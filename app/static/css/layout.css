@@ -1,0 +1,60 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+
+    background:var(--background);
+
+}
+
+.sidebar{
+
+    position:fixed;
+
+    width:260px;
+
+    height:100vh;
+
+    background:white;
+
+    box-shadow:var(--shadow);
+
+    padding:25px;
+
+}
+
+.main-content{
+
+    margin-left:260px;
+
+    min-height:100vh;
+
+}
+
+.page-content{
+
+    padding:30px;
+
+}
+
+.navbar-custom{
+
+    height:75px;
+
+    background:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 30px;
+
+    box-shadow:var(--shadow);
+
+}

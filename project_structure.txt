@@ -1,0 +1,155 @@
+SkinAI_Clinical/
+│
+├── app/                                # Chứa toàn bộ mã nguồn Backend Flask
+│   ├── __init__.py                     # Khởi tạo Flask App, đăng ký Blueprint, cấu hình hệ thống
+│   │
+│   ├── api/                            # REST API dùng cho Web, Mobile và tích hợp hệ thống khác
+│   │   ├── __init__.py                 # Khởi tạo API Blueprint
+│   │   ├── auth_api.py                 # API đăng nhập, đăng xuất
+│   │   ├── doctor_api.py              # API dành cho bác sĩ
+│   │   ├── patient_api.py             # API quản lý bệnh nhân
+│   │   ├── examination_api.py         # API quản lý lần khám
+│   │   ├── ai_api.py                  # API gửi ảnh và nhận kết quả AI
+│   │   └── admin_api.py               # API quản trị hệ thống
+│   │
+│   ├── auth/                           # Module xác thực người dùng
+│   │   ├── __init__.py
+│   │   ├── routes.py                  # Route đăng nhập, đăng xuất
+│   │   ├── forms.py                   # Form đăng nhập
+│   │   ├── services.py                # Xử lý nghiệp vụ đăng nhập
+│   │   └── repositories.py            # Truy vấn bảng users
+│   │
+│   ├── doctor/                         # Chức năng dành cho bác sĩ
+│   │   ├── __init__.py
+│   │   ├── routes.py                  # Giao diện bác sĩ
+│   │   ├── forms.py                   # Form nhập thông tin bệnh nhân
+│   │   ├── services.py                # Xử lý nghiệp vụ bác sĩ
+│   │   └── repositories.py            # Truy vấn dữ liệu bác sĩ
+│   │
+│   ├── admin/                          # Chức năng dành cho quản trị viên
+│   │   ├── __init__.py
+│   │   ├── routes.py                  # Dashboard Admin
+│   │   ├── services.py                # Xử lý thống kê, quản lý
+│   │   └── repositories.py            # Truy vấn dữ liệu hệ thống
+│   │
+│   ├── patient/                        # CRUD bệnh nhân
+│   │   ├── __init__.py
+│   │   ├── routes.py                  # Giao diện bệnh nhân
+│   │   ├── forms.py                   # Form tạo bệnh nhân
+│   │   ├── services.py                # Xử lý nghiệp vụ bệnh nhân
+│   │   └── repositories.py            # Truy vấn bảng patients
+│   │
+│   ├── examination/                    # Quản lý các lần khám
+│   │   ├── __init__.py
+│   │   ├── routes.py                  # Route quản lý lần khám
+│   │   ├── services.py                # Xử lý lần khám
+│   │   └── repositories.py            # Truy vấn examinations
+│   │
+│   ├── ai/                             # Toàn bộ chức năng AI
+│   │   ├── __init__.py
+│   │   ├── routes.py                  # Route AI
+│   │   ├── predict.py                 # Hàm dự đoán ảnh
+│   │   ├── inference.py               # Luồng AI Prediction
+│   │   ├── load_model.py              # Load mô hình .keras
+│   │   └── services.py                # Gọi AI và lưu kết quả
+│   │
+│   ├── preprocessing/                  # Tiền xử lý ảnh trước AI
+│   │   ├── blur_detector.py           # Kiểm tra ảnh mờ
+│   │   ├── cropper.py                 # Cắt vùng tổn thương
+│   │   ├── image_normalizer.py        # Chuẩn hóa ảnh
+│   │   ├── metadata_processor.py      # Chuẩn hóa tuổi, giới tính...
+│   │   └── quality_checker.py         # Kiểm tra chất lượng ảnh
+│   │
+│   ├── explain/                        # Giải thích kết quả AI
+│   │   ├── gradcam.py                 # Thuật toán Grad-CAM
+│   │   └── heatmap.py                 # Sinh ảnh Heatmap
+│   │
+│   ├── database/                       # Cấu hình Database
+│   │   ├── db.py                      # SQLAlchemy + Flask-Migrate
+│   │   └── seed.py                    # Seed dữ liệu ban đầu
+│   │
+│   ├── models/                         # ORM Model tương ứng từng bảng PostgreSQL
+│   │   ├── __init__.py
+│   │   ├── user.py                    # Bảng users
+│   │   ├── doctor_profile.py          # Bảng doctor_profiles
+│   │   ├── patient.py                 # Bảng patients
+│   │   ├── examination.py             # Bảng examinations
+│   │   ├── lesion_image.py            # Bảng lesion_images
+│   │   ├── image_metadata.py          # Bảng image_metadata
+│   │   ├── ai_prediction.py           # Bảng ai_predictions
+│   │   ├── ai_prediction_detail.py    # Bảng ai_prediction_details
+│   │   ├── ai_heatmap.py              # Bảng ai_heatmaps
+│   │   ├── doctor_report.py           # Bảng doctor_reports
+│   │   ├── report_prediction_ref.py   # Bảng report_prediction_refs
+│   │   ├── consent_record.py          # Bảng consent_records
+│   │   └── audit_log.py               # Bảng audit_logs
+│   │
+│   ├── repositories/                   # Data Access Layer (làm việc trực tiếp với PostgreSQL)
+│   │
+│   ├── services/                       # Business Logic Layer (xử lý nghiệp vụ)
+│   │
+│   ├── utils/                          # Hàm dùng chung toàn hệ thống
+│   │   ├── helpers.py                 # Hàm hỗ trợ
+│   │   ├── validator.py               # Kiểm tra dữ liệu
+│   │   ├── security.py                # Mã hóa, bảo mật
+│   │   └── response.py                # Chuẩn hóa Response JSON
+│   │
+│   ├── templates/                      # Giao diện HTML
+│   │   ├── layouts/                   # Layout chung
+│   │   ├── auth/                      # Giao diện đăng nhập
+│   │   ├── doctor/                    # Giao diện bác sĩ
+│   │   ├── admin/                     # Giao diện Admin
+│   │   ├── patient/                   # Giao diện bệnh nhân
+│   │   ├── examination/               # Giao diện lần khám
+│   │   └── ai/                        # Giao diện kết quả AI
+│   │
+│   └── static/                         # Tài nguyên tĩnh
+│       ├── css/                       # File CSS
+│       ├── js/                        # JavaScript
+│       ├── images/                    # Ảnh giao diện
+│       ├── uploads/                   # Ảnh upload
+│       │   ├── original/              # Ảnh gốc
+│       │   ├── crop/                  # Ảnh sau Crop
+│       │   ├── heatmap/               # Heatmap GradCAM
+│       │   └── overlay/               # Heatmap chồng lên ảnh gốc
+│       └── icons/                     # Icon giao diện
+│
+├── dataset/                            # Dataset dùng để huấn luyện AI
+│   ├── HAM10000/                      # Dataset chính
+│   ├── MobileSkin/                    # Dataset ảnh điện thoại
+│   └── UPATH20/                       # Dataset UPath20 Brazil
+│
+├── model/                              # Lưu mô hình AI đã huấn luyện
+│   ├── skin_model.keras               # Mô hình đang sử dụng
+│   ├── best_model.keras               # Mô hình có Accuracy tốt nhất
+│   └── tf_lite/                       # Mô hình TensorFlow Lite cho Mobile
+│
+├── training/                           # Huấn luyện và đánh giá AI
+│   ├── train_model.py                 # Train mô hình
+│   ├── evaluate.py                    # Đánh giá Accuracy
+│   ├── gradcam_test.py                # Kiểm tra GradCAM
+│   └── export_tflite.py               # Chuyển sang TensorFlow Lite
+│
+├── migrations/                         # Lịch sử Migration PostgreSQL
+│
+├── docs/                               # Tài liệu dự án
+│   ├── api.md                         # Tài liệu REST API
+│   ├── database.md                    # Thiết kế CSDL
+│   ├── architecture.md                # Kiến trúc hệ thống
+│   ├── deployment.md                  # Hướng dẫn cài đặt
+│   ├── training.md                    # Quy trình huấn luyện AI
+│   └── report/                        # Báo cáo đồ án
+│
+├── logs/                               # Nhật ký hệ thống
+│   ├── system.log                     # Nhật ký hoạt động hệ thống
+│   ├── error.log                      # Nhật ký lỗi
+│   ├── prediction.log                 # Nhật ký AI Prediction
+│   └── audit.log                      # Nhật ký truy cập
+│
+├── tests/                              # Unit Test và Integration Test
+│
+├── config.py                           # Cấu hình Flask và PostgreSQL
+├── run.py                              # Điểm khởi động ứng dụng Flask
+├── requirements.txt                    # Danh sách thư viện Python
+├── .env                                # Biến môi trường (DB, SECRET_KEY...)
+└── .gitignore                          # Bỏ qua file không đưa lên GitHub

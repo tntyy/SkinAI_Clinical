@@ -1,0 +1,39 @@
+# Virtual Environment
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Database
+*.db
+
+# Upload
+uploads/
+static/uploads/
+
+# Model
+model/
+*.keras
+*.h5
+*.onnx
+
+# Dataset
+dataset/
+archive/
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+
+# Images
+accuracy.png
+loss.png
+confusion_matrix.png
