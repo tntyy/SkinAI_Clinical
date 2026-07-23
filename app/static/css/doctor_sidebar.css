@@ -1,0 +1,17 @@
+.sidebar{
+
+    width:270px;
+
+    position:fixed;
+
+    left:0;
+
+    top:0;
+
+    bottom:0;
+
+    background:white;
+
+    border-right:1px solid #ECECEC;
+
+}

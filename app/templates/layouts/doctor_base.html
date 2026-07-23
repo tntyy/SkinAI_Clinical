@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+
+        {% block title %}
+
+        SkinAI Clinical
+
+        {% endblock %}
+
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='css/common.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='css/doctor.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='css/doctor_header.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='css/doctor_sidebar.css') }}">
+
+</head>
+
+<body>
+
+{% include "doctor/sidebar.html" %}
+
+<div class="main-content">
+
+    {% include "doctor/header.html" %}
+
+    <main>
+
+        {% block content %}
+
+        {% endblock %}
+
+    </main>
+
+    {% include "doctor/footer.html" %}
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+<div class="sidebar" id="sidebar">
+
+    <button class="sidebar-close" id="sidebarClose">
+        <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="logo">
+        <i class="bi bi-shield-check"></i>
+        <span>SkinAI Admin</span>
+    </div>
+
+    <ul class="menu">
+
+        <li>
+            <a href="{{ url_for('admin.dashboard') }}">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.users') }}">
+                <i class="bi bi-people-fill"></i>
+                <span>Quản lý User</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.doctors') }}">
+                <i class="bi bi-person-badge-fill"></i>
+                <span>Quản lý Doctor</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.patients') }}">
+                <i class="bi bi-person-lines-fill"></i>
+                <span>Quản lý Bệnh nhân</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.datasets') }}">
+                <i class="bi bi-database-fill"></i>
+                <span>Quản lý Dataset</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.models') }}">
+                <i class="bi bi-cpu-fill"></i>
+                <span>Quản lý AI Model</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.diseases') }}">
+                <i class="bi bi-virus2"></i>
+                <span>Quản lý Disease</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.statistics') }}">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span>Thống kê</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.logs') }}">
+                <i class="bi bi-journal-text"></i>
+                <span>Audit Log</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('admin.settings') }}">
+                <i class="bi bi-gear-fill"></i>
+                <span>Cài đặt</span>
+            </a>
+        </li>
+
+        <li class="logout">
+            <a href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </li>
+
+    </ul>
+
+</div>

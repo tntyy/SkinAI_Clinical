@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-auth = Blueprint(
+home = Blueprint(
     "home",
     __name__,
     url_prefix="/home"

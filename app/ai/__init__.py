@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-auth = Blueprint(
+ai = Blueprint(
     "ai",
     __name__,
     url_prefix="/ai"

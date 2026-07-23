@@ -29,9 +29,27 @@ def login():
                 "success"
             )
 
-            return redirect(
-                url_for("doctor.dashboard")
-            )
+            if user.role == "admin":
+                return redirect(
+                    url_for("admin.dashboard")
+                )
+
+            elif user.role == "doctor":
+                return redirect(
+                    url_for("doctor.dashboard")
+                )
+
+            else:
+                flash(
+                    "Tài khoản không có quyền truy cập.",
+                    "danger"
+                )
+
+                logout_user()
+
+                return redirect(
+                    url_for("auth.login")
+                )
 
         flash(
             "Sai tài khoản hoặc mật khẩu!",

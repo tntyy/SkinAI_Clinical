@@ -2,60 +2,265 @@
 
 {% block content %}
 
-<header>
-
 <nav>
+    <div class="logo">
+            <img src="/static/images/logo.png" style="width: 180px">
+    </div>
 
-<div class="logo">
+    <ul class="nav-links">
+        <li><a href="#home" class="active">Trang chủ</a></li>
+        <li><a href="#about">Giới thiệu</a></li>
+        <li><a href="#diseases">Bệnh da</a></li>
+        <li><a href="#ai">AI</a></li>
+        <li><a href="#contact">Liên hệ</a></li>
+    </ul>
 
-❤️ SkinAI Clinical
-
-</div>
-
-<ul>
-
-<li>Trang chủ</li>
-
-<li>Giới thiệu</li>
-
-<li>Bệnh da</li>
-
-<li>AI</li>
-
-<li>Liên hệ</li>
-
-</ul>
-
-<a href="/doctor/dashboard">
-
-Đăng nhập
-
-</a>
-
+    <div class="nav-actions">
+        <a href="/doctor/dashboard" class="btn-login">Đăng nhập</a>
+        <button class="nav-toggle" aria-label="Mở menu">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
 </nav>
 
-</header>
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="hero" id="home">
+    <span class="hero-tag">
+        <i class="bi bi-shield-check"></i>
+        Hỗ trợ chẩn đoán da liễu bằng AI
+    </span>
 
-<section class="hero">
+    <h1>SkinAI Clinical</h1>
+    <p>Hệ thống hỗ trợ phân tích tổn thương da bằng trí tuệ nhân tạo, dành cho bác sĩ và cơ sở y tế.</p>
 
-<h1>
-
-SkinAI Clinical
-
-</h1>
-
-<p>
-
-Hệ thống hỗ trợ phân tích tổn thương da bằng AI
-
-</p>
-
-<a>
-
-Khám phá ngay
-
-</a>
-
+    <div class="hero-actions">
+        <a href="#diseases" class="btn-primary">Khám phá ngay</a>
+        <a href="#ai" class="btn-outline">Tìm hiểu về AI</a>
+    </div>
 </section>
+
+<!-- ============================================
+     GIỚI THIỆU
+     ============================================ -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">Giới thiệu</span>
+            <h2>Nền tảng hỗ trợ chẩn đoán da liễu</h2>
+            <p>SkinAI Clinical giúp bác sĩ và cơ sở y tế phân tích tổn thương da nhanh chóng, chính xác, dựa trên dữ liệu hình ảnh y khoa.</p>
+        </div>
+
+        <div class="about-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="bi bi-cpu"></i></div>
+                <h3>AI chuyên sâu</h3>
+                <p>Mô hình huấn luyện trên tập dữ liệu HAM10000, nhận diện 7 loại tổn thương da phổ biến.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="bi bi-lightning-charge"></i></div>
+                <h3>Xử lý tức thì</h3>
+                <p>Tải ảnh lên và nhận kết quả phân tích sơ bộ chỉ trong vài giây.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="bi bi-shield-lock"></i></div>
+                <h3>Bảo mật dữ liệu</h3>
+                <p>Thông tin bệnh nhân và hình ảnh được bảo mật theo tiêu chuẩn y tế.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon"><i class="bi bi-person-badge"></i></div>
+                <h3>Dành cho bác sĩ</h3>
+                <p>Giao diện quản lý dành riêng cho bác sĩ và quản trị viên, hỗ trợ theo dõi ca bệnh.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     BỆNH DA (7 loại HAM10000)
+     ============================================ -->
+<section class="section" id="diseases" style="background:#fff;">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">Bệnh da</span>
+            <h2>7 loại tổn thương da thường gặp</h2>
+            <p>Dựa trên tập dữ liệu HAM10000, hệ thống hỗ trợ nhận diện các loại tổn thương da phổ biến sau.</p>
+        </div>
+
+        <div class="disease-grid">
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/melanocytic-nevi.jpg" alt="Melanocytic nevi">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Lành tính</span>
+                    <h3>Melanocytic Nevi (nốt ruồi)</h3>
+                    <p>Tổn thương sắc tố lành tính, phổ biến nhất trong tập dữ liệu.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/melanoma.jpg" alt="Melanoma">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Cần theo dõi</span>
+                    <h3>Melanoma</h3>
+                    <p>Ung thư hắc tố da, loại nguy hiểm nhất, cần phát hiện sớm.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/benign-keratosis.jpg" alt="Benign keratosis">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Lành tính</span>
+                    <h3>Benign Keratosis</h3>
+                    <p>Tổn thương sừng hóa lành tính, thường gặp ở người lớn tuổi.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/basal-cell-carcinoma.jpg" alt="Basal cell carcinoma">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Cần theo dõi</span>
+                    <h3>Basal Cell Carcinoma</h3>
+                    <p>Ung thư biểu mô tế bào đáy, phát triển chậm nhưng cần điều trị.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/actinic-keratosis.jpg" alt="Actinic keratosis">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Tiền ung thư</span>
+                    <h3>Actinic Keratosis</h3>
+                    <p>Tổn thương do tia UV, có nguy cơ tiến triển thành ung thư da.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/vascular-lesion.jpg" alt="Vascular lesion">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Lành tính</span>
+                    <h3>Vascular Lesion</h3>
+                    <p>Tổn thương liên quan đến mạch máu dưới da.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="disease-card">
+                <div class="disease-img">
+                    <img src="/static/images/dermatofibroma.jpg" alt="Dermatofibroma">
+                </div>
+                <div class="disease-body">
+                    <span class="disease-tag">Lành tính</span>
+                    <h3>Dermatofibroma</h3>
+                    <p>U xơ da lành tính, thường gặp ở vùng chi dưới.</p>
+                    <a href="#" class="disease-link">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     AI
+     ============================================ -->
+<section class="section ai-section" id="ai">
+    <div class="container">
+        <div class="ai-wrapper">
+            <div class="ai-text">
+                <span class="section-eyebrow">Công nghệ AI</span>
+                <h2>Mô hình AI đang được triển khai</h2>
+                <p>Hệ thống sử dụng mô hình học sâu (deep learning) được huấn luyện trên tập dữ liệu HAM10000 để hỗ trợ phân loại 7 nhóm tổn thương da. Kết quả AI đưa ra mang tính hỗ trợ tham khảo, quyết định chẩn đoán cuối cùng luôn thuộc về bác sĩ chuyên khoa.</p>
+
+                <div class="ai-stats">
+                    <div class="ai-stat">
+                        <strong>7</strong>
+                        <span>Loại tổn thương da</span>
+                    </div>
+                    <div class="ai-stat">
+                        <strong>&lt; 5s</strong>
+                        <span>Thời gian xử lý</span>
+                    </div>
+                    <div class="ai-stat">
+                        <strong>HAM10000</strong>
+                        <span>Bộ dữ liệu huấn luyện</span>
+                    </div>
+                    <div class="ai-stat">
+                        <strong>Hỗ trợ</strong>
+                        <span>Không thay thế bác sĩ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-visual">
+                <img src="/static/images/hero-bg.png" alt="Minh họa AI phân tích da">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     LIÊN HỆ
+     ============================================ -->
+<section class="section" id="contact" style="background:#fff;">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">Liên hệ</span>
+            <h2>Kết nối với chúng tôi</h2>
+            <p>Bác sĩ, cơ sở y tế quan tâm hợp tác hoặc cần hỗ trợ, vui lòng liên hệ theo thông tin bên dưới.</p>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-info">
+                <h3>Thông tin liên hệ</h3>
+                <p>Đội ngũ SkinAI Clinical sẵn sàng hỗ trợ bạn.</p>
+
+                <div class="contact-item">
+                    <i class="bi bi-envelope"></i>
+                    <span>contact@skinaiclinical.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="bi bi-telephone"></i>
+                    <span>0123 456 789</span>
+                </div>
+                <div class="contact-item">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>Việt Nam</span>
+                </div>
+            </div>
+
+            <form class="contact-form">
+                <input type="text" placeholder="Họ và tên" required>
+                <input type="email" placeholder="Email" required>
+                <textarea rows="4" placeholder="Nội dung liên hệ"></textarea>
+                <button type="submit">Gửi liên hệ</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<footer>
+    © 2026 SkinAI Clinical. Hệ thống hỗ trợ chẩn đoán da liễu bằng AI.
+</footer>
 
 {% endblock %}

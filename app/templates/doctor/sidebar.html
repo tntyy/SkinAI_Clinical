@@ -1,0 +1,86 @@
+<div class="sidebar" id="sidebar">
+
+    <button class="sidebar-close" id="sidebarClose" aria-label="Đóng menu">
+        <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="logo">
+        <i class="bi bi-heart-pulse-fill"></i>
+        <span>SkinAI Clinical</span>
+    </div>
+
+    <ul class="menu">
+
+        <li>
+            <a href="{{ url_for('doctor.dashboard') }}">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.patients') }}">
+                <i class="bi bi-people-fill"></i>
+                <span>Bệnh nhân</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.examinations') }}">
+                <i class="bi bi-clipboard2-pulse-fill"></i>
+                <span>Lần khám</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.lesions') }}">
+                <i class="bi bi-image-fill"></i>
+                <span>Hình ảnh tổn thương</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.ai') }}">
+                <i class="bi bi-cpu-fill"></i>
+                <span>AI Prediction</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.explain') }}">
+                <i class="bi bi-fire"></i>
+                <span>GradCAM</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.reports') }}">
+                <i class="bi bi-file-earmark-medical-fill"></i>
+                <span>Kết luận bác sĩ</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.history') }}">
+                <i class="bi bi-clock-history"></i>
+                <span>Lịch sử khám</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ url_for('doctor.settings') }}">
+                <i class="bi bi-gear-fill"></i>
+                <span>Cài đặt</span>
+            </a>
+        </li>
+
+        <li class="logout">
+            <a href="{{ url_for('auth.logout') }}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Đăng xuất</span>
+            </a>
+        </li>
+
+    </ul>
+
+</div>
