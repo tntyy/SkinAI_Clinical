@@ -11,3 +11,4 @@ from .doctor_report import DoctorReport
 from .report_prediction_ref import ReportPredictionRef
 from .consent_record import ConsentRecord
 from .audit_log import AuditLog
+from .disease import Disease

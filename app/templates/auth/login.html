@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Đăng nhập | SkinAI Clinical</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="login-card">
+
+        <img src="{{ url_for('static', filename='images/logo.png') }}"
+             class="logo">
+
+        <h1>SkinAI Clinical</h1>
+
+        <p>Hệ thống hỗ trợ chẩn đoán ung thư da bằng AI</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="input-group">
+
+                <i class="fa-solid fa-user"></i>
+
+                <input
+                        type="text"
+                        name="username"
+                        placeholder="Tên đăng nhập"
+                        required>
+
+            </div>
+
+            <div class="input-group">
+
+                <i class="fa-solid fa-lock"></i>
+
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Mật khẩu"
+                        required>
+
+                <span class="toggle-password">
+
+                    <i
+                            class="fa-solid fa-eye"
+                            onclick="togglePassword()"></i>
+
+                </span>
+
+            </div>
+
+            <label class="remember">
+
+                <input type="checkbox">
+
+                Ghi nhớ đăng nhập
+
+            </label>
+
+            <button type="submit">
+
+                Đăng nhập
+
+            </button>
+
+        </form>
+
+        <div class="footer">
+
+            © 2026 SkinAI Clinical
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function togglePassword(){
+
+    let password=document.getElementById("password");
+
+    if(password.type==="password"){
+
+        password.type="text";
+
+    }
+
+    else{
+
+        password.type="password";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,8 +1,7 @@
 from app.database.db import db
+from flask_login import UserMixin
 
-
-class User(db.Model):
-
+class User(UserMixin ,db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(
@@ -28,6 +27,7 @@ class User(db.Model):
 
     is_active = db.Column(
         db.Boolean,
+        nullable=False,
         default=True
     )
 
@@ -42,9 +42,23 @@ class User(db.Model):
         onupdate=db.func.now()
     )
 
+    # Đăng nhập lần cuối
+    last_login = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+
+    # Quan hệ 1-1 với DoctorProfile
     doctor_profile = db.relationship(
         "DoctorProfile",
         back_populates="user",
         uselist=False,
-        cascade="all, delete"
+        cascade="all, delete-orphan"
     )
+
+    def get_id(self):
+        return str(self.user_id)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
+

@@ -4,16 +4,34 @@
 
     --primary-light:#43A047;
 
+    --primary-dark:#1B5E20;
+
+    --danger:#D32F2F;
+
+    --warning:#F9A825;
+
     --background:#F5F7FA;
 
     --white:#FFFFFF;
 
     --text:#263238;
 
+    --text-muted:#78848C;
+
     --border:#E8ECEF;
 
     --shadow:0 10px 25px rgba(0,0,0,.08);
 
     --radius:18px;
+
+    --radius-sm:12px;
+
+    --sidebar-width:260px;
+
+    --navbar-height:70px;
+
+    --bottomnav-height:64px;
+
+    --tap-target:48px;
 
 }

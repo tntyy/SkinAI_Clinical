@@ -3,12 +3,25 @@ from flask import redirect
 from flask import url_for
 from config import Config
 from app.database.db import db, migrate
+from flask_login import LoginManager
 
 import app.models
 
 from app.home.routes import home
 from app.doctor.routes import doctor
+from app.models.user import User
+from app.auth import auth
+from app.patient import patient
+from app.examination import examination
 
+login_manager = LoginManager()
+login_manager.login_view ='auth.login'
+login_manager.login_message = "Vui lòng đăng nhập!"
+login_manager.login_message_category = "warning"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 def create_app():
 
@@ -22,5 +35,10 @@ def create_app():
 
     app.register_blueprint(home)
     app.register_blueprint(doctor)
+    app.register_blueprint(auth)
+    app.register_blueprint(patient)
+    app.register_blueprint(examination)
+
+    login_manager.init_app(app)
 
     return app

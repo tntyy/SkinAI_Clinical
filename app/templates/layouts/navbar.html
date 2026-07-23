@@ -1,18 +1,58 @@
 <nav class="navbar-custom">
 
-    <div>
+    <div class="navbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Mở menu">
+            <i class="bi bi-list"></i>
+        </button>
 
-        <h4>Xin chào,</h4>
-        <h4>Bác sĩ Nguyễn Văn A</h4>
-
+        <div>
+            <h4>Xin chào,</h4>
+            <h4>Bác sĩ Nguyễn Văn A</h4>
+        </div>
     </div>
 
     <div class="user-info">
-
         <i class="bi bi-person-circle"></i>
-
         <span>Bác sĩ</span>
-
     </div>
 
+</nav>
+EOF
+
+cat > /home/claude/SkinAI_Clinical/app/templates/layouts/bottom_nav.html << 'EOF'
+<nav class="bottom-nav">
+    <ul>
+        <li>
+            <a href="{{ url_for('doctor.dashboard') }}"
+               class="{{ 'active' if request.endpoint == 'doctor.dashboard' }}">
+                <i class="bi bi-grid-fill"></i>
+                Tổng quan
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('patient.list_patients') }}"
+               class="{{ 'active' if request.endpoint and request.endpoint.startswith('patient.') }}">
+                <i class="bi bi-person-lines-fill"></i>
+                Bệnh nhân
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('examination.new_examination') }}" class="fab">
+                <i class="bi bi-plus-lg"></i>
+                Khám mới
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="bi bi-file-earmark-medical-fill"></i>
+                Báo cáo
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="bi bi-person-circle"></i>
+                Cá nhân
+            </a>
+        </li>
+    </ul>
 </nav>

@@ -46,3 +46,4 @@ grad-cam==1.5.5
 # Config
 python-dotenv==1.2.2
 PyYAML==6.0.3
+
