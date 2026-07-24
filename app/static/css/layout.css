@@ -54,11 +54,18 @@ body{
 }
 
 .sidebar-overlay{
-    display:none;
     position:fixed;
     inset:0;
     background:rgba(15,23,20,.45);
     z-index:1040;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .25s ease, visibility .25s ease;
+}
+
+.sidebar-overlay.active{
+    opacity:1;
+    visibility:visible;
 }
 
 .main-content{
@@ -118,7 +125,7 @@ body{
     flex-shrink:0;
 }
 
-/* ---------- (mobile / Android only) ---------- */
+/* ---------- Bottom nav (mobile) ---------- */
 
 .bottom-nav{
     display:none;
@@ -136,10 +143,15 @@ body{
 .bottom-nav ul{
     list-style:none;
     height:100%;
+    width:100%;
     display:flex;
 }
 
 .bottom-nav li{
+    flex:1;
+}
+
+.bottom-nav > a{
     flex:1;
 }
 
@@ -152,7 +164,8 @@ body{
     gap:2px;
     text-decoration:none;
     color:var(--text-muted);
-    font-size:.68rem;
+    font-size:.78rem;
+    font-weight:600;
 }
 
 .bottom-nav a i{
@@ -177,7 +190,14 @@ body{
     justify-content:center;
     font-size:1.3rem;
     margin-top:-26px;
-    box-shadow:0 6px 16px rgba(46,125,50,.4);
+    box-shadow:0 6px 16px rgba(25,118,210,.4);
+}
+
+footer{
+    text-align:center;
+    padding:20px;
+    color:var(--text-muted);
+    font-size:.85rem;
 }
 
 /* ---------- Breakpoints ---------- */
@@ -198,10 +218,6 @@ body{
         display:block;
     }
 
-    .sidebar-overlay.active{
-        display:block;
-    }
-
     .sidebar-toggle{
         display:flex;
     }
@@ -215,6 +231,10 @@ body{
         padding-bottom:calc(var(--bottomnav-height) + 24px);
     }
 
+    footer{
+        padding-bottom:calc(var(--bottomnav-height) + 16px);
+    }
+
     .navbar-custom{
         padding:0 16px;
     }
@@ -224,7 +244,7 @@ body{
     }
 
     .bottom-nav{
-        display:block;
+        display:flex;
     }
 }
 

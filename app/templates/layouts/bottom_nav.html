@@ -1,4 +1,6 @@
 <nav class="bottom-nav">
-    <a href="{{ url_for('doctor.dashboard') }}">Tổng quan</a>
-    <a href="{{ url_for('patient.list_patients') }}">Bệnh nhân</a>
+    <a href="{{ url_for('doctor.dashboard') }}"
+       class="{{ 'active' if request.endpoint == 'doctor.dashboard' }}">Tổng quan</a>
+    <a href="{{ url_for('doctor.patients') }}"
+       class="{{ 'active' if request.endpoint == 'doctor.patients' }}">Bệnh nhân</a>
 </nav>
