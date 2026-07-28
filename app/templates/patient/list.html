@@ -1,0 +1,150 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Danh sách bệnh nhân
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3>Danh sách bệnh nhân</h3>
+
+        <a href="{{ url_for('patient.create_patient') }}"
+           class="btn btn-primary">
+
+            <i class="bi bi-plus-circle"></i>
+            Thêm bệnh nhân
+
+        </a>
+
+    </div>
+
+    <form method="GET">
+
+        <div class="input-group mb-3">
+
+            <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Tìm bệnh nhân..."
+                    name="keyword"
+                    value="{{ keyword if keyword else '' }}">
+
+            <button class="btn btn-success">
+
+                <i class="bi bi-search"></i>
+                Tìm kiếm
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <table class="table table-bordered table-hover align-middle">
+
+        <thead class="table-light">
+
+        <tr>
+
+            <th>Mã BN</th>
+
+            <th>Họ tên</th>
+
+            <th>Giới tính</th>
+
+            <th>Năm sinh</th>
+
+            <th>Điện thoại</th>
+
+            <th width="330">Thao tác</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for patient in patients %}
+
+        <tr>
+
+            <td>{{ patient.patient_code }}</td>
+
+            <td>{{ patient.fullname }}</td>
+
+            <td>{{ patient.gender }}</td>
+
+            <td>{{ patient.birth_year }}</td>
+
+            <td>{{ patient.phone }}</td>
+
+            <td>
+
+                <!-- Chi tiết -->
+
+                <a href="{{ url_for('patient.detail_patient',
+                                    patient_id=patient.patient_id) }}"
+                   class="btn btn-info btn-sm">
+
+                    <i class="bi bi-eye"></i>
+                    Chi tiết
+
+                </a>
+
+                <!-- Sửa -->
+
+                <a href="{{ url_for('patient.edit_patient',
+                                    patient_id=patient.patient_id) }}"
+                   class="btn btn-warning btn-sm">
+
+                    <i class="bi bi-pencil-square"></i>
+                    Sửa
+
+                </a>
+
+                <!-- Tạo lần khám -->
+
+                <a href="{{ url_for('patient.new_examination',
+                                    patient_id=patient.patient_id) }}"
+                   class="btn btn-success btn-sm">
+
+                    <i class="bi bi-clipboard2-plus"></i>
+                    Khám
+
+                </a>
+
+                <!-- Xóa -->
+
+                <form action="{{ url_for('patient.delete_patient',
+                                         patient_id=patient.patient_id) }}"
+                      method="POST"
+                      style="display:inline;">
+
+                    <button
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+
+                        <i class="bi bi-trash"></i>
+                        Xóa
+
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

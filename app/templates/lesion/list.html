@@ -1,0 +1,31 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<h3>Danh sách ảnh</h3>
+
+<a
+class="btn btn-primary mb-3"
+href="{{ url_for('lesion.upload_image',exam_id=exam_id) }}">
+
+Upload ảnh
+
+</a>
+
+<div class="row">
+
+{% for image in images %}
+
+<div class="col-md-3">
+
+<img
+src="{{ url_for('static',filename=image.image_path) }}"
+class="img-fluid rounded">
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

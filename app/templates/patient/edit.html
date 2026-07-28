@@ -1,0 +1,59 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h3>Sửa bệnh nhân</h3>
+
+<form method="POST">
+
+{{ form.hidden_tag() }}
+
+<div class="mb-3">
+
+{{ form.fullname.label }}
+
+{{ form.fullname(class="form-control") }}
+
+</div>
+
+<div class="mb-3">
+
+{{ form.gender.label }}
+
+{{ form.gender(class="form-select") }}
+
+</div>
+
+<div class="mb-3">
+
+{{ form.birth_year.label }}
+
+{{ form.birth_year(class="form-control") }}
+
+</div>
+
+<div class="mb-3">
+
+{{ form.phone.label }}
+
+{{ form.phone(class="form-control") }}
+
+</div>
+
+{{ form.submit(class="btn btn-warning") }}
+
+<a
+href="{{ url_for('patient.list_patients') }}"
+class="btn btn-secondary">
+
+Hủy
+
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}

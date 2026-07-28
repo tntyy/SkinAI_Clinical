@@ -1,0 +1,67 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3>Thông tin ảnh phục vụ AI</h3>
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+
+            {{ form.age.label }}
+
+            {{ form.age(class="form-control") }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.gender.label }}
+
+            {{ form.gender(class="form-select") }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.lesion_location.label }}
+
+            {{ form.lesion_location(class="form-control") }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.skin_type.label }}
+
+            {{ form.skin_type(class="form-control") }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.device.label }}
+
+            {{ form.device(class="form-control") }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.note.label }}
+
+            {{ form.note(class="form-control") }}
+
+        </div>
+
+        {{ form.submit(class="btn btn-primary") }}
+
+    </form>
+
+</div>
+
+{% endblock %}

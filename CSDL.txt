@@ -1,0 +1,171 @@
+-- ============================================
+-- 1. USERS - Tài khoản đăng nhập
+-- ============================================
+CREATE TABLE users (
+    user_id       SERIAL PRIMARY KEY,
+    username      VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,      -- bcrypt/argon2, KHÔNG lưu plaintext
+    role          VARCHAR(20) NOT NULL CHECK (role IN ('doctor','admin')),
+    is_active     BOOLEAN DEFAULT TRUE,
+    created_at    TIMESTAMP DEFAULT NOW(),
+    updated_at    TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 2. DOCTOR_PROFILES - Hồ sơ bác sĩ (1-1 với users)
+-- ============================================
+CREATE TABLE doctor_profiles (
+    doctor_id   SERIAL PRIMARY KEY,
+    user_id     INT UNIQUE NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    fullname    VARCHAR(100) NOT NULL,
+    email       VARCHAR(100),
+    phone       VARCHAR(20),
+    hospital    VARCHAR(150),
+    department  VARCHAR(100),
+    avatar_path VARCHAR(255),
+    created_at  TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 3. PATIENTS - Bệnh nhân (KHÔNG lưu CCCD, địa chỉ)
+-- ============================================
+CREATE TABLE patients (
+    patient_id       SERIAL PRIMARY KEY,
+    patient_code     VARCHAR(30) UNIQUE NOT NULL,   -- mã ẩn danh nội bộ
+    created_by_doctor INT NOT NULL REFERENCES doctor_profiles(doctor_id),
+    fullname         VARCHAR(100) NOT NULL,
+    gender           VARCHAR(10) CHECK (gender IN ('male','female','other')),
+    birth_year       INT,                           -- chỉ lưu năm sinh
+    phone            VARCHAR(20),
+    created_at       TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 4. EXAMINATIONS - Mỗi lần khám
+-- ============================================
+CREATE TABLE examinations (
+    exam_id         SERIAL PRIMARY KEY,
+    patient_id      INT NOT NULL REFERENCES patients(patient_id) ON DELETE CASCADE,
+    doctor_id       INT NOT NULL REFERENCES doctor_profiles(doctor_id),
+    exam_date       TIMESTAMP DEFAULT NOW(),
+    chief_complaint VARCHAR(255),   -- Đau / Ngứa / Nổi mụn / Theo dõi...
+    note            TEXT,
+    created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 5. LESION_IMAGES - Ảnh tổn thương
+-- ============================================
+CREATE TABLE lesion_images (
+    image_id      SERIAL PRIMARY KEY,
+    exam_id       INT NOT NULL REFERENCES examinations(exam_id) ON DELETE CASCADE,
+    image_path    VARCHAR(255) NOT NULL,
+    crop_path     VARCHAR(255),
+    blur_score    NUMERIC(5,2),
+    quality_score NUMERIC(5,2),
+    is_valid      BOOLEAN DEFAULT TRUE,   -- ảnh đạt chuẩn để AI xử lý hay không
+    captured_at   TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 6. IMAGE_METADATA - Metadata phục vụ AI train
+-- ============================================
+CREATE TABLE image_metadata (
+    metadata_id    SERIAL PRIMARY KEY,
+    image_id       INT UNIQUE NOT NULL REFERENCES lesion_images(image_id) ON DELETE CASCADE,
+    age            INT,
+    gender         VARCHAR(10),
+    lesion_location VARCHAR(100),
+    skin_type      VARCHAR(50),
+    device         VARCHAR(100),
+    note           TEXT
+);
+
+-- ============================================
+-- 7. AI_PREDICTIONS - 1 lần AI chạy trên 1 ảnh
+-- ============================================
+CREATE TABLE ai_predictions (
+    prediction_id SERIAL PRIMARY KEY,
+    image_id      INT NOT NULL REFERENCES lesion_images(image_id) ON DELETE CASCADE,
+    model_name    VARCHAR(100) NOT NULL,     -- vd: ResNet50
+    model_version VARCHAR(30),               -- để tái lập kết quả (audit)
+    created_at    TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 8. AI_PREDICTION_DETAILS - Top-3 kết quả
+-- ============================================
+CREATE TABLE ai_prediction_details (
+    detail_id      SERIAL PRIMARY KEY,
+    prediction_id  INT NOT NULL REFERENCES ai_predictions(prediction_id) ON DELETE CASCADE,
+    rank           SMALLINT NOT NULL CHECK (rank BETWEEN 1 AND 3),
+    predicted_class VARCHAR(100) NOT NULL,   -- vd: Melanoma
+    confidence      NUMERIC(5,4) NOT NULL    -- vd: 0.9100
+);
+
+-- ============================================
+-- 9. AI_HEATMAPS - GradCAM giải thích
+-- ============================================
+CREATE TABLE ai_heatmaps (
+    heatmap_id    SERIAL PRIMARY KEY,
+    prediction_id INT NOT NULL REFERENCES ai_predictions(prediction_id) ON DELETE CASCADE,
+    heatmap_path  VARCHAR(255) NOT NULL,
+    method        VARCHAR(50) DEFAULT 'GradCAM'
+);
+
+-- ============================================
+-- 10. DOCTOR_REPORTS - Kết luận cuối cùng (gắn EXAM, không gắn 1 prediction)
+-- ============================================
+CREATE TABLE doctor_reports (
+    report_id     SERIAL PRIMARY KEY,
+    exam_id       INT NOT NULL REFERENCES examinations(exam_id) ON DELETE CASCADE,
+    doctor_id     INT NOT NULL REFERENCES doctor_profiles(doctor_id),
+    diagnosis     VARCHAR(255) NOT NULL,
+    treatment     TEXT,
+    note          TEXT,
+    status        VARCHAR(20) DEFAULT 'confirmed' CHECK (status IN ('draft','confirmed')),
+    confirmed_at  TIMESTAMP
+);
+
+-- Bảng phụ: bác sĩ chọn prediction nào làm căn cứ kết luận (nhiều-nhiều)
+CREATE TABLE report_prediction_refs (
+    id            SERIAL PRIMARY KEY,
+    report_id     INT NOT NULL REFERENCES doctor_reports(report_id) ON DELETE CASCADE,
+    prediction_id INT NOT NULL REFERENCES ai_predictions(prediction_id) ON DELETE CASCADE
+);
+
+-- ============================================
+-- 11. CONSENT_RECORDS - Đồng ý dùng dữ liệu (bác sĩ xác nhận thay bệnh nhân)
+-- ============================================
+CREATE TABLE consent_records (
+    consent_id   SERIAL PRIMARY KEY,
+    exam_id      INT NOT NULL REFERENCES examinations(exam_id) ON DELETE CASCADE,
+    purpose      VARCHAR(50) NOT NULL CHECK (purpose IN ('diagnosis','research','ai_training')),
+    granted_by   INT NOT NULL REFERENCES doctor_profiles(doctor_id),
+    granted_at   TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- 12. AUDIT_LOGS - Nhật ký truy cập (bắt buộc cho hệ thống y tế)
+-- ============================================
+CREATE TABLE audit_logs (
+    log_id       SERIAL PRIMARY KEY,
+    user_id      INT NOT NULL REFERENCES users(user_id),
+    action       VARCHAR(20) NOT NULL CHECK (action IN ('view','create','update','delete')),
+    target_table VARCHAR(50) NOT NULL,
+    target_id    INT,
+    ip_address   VARCHAR(45),
+    created_at   TIMESTAMP DEFAULT NOW()
+);
+
+-- ============================================
+-- INDEXES quan trọng
+-- ============================================
+CREATE INDEX idx_patients_doctor ON patients(created_by_doctor);
+CREATE INDEX idx_exams_patient ON examinations(patient_id);
+CREATE INDEX idx_exams_doctor ON examinations(doctor_id);
+CREATE INDEX idx_images_exam ON lesion_images(exam_id);
+CREATE INDEX idx_predictions_image ON ai_predictions(image_id);
+CREATE INDEX idx_reports_exam ON doctor_reports(exam_id);
+CREATE INDEX idx_audit_user ON audit_logs(user_id);
+CREATE INDEX idx_audit_created ON audit_logs(created_at);

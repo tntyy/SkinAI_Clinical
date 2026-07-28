@@ -17,8 +17,9 @@
             </a>
         </li>
 
-        <li class="{{ 'active' if request.endpoint == 'doctor.patients' }}">
-            <a href="{{ url_for('doctor.patients') }}">
+<!--        gup de phan bien hon-->
+        <li class="{{ 'active' if 'patient' in request.endpoint }}">
+            <a href="{{ url_for('doctor.list_patients') }}">
                 <i class="bi bi-people-fill"></i>
                 <span>Bệnh nhân</span>
             </a>

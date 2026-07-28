@@ -1,0 +1,72 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Chi tiết bệnh nhân
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h3>Thông tin bệnh nhân</h3>
+
+    <table class="table table-bordered">
+
+        <tr>
+            <th>Mã BN</th>
+            <td>{{ patient.patient_code }}</td>
+        </tr>
+
+        <tr>
+            <th>Họ tên</th>
+            <td>{{ patient.fullname }}</td>
+        </tr>
+
+        <tr>
+            <th>Giới tính</th>
+            <td>{{ patient.gender }}</td>
+        </tr>
+
+        <tr>
+            <th>Năm sinh</th>
+            <td>{{ patient.birth_year }}</td>
+        </tr>
+
+        <tr>
+            <th>Số điện thoại</th>
+            <td>{{ patient.phone }}</td>
+        </tr>
+
+    </table>
+
+    <a class="btn btn-success"
+
+        href="{{ url_for('examination.create_examination',
+
+        patient_id=patient.patient_id) }}">
+
+        <i class="bi bi-plus-circle"></i>
+
+        Khám mới
+
+        </a>
+
+    <a
+        href="{{ url_for('examination.list_examinations',
+                         patient_id=patient.patient_id) }}"
+        class="btn btn-success">
+
+        Lịch sử khám
+
+    </a>
+
+    <a href="{{ url_for('doctor.list_patients') }}"
+       class="btn btn-secondary">
+
+        Quay lại
+
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Chi tiết lần khám
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3>
+
+        Lần khám #{{ examination.exam_id }}
+
+    </h3>
+
+    <hr>
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <p>
+
+                <strong>Bệnh nhân:</strong>
+
+                {{ examination.patient.fullname }}
+
+            </p>
+
+            <p>
+
+                <strong>Bác sĩ:</strong>
+
+                {{ examination.doctor.fullname }}
+
+            </p>
+
+            <p>
+
+                <strong>Ngày khám:</strong>
+
+                {{ examination.exam_date.strftime("%d/%m/%Y %H:%M") }}
+
+            </p>
+
+            <p>
+
+                <strong>Lý do khám</strong>
+
+            </p>
+
+            <div class="alert alert-light">
+
+                {{ examination.chief_complaint }}
+
+            </div>
+
+            <p>
+
+                <strong>Ghi chú</strong>
+
+            </p>
+
+            <div class="alert alert-light">
+
+                {{ examination.note }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="mt-3">
+
+        <a
+            class="btn btn-primary">
+
+            Upload ảnh tổn thương
+
+        </a>
+
+        <a
+            class="btn btn-success">
+
+            AI Prediction
+
+        </a>
+
+        <a
+            class="btn btn-warning">
+
+            GradCAM
+
+        </a>
+
+        <a
+            class="btn btn-danger">
+
+            Kết luận
+
+        </a>
+
+        <a
+            href="{{ url_for('lesion.list_images', exam_id=exam.exam_id) }}"
+            class="btn btn-success">
+
+            Ảnh tổn thương
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

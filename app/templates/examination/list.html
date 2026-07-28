@@ -1,0 +1,112 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Lần khám
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <h3>Lịch sử lần khám</h3>
+
+        <a
+            href="{{ url_for('examination.create_examination',
+                             patient_id=patient_id) }}"
+            class="btn btn-primary">
+
+            + Tạo lần khám
+
+        </a>
+
+    </div>
+
+    <table class="table table-bordered">
+
+        <thead>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Ngày khám</th>
+
+            <th>Lý do khám</th>
+
+            <th>Ghi chú</th>
+
+            <th width="220">
+
+                Thao tác
+
+            </th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for exam in examinations %}
+
+        <tr>
+
+            <td>
+
+                {{ exam.exam_id }}
+
+            </td>
+
+            <td>
+
+                {{ exam.exam_date.strftime("%d/%m/%Y %H:%M") }}
+
+            </td>
+
+            <td>
+
+                {{ exam.chief_complaint }}
+
+            </td>
+
+            <td>
+
+                {{ exam.note }}
+
+            </td>
+
+            <td>
+
+                <a
+                    href="{{ url_for('examination.detail',
+                                     exam_id=exam.exam_id) }}"
+                    class="btn btn-info btn-sm">
+
+                    Xem
+
+                </a>
+
+                <a
+                    href="{{ url_for('examination.edit',
+                                     exam_id=exam.exam_id) }}"
+                    class="btn btn-warning btn-sm">
+
+                    Sửa
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
