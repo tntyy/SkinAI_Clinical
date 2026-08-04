@@ -21,7 +21,6 @@ from app.examination.services import ExaminationService
     "/create/<int:patient_id>",
     methods=["GET", "POST"]
 )
-
 @login_required
 def create_examination(patient_id):
 
@@ -60,8 +59,10 @@ def create_examination(patient_id):
         patient_id=patient_id
 
     )
+
+
 ####################################################
-# Danh sách lần khám của bệnh nhân
+# Danh sách lần khám
 ####################################################
 
 @examination.route("/patient/<int:patient_id>")
@@ -81,6 +82,8 @@ def list_examinations(patient_id):
         patient_id=patient_id
 
     )
+
+
 ####################################################
 # Chi tiết lần khám
 ####################################################
@@ -89,11 +92,11 @@ def list_examinations(patient_id):
 @login_required
 def detail(exam_id):
 
-    examination = ExaminationService.get_detail(
+    examination_data = ExaminationService.get_detail(
         exam_id
     )
 
-    if examination is None:
+    if examination_data is None:
 
         flash(
             "Không tìm thấy lần khám.",
@@ -108,6 +111,104 @@ def detail(exam_id):
 
         "examination/detail.html",
 
-        examination=examination
+        examination=examination_data
+
+    )
+####################################################
+# Sửa lần khám
+####################################################
+
+@examination.route(
+    "/<int:exam_id>/edit",
+    methods=["GET", "POST"]
+)
+@login_required
+def edit(exam_id):
+
+    exam = ExaminationService.get_by_id(exam_id)
+
+    if exam is None:
+
+        flash(
+            "Không tìm thấy lần khám.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("doctor.dashboard")
+        )
+
+    form = ExaminationForm(obj=exam)
+
+    if form.validate_on_submit():
+
+        ExaminationService.update(
+            exam,
+            form
+        )
+
+        flash(
+            "Đã cập nhật lần khám.",
+            "success"
+        )
+
+        return redirect(
+            url_for(
+                "examination.detail",
+                exam_id=exam.exam_id
+            )
+        )
+
+    return render_template(
+
+        "examination/edit.html",
+
+        form=form,
+
+        examination=exam
+
+    )
+####################################################
+# Xóa lần khám
+####################################################
+
+@examination.route(
+    "/<int:exam_id>/delete",
+    methods=["POST"]
+)
+@login_required
+def delete(exam_id):
+
+    exam = ExaminationService.get_by_id(exam_id)
+
+    if exam is None:
+
+        flash(
+            "Không tìm thấy lần khám.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("doctor.dashboard")
+        )
+
+    patient_id = exam.patient_id
+
+    ExaminationService.delete(exam)
+
+    flash(
+        "Đã xóa lần khám.",
+        "success"
+    )
+
+    return redirect(
+
+        url_for(
+
+            "examination.list_examinations",
+
+            patient_id=patient_id
+
+        )
 
     )

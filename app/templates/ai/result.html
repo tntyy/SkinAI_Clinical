@@ -1,0 +1,47 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<h3>Kết quả AI Prediction</h3>
+
+<img
+src="{{ url_for('static', filename=lesion.image_path) }}"
+width="250">
+
+<table class="table mt-3">
+
+    <thead>
+
+        <tr>
+
+            <th>Hạng</th>
+
+            <th>Loại tổn thương</th>
+
+            <th>Độ tin cậy</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for item in results %}
+
+        <tr>
+
+            <td>{{ item.rank }}</td>
+
+            <td>{{ item.class }}</td>
+
+            <td>{{ "%.2f"|format(item.confidence*100) }}%</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

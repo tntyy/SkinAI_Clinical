@@ -1,23 +1,124 @@
 {% extends "layouts/doctor_base.html" %}
 
+{% block title %}
+Upload ảnh
+{% endblock %}
+
 {% block content %}
 
-<h3>Upload ảnh tổn thương</h3>
+<div class="container mt-4">
 
-<form method="POST" enctype="multipart/form-data">
+    <h3>Upload ảnh tổn thương</h3>
 
-    {{ form.hidden_tag() }}
+    <form method="POST"
+          id="uploadForm"
+          enctype="multipart/form-data">
 
-    <div class="mb-3">
+        {{ form.hidden_tag() }}
 
-        {{ form.image.label }}
+        <div class="mb-3">
 
-        {{ form.image(class="form-control") }}
+            {{ form.image.label }}
+
+            {{ form.image(class="form-control", id="imageInput") }}
+
+        </div>
+
+        {{ form.submit(class="btn btn-primary") }}
+
+        <a href="{{ url_for('lesion.list_images',
+                            exam_id=exam_id) }}"
+           class="btn btn-secondary">
+
+            Quay lại
+
+        </a>
+
+    </form>
+
+        <hr>
+
+    <h4>Hoặc chụp bằng Camera</h4>
+
+    <video
+        id="video"
+        autoplay
+        style="width:500px;border-radius:10px;"></video>
+
+    <br><br>
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        onclick="startCamera()">
+
+        Mở Camera
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-success"
+        onclick="captureImage()">
+
+        Chụp ảnh
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-danger"
+        onclick="stopCamera()">
+
+        Tắt Camera
+    </button>
+
+    <br><br>
+
+    <canvas
+        id="canvas"
+        style="display:none;"></canvas>
+
+        <div
+        id="cropContainer"
+        style="display:none">
+
+        <img
+            id="preview"
+            style="max-width:500px">
+
+        <br><br>
+
+        <button
+            id="uploadCropBtn"
+            type="button"
+            class="btn btn-success">
+
+            Upload ảnh đã Crop
+
+        </button>
 
     </div>
 
-    {{ form.submit(class="btn btn-primary") }}
+    <br><br>
 
-</form>
+
+
+</div>
+
+
+<link rel="stylesheet"
+href="{{ url_for('static',
+filename='vendor/cropper/cropperjs-1.6.2/dist/cropper.min.css') }}">
+
+<script
+src="{{ url_for('static',
+filename='vendor/cropper/cropperjs-1.6.2/dist/cropper.min.js') }}">
+</script>
+
+<script
+src="{{ url_for('static',
+filename='js/camera.js') }}">
+</script>
 
 {% endblock %}

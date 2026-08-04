@@ -39,29 +39,33 @@ Chi tiết bệnh nhân
 
     </table>
 
-    <a class="btn btn-success"
-
+    <a
         href="{{ url_for('examination.create_examination',
-
-        patient_id=patient.patient_id) }}">
+        patient_id=patient.patient_id) }}"
+        class="btn btn-success">
 
         <i class="bi bi-plus-circle"></i>
 
         Khám mới
 
-        </a>
+    </a>
 
     <a
         href="{{ url_for('examination.list_examinations',
-                         patient_id=patient.patient_id) }}"
-        class="btn btn-success">
+        patient_id=patient.patient_id) }}"
+        class="btn btn-primary">
+
+        <i class="bi bi-clock-history"></i>
 
         Lịch sử khám
 
     </a>
 
-    <a href="{{ url_for('doctor.list_patients') }}"
-       class="btn btn-secondary">
+    <a
+        href="{{ url_for('patient.list_patients') }}"
+        class="btn btn-secondary">
+
+        <i class="bi bi-arrow-left"></i>
 
         Quay lại
 

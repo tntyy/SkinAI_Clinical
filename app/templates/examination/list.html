@@ -12,15 +12,6 @@ Lần khám
 
         <h3>Lịch sử lần khám</h3>
 
-        <a
-            href="{{ url_for('examination.create_examination',
-                             patient_id=patient_id) }}"
-            class="btn btn-primary">
-
-            + Tạo lần khám
-
-        </a>
-
     </div>
 
     <table class="table table-bordered">
@@ -96,6 +87,21 @@ Lần khám
                     Sửa
 
                 </a>
+                <form
+                action="{{ url_for('examination.delete',
+                                   exam_id=exam.exam_id) }}"
+                method="POST"
+                style="display:inline;">
+
+                    <button
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Xóa lần khám?')">
+
+                        Xóa
+
+                    </button>
+
+                </form>
 
             </td>
 

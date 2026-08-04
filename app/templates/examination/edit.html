@@ -1,0 +1,48 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Sửa lần khám
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3>Sửa lần khám</h3>
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+
+            {{ form.chief_complaint.label }}
+
+            {{ form.chief_complaint(class="form-control") }}
+
+        </div>
+
+        <div class="mb-3">
+
+            {{ form.note.label }}
+
+            {{ form.note(class="form-control", rows="5") }}
+
+        </div>
+
+        {{ form.submit(class="btn btn-primary") }}
+
+        <a
+            href="{{ url_for('examination.detail',
+                             exam_id=examination.exam_id) }}"
+            class="btn btn-secondary">
+
+            Hủy
+
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,420 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Chi tiết ảnh tổn thương
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="mb-4">
+        Chi tiết ảnh tổn thương
+    </h3>
+
+    <div class="row">
+
+        <!-- Ảnh -->
+        <div class="col-md-5">
+
+            <div class="card shadow">
+
+                <img
+                    src="{{ url_for('static', filename=lesion.image_path) }}"
+                    class="card-img-top">
+
+                <div class="card-body">
+
+                    <p>
+                        <strong>ID:</strong>
+                        {{ lesion.image_id }}
+                    </p>
+
+                    <p>
+                        <strong>Blur Score:</strong>
+
+                        {% if lesion.blur_score is not none %}
+                            {{ "%.2f"|format(lesion.blur_score) }}
+                        {% else %}
+                            <span class="text-danger">N/A</span>
+                        {% endif %}
+                    </p>
+
+                    {% if lesion.is_valid %}
+
+                        <span class="badge bg-success">
+                            Hợp lệ
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger">
+                            Ảnh mờ
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Kết quả AI -->
+        <div class="col-md-7">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-success text-white">
+
+                    <h5 class="mb-0">
+
+                        AI Prediction
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    {% if results %}
+
+                        <!-- Top 1 -->
+
+                        <div class="alert alert-success">
+
+                            <h4>
+
+                                {{ results[0].disease.disease_name_vi }}
+
+                            </h4>
+
+                            <h6 class="text-muted">
+
+                                {{ results[0].disease.disease_name }}
+
+                            </h6>
+
+                            <h5>
+
+                                {{ "%.2f"|format(results[0].confidence*100) }}%
+
+                            </h5>
+
+                        </div>
+
+                        <h5 class="mt-4">
+                            Top 3 dự đoán
+                        </h5>
+
+                        <table class="table table-bordered">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Hạng</th>
+
+                                    <th>Bệnh</th>
+
+                                    <th>Mức nguy hiểm</th>
+
+                                    <th>Xác suất</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                            {% for item in results %}
+
+                                <tr>
+
+                                    <td>{{ item.rank }}</td>
+
+                                    <td>
+
+                                        <strong>
+
+                                            {{ item.disease.disease_name_vi }}
+
+                                        </strong>
+
+                                        <br>
+
+                                        <small>
+
+                                            {{ item.disease.disease_name }}
+
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge
+                                        {% if item.disease.risk_level=='High' %}
+                                            bg-danger
+                                        {% elif item.disease.risk_level=='Medium' %}
+                                            bg-warning
+                                        {% else %}
+                                            bg-success
+                                        {% endif %}
+                                        ">
+
+                                            {{ item.disease.risk_level }}
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ "%.2f"|format(item.confidence*100) }}%
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    <hr>
+
+                    <h4>
+                        Thông tin bệnh được AI dự đoán
+                    </h4>
+
+                    <p>
+
+                        <strong>Mã bệnh:</strong>
+
+                        {{ results[0].disease.disease_code }}
+
+                    </p>
+
+                    <p>
+
+                    <strong>Nhóm bệnh:</strong>
+
+                        {{ results[0].disease.category }}
+
+                    </p>
+
+                    <p>
+
+                    <strong>Mức nguy hiểm:</strong>
+
+                    {{ results[0].disease.risk_level }}
+
+                    </p>
+
+                    <div class="alert alert-light">
+
+                        {{ results[0].disease.overview }}
+
+                    </div>
+
+                    <div class="card mt-3">
+
+                        <div class="card-header">
+
+                            Triệu chứng
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{ results[0].disease.symptoms }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="card mt-3">
+
+                        <div class="card-header">
+
+                            Điều trị
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{ results[0].disease.treatment }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="card mt-3">
+
+                        <div class="card-header">
+
+                            Phòng ngừa
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{ results[0].disease.prevention }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="card mt-3">
+
+                        <div class="card-header">
+
+                            Theo dõi
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{ results[0].disease.follow_up }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="card mt-3">
+
+                        <div class="card-header">
+
+                            Vị trí thường gặp
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{ results[0].disease.common_locations }}
+
+                        </div>
+
+                    </div>
+
+                    <p class="mt-3">
+
+                        <strong>Độ tuổi:</strong>
+
+                            {{ results[0].disease.age_group }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Giới tính:</strong>
+
+                        {{ results[0].disease.gender_prevalence }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>ICD-10:</strong>
+
+                        {{ results[0].disease.icd10_code }}
+
+                    </p>
+
+                    <hr>
+
+                    {% if heatmap_path %}
+
+                    <h4 id="gradcam">GradCAM</h4>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <h6>Heatmap</h6>
+
+                            <img
+                                src="{{ url_for('static', filename=heatmap_path) }}"
+                                class="img-fluid rounded shadow">
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h6>Overlay</h6>
+
+                            <img
+                                src="{{ url_for('static', filename=overlay_path) }}"
+                                class="img-fluid rounded shadow">
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                    {% else %}
+
+                        <div class="alert alert-warning">
+
+                            Chưa có kết quả AI.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr class="mt-4">
+
+    <div class="d-flex gap-2">
+
+        <a
+            href="{{ url_for(
+            'ai.predict',
+            lesion_image_id=lesion.image_id
+            ) }}"
+            class="btn btn-success">
+
+            AI Prediction
+
+        </a>
+
+        <a href="#gradcam"
+           class="btn btn-secondary">
+            GradCAM
+        </a>
+
+        <button
+            class="btn btn-dark"
+            disabled>
+
+            Kết luận
+
+        </button>
+
+        <a
+            href="{{ url_for(
+            'lesion.list_images',
+            exam_id=lesion.exam_id
+            ) }}"
+            class="btn btn-outline-primary ms-auto">
+
+            Quay lại
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

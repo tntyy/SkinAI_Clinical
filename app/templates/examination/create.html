@@ -1,52 +1,38 @@
 {% extends "layouts/doctor_base.html" %}
 
-{% block title %}
-
-Tạo lần khám
-
-{% endblock %}
-
 {% block content %}
 
 <div class="container mt-4">
 
-    <div class="card">
+    <h3>Tạo lần khám</h3>
 
-        <div class="card-header">
+    <form method="POST">
 
-            <h3>Tạo lần khám</h3>
+        {{ form.hidden_tag() }}
 
-        </div>
+        <div class="mb-3">
 
-        <div class="card-body">
+            {{ form.chief_complaint.label }}
 
-            <form method="POST">
-
-                {{ form.hidden_tag() }}
-
-                <div class="mb-3">
-
-                    {{ form.chief_complaint.label }}
-
-                    {{ form.chief_complaint(class="form-control") }}
-
-                </div>
-
-                <div class="mb-3">
-
-                    {{ form.note.label }}
-
-                    {{ form.note(class="form-control", rows=5) }}
-
-                </div>
-
-                {{ form.submit(class="btn btn-primary") }}
-
-            </form>
+            {{ form.chief_complaint(class="form-control") }}
 
         </div>
 
-    </div>
+        <div class="mb-3">
+
+            {{ form.note.label }}
+
+            {{ form.note(class="form-control") }}
+
+        </div>
+
+        <button class="btn btn-primary">
+
+            Lưu lần khám
+
+        </button>
+
+    </form>
 
 </div>
 

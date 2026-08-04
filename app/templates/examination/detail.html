@@ -76,44 +76,43 @@ Chi tiết lần khám
 
     <div class="mt-3">
 
-        <a
-            class="btn btn-primary">
-
-            Upload ảnh tổn thương
-
-        </a>
-
-        <a
-            class="btn btn-success">
-
-            AI Prediction
-
-        </a>
-
-        <a
-            class="btn btn-warning">
-
-            GradCAM
-
-        </a>
-
-        <a
-            class="btn btn-danger">
-
-            Kết luận
-
-        </a>
-
-        <a
-            href="{{ url_for('lesion.list_images', exam_id=exam.exam_id) }}"
-            class="btn btn-success">
+        <a href="{{ url_for('lesion.list_images',
+                            exam_id=examination.exam_id) }}"
+           class="btn btn-primary">
 
             Ảnh tổn thương
 
         </a>
 
+        <a href="{{ url_for('examination.edit',
+                            exam_id=examination.exam_id) }}"
+           class="btn btn-warning">
+
+            Sửa
+
+        </a>
+
+        <form action="{{ url_for('examination.delete',
+                                 exam_id=examination.exam_id) }}"
+              method="POST"
+              style="display:inline;">
+
+            <button
+                class="btn btn-danger"
+                onclick="return confirm('Xóa lần khám?')">
+
+                Xóa
+
+            </button>
+
+        </form>
+
+
+       
+
     </div>
 
 </div>
+
 
 {% endblock %}

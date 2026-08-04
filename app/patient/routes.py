@@ -25,21 +25,21 @@ def list_patients():
     keyword = request.args.get("keyword")
 
     if keyword:
-
         patients = PatientService.search(keyword)
-
     else:
-
         patients = PatientService.get_all()
 
+    print("========== DEBUG ==========")
+    print("Patients:", patients)
+    print("Count:", len(patients))
+    for p in patients:
+        print(p.patient_id, p.fullname)
+    print("===========================")
+
     return render_template(
-
         "patient/list.html",
-
         patients=patients,
-
         keyword=keyword
-
     )
 
 

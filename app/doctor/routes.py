@@ -16,12 +16,6 @@ def patients():
     return render_template("doctor/patients.html")
 
 
-@doctor.route("/examinations")
-@login_required
-def examinations():
-    return render_template("doctor/examinations.html")
-
-
 @doctor.route("/lesions")
 @login_required
 def lesions():

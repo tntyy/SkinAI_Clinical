@@ -1,0 +1,9 @@
+app/ai/
+
+├── __init__.py
+├── routes.py              # Route AI
+├── services.py            # Điều phối toàn bộ luồng AI
+├── repositories.py        # Lưu ai_predictions và ai_prediction_details
+├── inference.py           # Xử lý Top-3 Prediction
+├── predict.py             # Chạy ResNet50
+├── load_model.py          # Load model một lần

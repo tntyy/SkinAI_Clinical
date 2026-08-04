@@ -4,6 +4,18 @@ from app.ai.inference import run_prediction
 class AIService:
 
     @staticmethod
-    def predict(image_path):
+    def predict(
 
-        return run_prediction(image_path)
+            image_path,
+
+            lesion_image_id
+
+    ):
+
+        return run_prediction(
+
+            image_path,
+
+            lesion_image_id
+
+        )

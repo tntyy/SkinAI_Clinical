@@ -1,8 +1,8 @@
-from app.models.lesion_image import LesionImage
 from app.database.db import db
+from app.models.lesion_image import LesionImage
 
 
-class LesionRepository:
+class LesionImageRepository:
 
     @staticmethod
     def create(image):
@@ -12,10 +12,27 @@ class LesionRepository:
 
         return image
 
+    @staticmethod
+    def get_by_id(image_id):
+
+        return LesionImage.query.get(image_id)
 
     @staticmethod
-    def get_by_exam(exam_id):
+    def get_by_examination(exam_id):
 
-        return LesionImage.query.filter_by(
-            exam_id=exam_id
-        ).all()
+        return (
+            LesionImage.query
+            .filter_by(exam_id=exam_id)
+            .all()
+        )
+
+    @staticmethod
+    def update():
+
+        db.session.commit()
+
+    @staticmethod
+    def delete(image):
+
+        db.session.delete(image)
+        db.session.commit()

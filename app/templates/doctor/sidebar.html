@@ -18,17 +18,10 @@
         </li>
 
 <!--        gup de phan bien hon-->
-        <li class="{{ 'active' if 'patient' in request.endpoint }}">
-            <a href="{{ url_for('doctor.list_patients') }}">
+        <li class="{{ 'active' if request.endpoint and request.endpoint.startswith('patient.') }}">
+            <a href="{{ url_for('patient.list_patients') }}">
                 <i class="bi bi-people-fill"></i>
                 <span>Bệnh nhân</span>
-            </a>
-        </li>
-
-        <li class="{{ 'active' if request.endpoint == 'doctor.examinations' }}">
-            <a href="{{ url_for('doctor.examinations') }}">
-                <i class="bi bi-clipboard2-pulse-fill"></i>
-                <span>Lần khám</span>
             </a>
         </li>
 
@@ -57,13 +50,6 @@
             <a href="{{ url_for('doctor.reports') }}">
                 <i class="bi bi-file-earmark-medical-fill"></i>
                 <span>Kết luận bác sĩ</span>
-            </a>
-        </li>
-
-        <li class="{{ 'active' if request.endpoint == 'doctor.history' }}">
-            <a href="{{ url_for('doctor.history') }}">
-                <i class="bi bi-clock-history"></i>
-                <span>Lịch sử khám</span>
             </a>
         </li>
 

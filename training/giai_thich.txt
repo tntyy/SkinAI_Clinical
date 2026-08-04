@@ -1,0 +1,74 @@
+Bước 1: evaluate.py
+Mục đích
+
+Đánh giá chất lượng mô hình sau khi train.
+
+Đây là bước quan trọng để biết AI học được đến đâu.
+
+Việc làm
+Load model skin_model.keras
+Load tập Test
+Dự đoán toàn bộ ảnh
+So sánh với nhãn thật
+Tính các chỉ số
+
+Trong báo cáo ghi:
+Sau khi mô hình ResNet50 được huấn luyện, hệ thống sử dụng tập dữ liệu Test để đánh giá hiệu năng.
+Các chỉ số Accuracy, Precision, Recall, Macro F1 và Confusion Matrix được sử dụng nhằm đánh giá khả năng phân loại của mô hình trên từng lớp bệnh da.
+
+--------------------------------------------
+
+Bước 2: gradcam_test.py
+Mục đích
+
+Giải thích AI.
+
+AI không chỉ nói
+
+Melanoma 93%
+
+mà còn cho bác sĩ biết
+
+AI nhìn vào vùng nào trên ảnh.
+
+Đó là Heatmap.
+
+Công dụng:
+Giúp
+bác sĩ tin tưởng AI hơn
+giải thích quyết định AI
+phục vụ Explainable AI (XAI)
+
+Trong báo cáo ghi:
+Hệ thống sử dụng thuật toán Grad-CAM để trực quan hóa vùng ảnh mà mô hình ResNet50 tập trung khi đưa ra dự đoán.
+Heatmap giúp bác sĩ hiểu được cơ sở mà AI sử dụng để phân loại tổn thương da.
+
+-------------------------------------------------
+
+Bước 3: export_tflite.py
+Mục đích
+
+Chuyển mô hình
+
+Trong báo cáo ghi:
+Sau khi huấn luyện, mô hình được chuyển sang định dạng TensorFlow Lite nhằm giảm dung lượng và tối ưu tốc độ suy luận trên các thiết bị di động.
+
+--------------------------------------------------------------------
+Dataset HAM10000
+        │
+        ▼
+train_model.py
+(Huấn luyện ResNet50)
+        │
+        ▼
+skin_model.keras
+        │
+        ├──────────────► evaluate.py
+        │                (Đánh giá Accuracy,
+        │                 Precision, Recall, F1)
+        │
+        ├──────────────► gradcam_test.py
+        │                (Sinh Heatmap giải thích AI)
+        │
+        └──────────────► export_tflite.py
+                         (Xuất mô hình cho Android)

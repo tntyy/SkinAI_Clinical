@@ -14,7 +14,10 @@ from app.auth import auth
 from app.patient import patient
 from app.examination import examination
 from app.admin import admin
-from app.patient import patient
+from app.metadata import metadata
+from app.lesion import lesion
+from app.ai import ai
+from app.disease import disease
 
 login_manager = LoginManager()
 login_manager.login_view ='auth.login'
@@ -41,7 +44,10 @@ def create_app():
     app.register_blueprint(patient)
     app.register_blueprint(examination)
     app.register_blueprint(admin)
-    app.register_blueprint(patient)
+    app.register_blueprint(metadata)
+    app.register_blueprint(lesion)
+    app.register_blueprint(ai)
+    app.register_blueprint(disease)
 
     login_manager.init_app(app)
 
