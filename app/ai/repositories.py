@@ -74,3 +74,27 @@ class AIRepository:
         db.session.commit()
 
         return row
+
+    @staticmethod
+    def get_prediction_by_image(image_id):
+        return (
+            AIPrediction.query
+            .filter_by(image_id=image_id)
+            .order_by(AIPrediction.prediction_id.desc())
+            .first()
+        )
+
+    @staticmethod
+    def get_prediction_details(prediction_id):
+        return (
+            AIPredictionDetail.query
+            .filter_by(prediction_id=prediction_id)
+            .order_by(AIPredictionDetail.rank)
+            .all()
+        )
+
+    @staticmethod
+    def get_heatmap(prediction_id):
+        return AIHeatmap.query.filter_by(
+            prediction_id=prediction_id
+        ).first()

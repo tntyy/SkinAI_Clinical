@@ -1,0 +1,39 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<h3>Xác nhận AI</h3>
+
+<form method="POST">
+
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+
+        {{ form.diagnosis.label }}
+
+        {{ form.diagnosis(class="form-control") }}
+
+    </div>
+
+    <div class="mb-3">
+
+        {{ form.treatment.label }}
+
+        {{ form.treatment(class="form-control") }}
+
+    </div>
+
+    <div class="mb-3">
+
+        {{ form.note.label }}
+
+        {{ form.note(class="form-control") }}
+
+    </div>
+
+    {{ form.submit(class="btn btn-success") }}
+
+</form>
+
+{% endblock %}

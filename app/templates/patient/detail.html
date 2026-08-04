@@ -61,6 +61,14 @@ Chi tiết bệnh nhân
 
     </a>
 
+    <a href="{{ url_for('doctor.prediction_history', patient_id=patient.patient_id) }}"
+       class="btn btn-info">
+
+        <i class="bi bi-cpu"></i>
+        Lịch sử AI
+
+    </a>
+
     <a
         href="{{ url_for('patient.list_patients') }}"
         class="btn btn-secondary">

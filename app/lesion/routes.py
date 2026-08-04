@@ -10,7 +10,10 @@ from app.lesion import lesion
 
 from app.lesion.forms import UploadImageForm
 from app.lesion.services import LesionService
+import os
 
+from app.ai.services import AIService
+from app.doctor.services import DoctorReportService
 
 @lesion.route("/exam/<int:exam_id>")
 @login_required
@@ -30,9 +33,9 @@ def list_images(exam_id):
 @login_required
 def detail(image_id):
 
-    image = LesionService.get_by_id(image_id)
+    lesion = LesionService.get_by_id(image_id)
 
-    if image is None:
+    if lesion is None:
 
         flash(
             "Không tìm thấy ảnh.",
@@ -43,12 +46,28 @@ def detail(image_id):
             url_for("doctor.dashboard")
         )
 
+    image_path = os.path.join(
+        "app",
+        "static",
+        lesion.image_path
+    )
+
+    data = AIService.predict(
+        image_path,
+        lesion.image_id
+    )
+
+    report = DoctorReportService.get_report(
+        lesion.exam_id
+    )
+
     return render_template(
-
         "lesion/detail.html",
-
-        lesion=image
-
+        lesion=lesion,
+        results=data["results"],
+        heatmap_path=data["heatmap_path"],
+        overlay_path=data["overlay_path"],
+        report=report
     )
 
 @lesion.route(

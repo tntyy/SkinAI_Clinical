@@ -19,6 +19,58 @@ CLASSES = [
 
 def run_prediction(image_path, lesion_image_id):
 
+    # ----------------------------
+    # ĐÃ CÓ KẾT QUẢ
+    # ----------------------------
+
+    old_prediction = AIRepository.get_prediction_by_image(
+        lesion_image_id
+    )
+
+    if old_prediction:
+
+        details = AIRepository.get_prediction_details(
+            old_prediction.prediction_id
+        )
+
+        heatmap = AIRepository.get_heatmap(
+            old_prediction.prediction_id
+        )
+
+        results = []
+
+        for row in details:
+
+            disease = Disease.query.filter_by(
+                disease_code=row.predicted_class
+            ).first()
+
+            results.append({
+
+                "rank": row.rank,
+
+                "class": row.predicted_class,
+
+                "confidence": row.confidence,
+
+                "disease": disease
+
+            })
+
+        return {
+
+            "results": results,
+
+            "heatmap_path": heatmap.heatmap_path,
+
+            "overlay_path": heatmap.overlay_path
+
+        }
+
+    # ----------------------------
+    # CHƯA CÓ -> CHẠY AI
+    # ----------------------------
+
     start = time.time()
 
     prediction = predict_image(image_path)
@@ -29,13 +81,13 @@ def run_prediction(image_path, lesion_image_id):
 
     prediction_row = AIRepository.save_prediction(
 
-        lesion_image_id=lesion_image_id,
+        lesion_image_id,
 
-        model_name="ResNet50",
+        "ResNet50",
 
-        version="1.0",
+        "1.0",
 
-        inference_time=inference_time
+        inference_time
 
     )
 
@@ -53,7 +105,7 @@ def run_prediction(image_path, lesion_image_id):
 
     )
 
-    results=[]
+    results = []
 
     for rank, idx in enumerate(top3, start=1):
 
@@ -63,25 +115,25 @@ def run_prediction(image_path, lesion_image_id):
 
         AIRepository.save_detail(
 
-            prediction_id=prediction_row.prediction_id,
+            prediction_row.prediction_id,
 
-            lesion_type=CLASSES[idx],
+            CLASSES[idx],
 
-            probability=float(prediction[idx]),
+            float(prediction[idx]),
 
-            ranking=rank
+            rank
 
         )
 
         results.append({
 
-            "rank":rank,
+            "rank": rank,
 
-            "class":CLASSES[idx],
+            "class": CLASSES[idx],
 
-            "confidence":float(prediction[idx]),
+            "confidence": float(prediction[idx]),
 
-            "disease" : disease
+            "disease": disease
 
         })
 

@@ -1,0 +1,91 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<h3>Lịch sử AI Prediction</h3>
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>Ngày</th>
+
+<th>Ảnh</th>
+
+<th>AI</th>
+
+<th>Confidence</th>
+
+<th>Review</th>
+
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in history %}
+
+<tr>
+
+<td>
+
+{{ row.exam_date.strftime("%d/%m/%Y") }}
+
+</td>
+
+<td>
+
+<img
+
+src="{{ url_for('static', filename=row.image_path) }}"
+
+width="80">
+
+</td>
+
+<td>
+
+{{ row.predicted_class }}
+
+</td>
+
+<td>
+
+{{ "%.2f"|format(row.confidence*100) }}%
+
+</td>
+
+<td>
+
+{{ row.status or "Draft" }}
+
+</td>
+
+<td>
+
+<a
+
+href="{{ url_for('lesion.detail', image_id=row.image_id) }}"
+
+class="btn btn-primary btn-sm">
+
+Xem
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

@@ -356,6 +356,273 @@ Chi tiết ảnh tổn thương
 
                     {% endif %}
 
+                    <hr>
+
+                    <div id="ai-conclusion" class="card mt-4 shadow">
+
+                        <div class="card-header bg-dark text-white">
+
+                            <h5 class="mb-0">
+                                AI Conclusion
+                            </h5>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {% set top = results[0] %}
+
+                            {% if top.disease.risk_level == "Low" %}
+
+                                <div class="alert alert-success">
+
+                                    <h5>
+                                        AI dự đoán:
+                                        <strong>{{ top.disease.disease_name_vi }}</strong>
+                                    </h5>
+
+                                    <p class="mb-2">
+
+                                        Độ tin cậy:
+
+                                        <strong>
+
+                                            {{ "%.2f"|format(top.confidence*100) }}%
+
+                                        </strong>
+
+                                    </p>
+
+                                    <p>
+
+                                        Đây là tổn thương
+
+                                        <strong>lành tính</strong>.
+
+                                        Khuyến nghị tiếp tục theo dõi định kỳ,
+
+                                        chưa ghi nhận dấu hiệu ác tính rõ ràng.
+
+                                    </p>
+
+                                </div>
+
+                            {% elif top.disease.risk_level == "Medium" %}
+
+                                <div class="alert alert-warning">
+
+                                    <h5>
+
+                                        AI dự đoán:
+
+                                        <strong>{{ top.disease.disease_name_vi }}</strong>
+
+                                    </h5>
+
+                                    <p>
+
+                                        Độ tin cậy:
+
+                                        <strong>
+
+                                            {{ "%.2f"|format(top.confidence*100) }}%
+
+                                        </strong>
+
+                                    </p>
+
+                                    <p>
+
+                                        Tổn thương có
+
+                                        <strong>mức nguy cơ trung bình.</strong>
+
+                                        Nên khám chuyên khoa Da liễu để được đánh giá thêm.
+
+                                    </p>
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="alert alert-danger">
+
+                                    <h5>
+
+                                        AI dự đoán:
+
+                                        <strong>{{ top.disease.disease_name_vi }}</strong>
+
+                                    </h5>
+
+                                    <p>
+
+                                        Độ tin cậy:
+
+                                        <strong>
+
+                                            {{ "%.2f"|format(top.confidence*100) }}%
+
+                                        </strong>
+
+                                    </p>
+
+                                    <p>
+
+                                        AI phát hiện tổn thương
+
+                                        <strong>nguy cơ cao.</strong>
+
+                                        Khuyến nghị bệnh nhân đến bệnh viện
+
+                                        để được soi da, sinh thiết
+
+                                        và điều trị càng sớm càng tốt.
+
+                                    </p>
+
+                                </div>
+
+                            {% endif %}
+
+                            <table class="table table-bordered mt-3">
+
+                                <tr>
+
+                                    <th width="200">
+                                        Chẩn đoán AI
+                                    </th>
+
+                                    <td>
+
+                                        {{ top.disease.disease_name_vi }}
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <th>
+
+                                        Độ tin cậy
+
+                                    </th>
+
+                                    <td>
+
+                                        {{ "%.2f"|format(top.confidence*100) }}%
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <th>
+
+                                        Mức nguy hiểm
+
+                                    </th>
+
+                                    <td>
+
+                                        {{ top.disease.risk_level }}
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <th>
+
+                                        Khuyến nghị
+
+                                    </th>
+
+                                    <td>
+
+                                        {{ top.disease.follow_up }}
+
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    {% if report %}
+
+                    <hr class="mt-4">
+
+                    <div class="card border-success shadow">
+
+                        <div class="card-header bg-success text-white">
+
+                            <h5 class="mb-0">
+
+                                Doctor Review
+
+                            </h5>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <p>
+
+                                <strong>Chẩn đoán cuối:</strong>
+
+                                {{ report.diagnosis }}
+
+                            </p>
+
+                            <p>
+
+                                <strong>Điều trị:</strong>
+
+                                {{ report.treatment }}
+
+                            </p>
+
+                            <p>
+
+                                <strong>Ghi chú:</strong>
+
+                                {{ report.note }}
+
+                            </p>
+
+                            <p>
+
+                                <strong>Trạng thái:</strong>
+
+                                <span class="badge bg-success">
+
+                                    {{ report.status }}
+
+                                </span>
+
+                            </p>
+
+                            <p>
+
+                                <strong>Thời gian xác nhận:</strong>
+
+                                {{ report.confirmed_at.strftime("%d/%m/%Y %H:%M") }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
                     {% else %}
 
                         <div class="alert alert-warning">
@@ -380,27 +647,14 @@ Chi tiết ảnh tổn thương
 
         <a
             href="{{ url_for(
-            'ai.predict',
-            lesion_image_id=lesion.image_id
+                'doctor.review',
+                image_id=lesion.image_id
             ) }}"
-            class="btn btn-success">
-
-            AI Prediction
-
-        </a>
-
-        <a href="#gradcam"
-           class="btn btn-secondary">
-            GradCAM
-        </a>
-
-        <button
-            class="btn btn-dark"
-            disabled>
+            class="btn btn-primary">
 
             Kết luận
 
-        </button>
+        </a>
 
         <a
             href="{{ url_for(
