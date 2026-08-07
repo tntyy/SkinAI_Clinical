@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Phiếu kết luận da liễu - SkinAI Clinical
+    </title>
+
+    <style>
+
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
+        /* ==============================
+           FONT
+        ============================== */
+
+       @font-face {
+            font-family: DejaVuSans;
+            src: url("fonts/DejaVuSans.ttf");
+        }
+
+        @font-face {
+            font-family: DejaVuSansBold;
+            src: url("fonts/DejaVuSans-Bold.ttf");
+        }
+
+        body {
+            font-family: "DejaVuSans";
+            font-size: 10.5pt;
+            color: #222222;
+            line-height: 1.4;
+        }
+
+        h1,
+        h2,
+        h3,
+        b,
+        strong,
+        .section-title,
+        .label,
+        .prediction-main,
+        .confidence,
+        .doctor-title,
+        .signature-name,
+        .image-title,
+        .hospital {
+            font-family: "DejaVuSansBold";
+        }
+
+        h1 {
+            font-size: 20pt;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 14pt;
+            margin: 4px 0 0 0;
+        }
+
+        .hospital {
+            font-size: 11pt;
+            color: #1f5f8b;
+            margin-bottom: 3px;
+        }
+
+        .subtitle {
+            font-size: 9pt;
+            color: #666666;
+        }
+
+        .section-title {
+            font-size: 11pt;
+            color: #ffffff;
+            background-color: #1f5f8b;
+            padding: 7px;
+            margin-top: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            font-family: "DejaVuSansBold";
+            background-color: #eeeeee;
+            text-align: left;
+        }
+
+        th,
+        td {
+            border: 1px solid #cccccc;
+            padding: 6px;
+            vertical-align: top;
+        }
+
+        .label {
+            width: 25%;
+            background-color: #f5f5f5;
+        }
+
+        .two-column {
+            width: 100%;
+        }
+
+        .two-column td {
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .image-box {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .lesion-image {
+            width: 260px;
+            max-height: 260px;
+        }
+
+        .gradcam-image {
+            width: 210px;
+            max-height: 210px;
+        }
+
+        .image-title {
+            margin-bottom: 7px;
+        }
+
+        .prediction-table th {
+            text-align: center;
+        }
+
+        .prediction-table td {
+            text-align: center;
+        }
+
+        .ai-result {
+            border: 1px solid #9db7c8;
+            background-color: #f3f8fb;
+            padding: 10px;
+        }
+
+        .ai-warning {
+            border: 1px solid #d6a700;
+            background-color: #fff8dc;
+            padding: 10px;
+            margin-top: 12px;
+        }
+
+        .ai-warning-title {
+            font-family: "DejaVuSansBold";
+            color: #8a6500;
+            font-size: 11pt;
+        }
+
+        .doctor-result {
+            border: 2px solid #1f5f8b;
+            background-color: #f7fbfd;
+            padding: 12px;
+        }
+
+        .doctor-title {
+            color: #1f5f8b;
+            font-size: 12pt;
+        }
+
+        .signature {
+            margin-top: 45px;
+            text-align: right;
+        }
+
+        .small {
+            font-size: 8.5pt;
+            color: #666666;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            border-top: 1px solid #cccccc;
+            padding-top: 8px;
+            font-size: 8pt;
+            color: #777777;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- ==================================================
+     HEADER
+================================================== -->
+
+<div class="header">
+
+
+    {% if logo %}
+
+        <img
+            src="{{ logo }}"
+            class="logo"
+        >
+
+    {% endif %}
+
+
+    <div class="hospital">
+
+        SKINAI CLINICAL
+
+    </div>
+
+
+    <h1>
+
+        PHIẾU KẾT LUẬN DA LIỄU
+
+    </h1>
+
+
+    <div class="subtitle">
+
+        Báo cáo kết quả phân tích tổn thương da
+
+    </div>
+
+
+</div>
+
+
+<!-- ==================================================
+     1. THÔNG TIN BỆNH NHÂN
+================================================== -->
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        1. THÔNG TIN BỆNH NHÂN
+
+    </div>
+
+
+    <table>
+
+
+        <tr>
+
+            <td class="label">
+
+                Họ và tên
+
+            </td>
+
+            <td>
+
+                {{ patient.fullname }}
+
+            </td>
+
+
+            <td class="label">
+
+                Mã bệnh nhân
+
+            </td>
+
+            <td>
+
+                {{ patient.patient_code }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Giới tính
+
+            </td>
+
+            <td>
+
+                {{ patient.gender or "Không xác định" }}
+
+            </td>
+
+
+            <td class="label">
+
+                Năm sinh
+
+            </td>
+
+            <td>
+
+                {{ patient.birth_year or "Không xác định" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Số điện thoại
+
+            </td>
+
+            <td>
+
+                {{ patient.phone or "Không có" }}
+
+            </td>
+
+
+            <td class="label">
+
+                Ngày khám
+
+            </td>
+
+            <td>
+
+                {{ exam.exam_date.strftime("%d/%m/%Y %H:%M")
+                   if exam.exam_date else "Không xác định" }}
+
+            </td>
+
+        </tr>
+
+
+    </table>
+
+
+</div>
+
+
+<!-- ==================================================
+     2. THÔNG TIN KHÁM
+================================================== -->
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        2. THÔNG TIN KHÁM
+
+    </div>
+
+
+    <table>
+
+
+        <tr>
+
+            <td class="label">
+
+                Bác sĩ
+
+            </td>
+
+            <td>
+
+                {{ doctor.fullname }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Bệnh viện / Cơ sở
+
+            </td>
+
+            <td>
+
+                {{ doctor.hospital or "SKINAI CLINICAL" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Chuyên khoa
+
+            </td>
+
+            <td>
+
+                {{ doctor.department or "Da liễu" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Lý do khám
+
+            </td>
+
+            <td>
+
+                {{ exam.chief_complaint or "Không ghi nhận" }}
+
+            </td>
+
+        </tr>
+
+
+    </table>
+
+
+</div>
+
+
+<!-- ==================================================
+     3. HÌNH ẢNH TỔN THƯƠNG
+================================================== -->
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        3. HÌNH ẢNH TỔN THƯƠNG
+
+    </div>
+
+
+    <table>
+
+
+        <tr>
+
+
+            <td class="image-box">
+
+
+                {% if lesion_image %}
+
+
+                    <div class="image-title">
+
+                        Ảnh tổn thương
+
+                    </div>
+
+
+                    <img
+
+                        src="{{ lesion_image }}"
+
+                        class="lesion-image"
+
+                    >
+
+
+                {% else %}
+
+
+                    <span class="small">
+
+                        Không có hình ảnh
+
+                    </span>
+
+
+                {% endif %}
+
+
+            </td>
+
+
+        </tr>
+
+
+    </table>
+
+
+    <table>
+
+
+        <tr>
+
+
+            <td class="label">
+
+                Blur Score
+
+            </td>
+
+
+            <td>
+
+                {{ "%.2f"|format(lesion.blur_score or 0) }}
+
+            </td>
+
+
+            <td class="label">
+
+                Chất lượng ảnh
+
+            </td>
+
+
+            <td>
+
+                {{ "%.2f"|format(lesion.quality_score or 0) }}
+
+            </td>
+
+
+        </tr>
+
+
+    </table>
+
+
+</div>
+
+
+<!-- ==================================================
+     4. KẾT QUẢ AI
+================================================== -->
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        4. KẾT QUẢ PHÂN TÍCH AI
+
+    </div>
+
+
+    {% if results %}
+
+
+        <table class="prediction-table">
+
+
+            <thead>
+
+
+                <tr>
+
+                    <th>
+
+                        Hạng
+
+                    </th>
+
+
+                    <th>
+
+                        Chẩn đoán dự đoán
+
+                    </th>
+
+
+                    <th>
+
+                        Mức nguy hiểm
+
+                    </th>
+
+
+                    <th>
+
+                        Độ tin cậy
+
+                    </th>
+
+
+                </tr>
+
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for item in results %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            {{ item.rank }}
+
+                        </td>
+
+
+                        <td class="prediction-main">
+
+
+                            {% if item.disease %}
+
+                                {{ item.disease.disease_name_vi }}
+
+                            {% else %}
+
+                                {{ item.predicted_class }}
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <td>
+
+
+                            {% if item.disease %}
+
+                                {{ item.disease.risk_level }}
+
+                            {% else %}
+
+                                Không xác định
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <td class="confidence">
+
+                            {{ "%.2f"|format(
+                                item.confidence * 100
+                            ) }}%
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    {% else %}
+
+
+        <div class="small">
+
+            Không có dữ liệu phân tích AI.
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- ==================================================
+     5. KẾT QUẢ AI CAO NHẤT
+================================================== -->
+
+{% if results %}
+
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        5. KẾT QUẢ AI CAO NHẤT
+
+    </div>
+
+
+    <div class="ai-result">
+
+
+        Hệ thống AI nhận diện tổn thương có khả năng cao nhất là:
+
+
+        <br><br>
+
+
+        <b>
+
+
+            {% if results[0].disease %}
+
+                {{ results[0].disease.disease_name_vi }}
+
+            {% else %}
+
+                {{ results[0].predicted_class }}
+
+            {% endif %}
+
+
+        </b>
+
+
+        <br><br>
+
+
+        Độ tin cậy:
+
+
+        <b>
+
+            {{ "%.2f"|format(
+                results[0].confidence * 100
+            ) }}%
+
+        </b>
+
+
+        {% if results[0].disease %}
+
+
+            <br><br>
+
+
+            Mức nguy hiểm:
+
+
+            <b>
+
+                {{ results[0].disease.risk_level }}
+
+            </b>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+{% endif %}
+
+
+<!-- ==================================================
+     6. GRADCAM
+================================================== -->
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        6. GIẢI THÍCH KẾT QUẢ AI - GRADCAM
+
+    </div>
+
+
+    <table class="two-column">
+
+
+        <tr>
+
+
+            <td class="image-box">
+
+
+                <div class="image-title">
+
+                    Heatmap
+
+                </div>
+
+
+                {% if heatmap_image %}
+
+
+                    <img
+
+                        src="{{ heatmap_image }}"
+
+                        class="gradcam-image"
+
+                    >
+
+
+                {% else %}
+
+
+                    <span class="small">
+
+                        Không có Heatmap
+
+                    </span>
+
+
+                {% endif %}
+
+
+            </td>
+
+
+            <td class="image-box">
+
+
+                <div class="image-title">
+
+                    Overlay
+
+                </div>
+
+
+                {% if overlay_image %}
+
+
+                    <img
+
+                        src="{{ overlay_image }}"
+
+                        class="gradcam-image"
+
+                    >
+
+
+                {% else %}
+
+
+                    <span class="small">
+
+                        Không có Overlay
+
+                    </span>
+
+
+                {% endif %}
+
+
+            </td>
+
+
+        </tr>
+
+
+    </table>
+
+
+</div>
+
+
+<!-- ==================================================
+     7. THÔNG TIN TỔN THƯƠNG
+================================================== -->
+
+{% if results and results[0].disease %}
+
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        7. THÔNG TIN TỔN THƯƠNG
+
+    </div>
+
+
+    <table>
+
+
+        <tr>
+
+            <td class="label">
+
+                Tên bệnh
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.disease_name_vi }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Tên tiếng Anh
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.disease_name }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Mã bệnh
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.disease_code }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                ICD-10
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.icd10_code
+                   or "Chưa cập nhật" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Nhóm bệnh
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.category
+                   or "Chưa cập nhật" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Điều trị tham khảo
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.treatment
+                   or "Chưa cập nhật" }}
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+
+                Theo dõi tham khảo
+
+            </td>
+
+            <td>
+
+                {{ results[0].disease.follow_up
+                   or "Chưa cập nhật" }}
+
+            </td>
+
+        </tr>
+
+
+    </table>
+
+
+</div>
+
+
+{% endif %}
+
+
+<!-- ==================================================
+     AI WARNING
+================================================== -->
+
+<div class="ai-warning">
+
+
+    <div class="ai-warning-title">
+
+        LƯU Ý QUAN TRỌNG VỀ KẾT QUẢ AI
+
+    </div>
+
+
+    <br>
+
+
+    Kết quả phân tích trong báo cáo này được tạo
+    bởi hệ thống trí tuệ nhân tạo (AI) nhằm mục đích
+    <b>tham khảo và hỗ trợ bác sĩ trong quá trình đánh giá</b>.
+
+
+    <br><br>
+
+
+    Kết quả AI
+
+    <b>
+
+        không thay thế chẩn đoán,
+        kết luận hoặc chỉ định điều trị của bác sĩ.
+
+    </b>
+
+
+    <br><br>
+
+
+    Kết luận chuyên môn cuối cùng phải được đưa ra
+    dựa trên kết quả thăm khám lâm sàng, hình ảnh,
+    tiền sử bệnh và đánh giá của bác sĩ chuyên khoa.
+
+
+</div>
+
+
+<!-- ==================================================
+     8. KẾT LUẬN BÁC SĨ
+================================================== -->
+
+<div class="section">
+
+
+    <div class="section-title">
+
+        8. KẾT LUẬN CỦA BÁC SĨ
+
+    </div>
+
+
+    {% if report %}
+
+
+        <div class="doctor-result">
+
+
+            <div class="doctor-title">
+
+                Kết luận chuyên môn
+
+            </div>
+
+
+            <br>
+
+
+            <table>
+
+
+                <tr>
+
+
+                    <td class="label">
+
+                        Chẩn đoán
+
+                    </td>
+
+
+                    <td>
+
+                        {{ report.diagnosis }}
+
+                    </td>
+
+
+                </tr>
+
+
+                <tr>
+
+
+                    <td class="label">
+
+                        Điều trị
+
+                    </td>
+
+
+                    <td>
+
+                        {{ report.treatment
+                           or "Không ghi nhận" }}
+
+                    </td>
+
+
+                </tr>
+
+
+                <tr>
+
+
+                    <td class="label">
+
+                        Ghi chú
+
+                    </td>
+
+
+                    <td>
+
+                        {{ report.note
+                           or "Không có" }}
+
+                    </td>
+
+
+                </tr>
+
+
+                <tr>
+
+
+                    <td class="label">
+
+                        Trạng thái
+
+                    </td>
+
+
+                    <td>
+
+                        {{ report.status }}
+
+                    </td>
+
+
+                </tr>
+
+
+                <tr>
+
+
+                    <td class="label">
+
+                        Thời gian xác nhận
+
+                    </td>
+
+
+                    <td>
+
+                        {{ report.confirmed_at.strftime(
+                            "%d/%m/%Y %H:%M"
+                        )
+                        if report.confirmed_at
+                        else "Không xác định" }}
+
+                    </td>
+
+
+                </tr>
+
+
+            </table>
+
+
+        </div>
+
+
+    {% else %}
+
+
+        <div class="doctor-result">
+
+            Chưa có kết luận của bác sĩ.
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- ==================================================
+     CHỮ KÝ
+================================================== -->
+
+<div class="signature">
+
+
+    Ngày ..... tháng ..... năm ......
+
+
+    <br><br><br>
+
+
+    <b>
+
+        BÁC SĨ ĐIỀU TRỊ
+
+    </b>
+
+
+    <br><br><br><br>
+
+
+    _______________________
+
+
+    <br>
+
+
+    <span class="signature-name">
+
+        {{ doctor.fullname }}
+
+    </span>
+
+
+</div>
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<div class="footer-note">
+
+
+    <b>
+
+        SkinAI Clinical
+
+    </b>
+
+    - Hệ thống hỗ trợ phân tích tổn thương da
+    bằng trí tuệ nhân tạo.
+
+
+    <br>
+
+
+    Tài liệu này chỉ có giá trị tham khảo và hỗ trợ
+    chuyên môn, không thay thế kết luận của bác sĩ.
+
+
+</div>
+
+
+</body>
+
+</html>

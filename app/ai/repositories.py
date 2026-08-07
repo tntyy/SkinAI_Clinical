@@ -3,6 +3,31 @@ from app.database.db import db
 from app.models.ai_prediction import AIPrediction
 from app.models.ai_prediction_detail import AIPredictionDetail
 from app.models.ai_heatmap import AIHeatmap
+from app.models.disease import Disease
+
+
+class PredictionResult:
+
+    def __init__(
+        self,
+        detail,
+        disease
+    ):
+
+        self.detail = detail
+
+        self.rank = detail.rank
+
+        self.predicted_class = (
+            detail.predicted_class
+        )
+
+        self.confidence = (
+            detail.confidence
+        )
+
+        self.disease = disease
+
 
 class AIRepository:
 
@@ -13,6 +38,7 @@ class AIRepository:
             version,
             inference_time
     ):
+
         prediction = AIPrediction(
 
             image_id=lesion_image_id,
@@ -26,9 +52,11 @@ class AIRepository:
         )
 
         db.session.add(prediction)
+
         db.session.commit()
 
         return prediction
+
 
     @staticmethod
     def save_detail(
@@ -37,6 +65,7 @@ class AIRepository:
             probability,
             ranking
     ):
+
         detail = AIPredictionDetail(
 
             prediction_id=prediction_id,
@@ -50,15 +79,19 @@ class AIRepository:
         )
 
         db.session.add(detail)
+
         db.session.commit()
 
         return detail
+
 
     @staticmethod
     def save_heatmap(
             prediction_id,
             heatmap_path,
-            overlay_path):
+            overlay_path
+    ):
+
         row = AIHeatmap(
 
             prediction_id=prediction_id,
@@ -75,26 +108,104 @@ class AIRepository:
 
         return row
 
+
     @staticmethod
     def get_prediction_by_image(image_id):
+
         return (
+
             AIPrediction.query
-            .filter_by(image_id=image_id)
-            .order_by(AIPrediction.prediction_id.desc())
+
+            .filter_by(
+                image_id=image_id
+            )
+
+            .order_by(
+                AIPrediction.prediction_id.desc()
+            )
+
             .first()
+
         )
 
     @staticmethod
     def get_prediction_details(prediction_id):
-        return (
-            AIPredictionDetail.query
-            .filter_by(prediction_id=prediction_id)
-            .order_by(AIPredictionDetail.rank)
+        results = (
+            db.session.query(
+                AIPredictionDetail,
+                Disease
+            )
+
+            .outerjoin(
+                Disease,
+                Disease.disease_code
+                == AIPredictionDetail.predicted_class
+            )
+
+            .filter(
+                AIPredictionDetail.prediction_id
+                == prediction_id
+            )
+
+            .order_by(
+                AIPredictionDetail.rank
+            )
+
             .all()
         )
 
+        data = []
+
+        for detail, disease in results:
+            data.append({
+
+                "rank": detail.rank,
+
+                "predicted_class":
+                    detail.predicted_class,
+
+                "confidence":
+                    detail.confidence,
+
+                "disease":
+                    disease
+
+            })
+
+        return data
+
+
     @staticmethod
     def get_heatmap(prediction_id):
-        return AIHeatmap.query.filter_by(
-            prediction_id=prediction_id
-        ).first()
+
+        return (
+
+            AIHeatmap.query
+
+            .filter_by(
+                prediction_id=prediction_id
+            )
+
+            .first()
+
+        )
+
+
+    @staticmethod
+    def get_latest_prediction(image_id):
+
+        return (
+
+            AIPrediction.query
+
+            .filter_by(
+                image_id=image_id
+            )
+
+            .order_by(
+                AIPrediction.prediction_id.desc()
+            )
+
+            .first()
+
+        )

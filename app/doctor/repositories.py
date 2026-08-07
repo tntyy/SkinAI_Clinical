@@ -9,6 +9,7 @@ from app.models.examination import Examination
 from app.models.lesion_image import LesionImage
 from app.models.ai_prediction import AIPrediction
 from app.models.ai_prediction_detail import AIPredictionDetail
+from app.models.ai_heatmap import AIHeatmap
 
 
 class DoctorReportRepository:
@@ -126,4 +127,54 @@ class DoctorReportRepository:
             )
 
             .all()
+        )
+    @staticmethod
+    def get_by_image(image_id):
+
+        return (
+
+            DoctorReport.query
+
+            .join(
+                Examination,
+                Examination.exam_id == DoctorReport.exam_id
+            )
+
+            .join(
+                LesionImage,
+                LesionImage.exam_id == Examination.exam_id
+            )
+
+            .filter(
+                LesionImage.image_id == image_id
+            )
+
+            .order_by(
+                DoctorReport.report_id.desc()
+            )
+
+            .first()
+
+        )
+
+    @staticmethod
+    def get_all():
+        return (
+
+            DoctorReport.query
+
+            .order_by(
+                DoctorReport.confirmed_at.desc()
+            )
+
+            .all()
+
+        )
+
+    @staticmethod
+    def get_by_id(report_id):
+        return (
+            DoctorReport.query
+            .filter_by(report_id=report_id)
+            .first()
         )

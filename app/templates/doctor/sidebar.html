@@ -25,31 +25,11 @@
             </a>
         </li>
 
-        <li class="{{ 'active' if request.endpoint == 'doctor.lesions' }}">
-            <a href="{{ url_for('doctor.lesions') }}">
-                <i class="bi bi-image-fill"></i>
-                <span>Hình ảnh tổn thương</span>
-            </a>
-        </li>
-
-        <li class="{{ 'active' if request.endpoint == 'doctor.ai' }}">
-            <a href="{{ url_for('doctor.ai') }}">
-                <i class="bi bi-cpu-fill"></i>
-                <span>AI Prediction</span>
-            </a>
-        </li>
-
-        <li class="{{ 'active' if request.endpoint == 'doctor.explain' }}">
-            <a href="{{ url_for('doctor.explain') }}">
-                <i class="bi bi-fire"></i>
-                <span>GradCAM</span>
-            </a>
-        </li>
-
+         <!-- Báo cáo -->
         <li class="{{ 'active' if request.endpoint == 'doctor.reports' }}">
             <a href="{{ url_for('doctor.reports') }}">
-                <i class="bi bi-file-earmark-medical-fill"></i>
-                <span>Kết luận bác sĩ</span>
+                <i class="bi bi-bar-chart-fill"></i>
+                <span>Báo cáo</span>
             </a>
         </li>
 

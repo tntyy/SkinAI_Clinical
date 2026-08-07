@@ -36,3 +36,14 @@ class LesionImageRepository:
 
         db.session.delete(image)
         db.session.commit()
+
+    @staticmethod
+    def get_first_by_exam(exam_id):
+        return (
+            LesionImage.query
+            .filter_by(exam_id=exam_id)
+            .order_by(
+                LesionImage.image_id.asc()
+            )
+            .first()
+        )

@@ -1,11 +1,115 @@
 {% extends "layouts/doctor_base.html" %}
 
-{% block title %}
-Cài đặt
-{% endblock %}
-
 {% block content %}
 
-<h2>Cài đặt</h2>
+<h2>
+
+Cài đặt
+
+</h2>
+
+<div class="card shadow mt-4">
+
+<div class="card-body">
+
+<h4>
+
+Thông tin bác sĩ
+
+</h4>
+
+<hr>
+
+<p>
+
+Tên: {{ current_user.full_name }}
+
+</p>
+
+<p>
+
+Email: {{ current_user.email }}
+
+</p>
+
+<p>
+
+Vai trò: Bác sĩ
+
+</p>
+
+</div>
+
+</div>
+
+<div class="card shadow mt-4">
+
+<div class="card-body">
+
+<h4>
+
+Đổi mật khẩu
+
+</h4>
+
+<hr>
+
+<button class="btn btn-warning">
+
+Đổi mật khẩu
+
+</button>
+
+</div>
+
+</div>
+
+<div class="card shadow mt-4">
+
+<div class="card-body">
+
+<h4>
+
+Thông tin AI
+
+</h4>
+
+<hr>
+
+<p>
+
+Model:
+
+<b>ResNet50</b>
+
+</p>
+
+<p>
+
+Input:
+
+224×224
+
+</p>
+
+<p>
+
+Dataset:
+
+HAM10000
+
+</p>
+
+<p>
+
+Classes:
+
+7
+
+</p>
+
+</div>
+
+</div>
 
 {% endblock %}

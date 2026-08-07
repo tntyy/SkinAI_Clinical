@@ -1,0 +1,218 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block title %}
+Báo cáo
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h3 class="mb-1">
+                Danh sách báo cáo
+            </h3>
+
+            <p class="text-muted mb-0">
+                Các ca khám đã được bác sĩ xác nhận
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if reports %}
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-success">
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Mã báo cáo</th>
+
+                        <th>Bệnh nhân</th>
+
+                        <th>Chẩn đoán bác sĩ</th>
+
+                        <th>Ngày xác nhận</th>
+
+                        <th>Trạng thái</th>
+
+                        <th style="width: 180px;">
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for report in reports %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            #{{ report.report_id }}
+                        </td>
+
+                        <td>
+
+                            {% if report.examination and report.examination.patient %}
+
+                                <strong>
+                                    {{ report.examination.patient.fullname }}
+                                </strong>
+
+                                <br>
+
+                                <small class="text-muted">
+
+                                    Mã BN:
+
+                                    {{ report.examination.patient.patient_code }}
+
+                                </small>
+
+                            {% else %}
+
+                                <span class="text-muted">
+                                    Không có dữ liệu
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <strong>
+                                {{ report.diagnosis }}
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            {% if report.confirmed_at %}
+
+                                {{ report.confirmed_at.strftime(
+                                    "%d/%m/%Y %H:%M"
+                                ) }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if report.status == "confirmed" %}
+
+                                <span class="badge bg-success">
+
+                                    Đã xác nhận
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ report.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex gap-2">
+
+                                {% if report.examination
+                                      and report.examination.lesion_images %}
+
+                                    <a
+                                        href="{{ url_for(
+                                            'lesion.detail',
+                                            image_id=report.examination.lesion_images[0].image_id
+                                        ) }}"
+                                        class="btn btn-primary btn-sm">
+
+                                        <i class="bi bi-eye"></i>
+
+                                        Xem
+
+                                    </a>
+
+                                {% endif %}
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'doctor.export_report_pdf',
+                                        report_id=report.report_id
+                                    ) }}"
+                                    class="btn btn-danger btn-sm">
+
+                                    <i class="bi bi-file-earmark-pdf"></i>
+
+                                    PDF
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-info">
+
+        <i class="bi bi-info-circle"></i>
+
+        Chưa có báo cáo nào được bác sĩ xác nhận.
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

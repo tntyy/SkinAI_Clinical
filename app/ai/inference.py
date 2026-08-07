@@ -40,20 +40,15 @@ def run_prediction(image_path, lesion_image_id):
         results = []
 
         for row in details:
-
-            disease = Disease.query.filter_by(
-                disease_code=row.predicted_class
-            ).first()
-
             results.append({
 
-                "rank": row.rank,
+                "rank": row["rank"],
 
-                "class": row.predicted_class,
+                "class": row["predicted_class"],
 
-                "confidence": row.confidence,
+                "confidence": row["confidence"],
 
-                "disease": disease
+                "disease": row["disease"]
 
             })
 

@@ -658,6 +658,19 @@ Chi tiết ảnh tổn thương
 
         <a
             href="{{ url_for(
+                'doctor.export_pdf',
+                image_id=lesion.image_id
+            ) }}"
+            class="btn btn-danger">
+
+            <i class="bi bi-file-earmark-pdf"></i>
+
+            Xuất PDF
+
+        </a>
+
+        <a
+            href="{{ url_for(
             'lesion.list_images',
             exam_id=lesion.exam_id
             ) }}"
