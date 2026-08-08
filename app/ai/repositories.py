@@ -1,9 +1,20 @@
 from app.database.db import db
 
-from app.models.ai_prediction import AIPrediction
-from app.models.ai_prediction_detail import AIPredictionDetail
-from app.models.ai_heatmap import AIHeatmap
-from app.models.disease import Disease
+from app.models.ai_prediction import (
+    AIPrediction
+)
+
+from app.models.ai_prediction_detail import (
+    AIPredictionDetail
+)
+
+from app.models.ai_heatmap import (
+    AIHeatmap
+)
+
+from app.models.disease import (
+    Disease
+)
 
 
 class PredictionResult:
@@ -31,12 +42,16 @@ class PredictionResult:
 
 class AIRepository:
 
+    # ======================================================
+    # SAVE PREDICTION
+    # ======================================================
+
     @staticmethod
     def save_prediction(
-            lesion_image_id,
-            model_name,
-            version,
-            inference_time
+        lesion_image_id,
+        model_name,
+        version,
+        inference_time
     ):
 
         prediction = AIPrediction(
@@ -51,19 +66,24 @@ class AIRepository:
 
         )
 
-        db.session.add(prediction)
+        db.session.add(
+            prediction
+        )
 
         db.session.commit()
 
         return prediction
 
+    # ======================================================
+    # SAVE DETAIL
+    # ======================================================
 
     @staticmethod
     def save_detail(
-            prediction_id,
-            lesion_type,
-            probability,
-            ranking
+        prediction_id,
+        lesion_type,
+        probability,
+        ranking
     ):
 
         detail = AIPredictionDetail(
@@ -78,18 +98,23 @@ class AIRepository:
 
         )
 
-        db.session.add(detail)
+        db.session.add(
+            detail
+        )
 
         db.session.commit()
 
         return detail
 
+    # ======================================================
+    # SAVE HEATMAP
+    # ======================================================
 
     @staticmethod
     def save_heatmap(
-            prediction_id,
-            heatmap_path,
-            overlay_path
+        prediction_id,
+        heatmap_path,
+        overlay_path
     ):
 
         row = AIHeatmap(
@@ -102,15 +127,22 @@ class AIRepository:
 
         )
 
-        db.session.add(row)
+        db.session.add(
+            row
+        )
 
         db.session.commit()
 
         return row
 
+    # ======================================================
+    # GET PREDICTION BY IMAGE
+    # ======================================================
 
     @staticmethod
-    def get_prediction_by_image(image_id):
+    def get_prediction_by_image(
+        image_id
+    ):
 
         return (
 
@@ -121,45 +153,71 @@ class AIRepository:
             )
 
             .order_by(
-                AIPrediction.prediction_id.desc()
+                AIPrediction
+                .prediction_id
+                .desc()
             )
 
             .first()
 
         )
 
+    # ======================================================
+    # GET PREDICTION DETAILS
+    # ======================================================
+
     @staticmethod
-    def get_prediction_details(prediction_id):
+    def get_prediction_details(
+        prediction_id
+    ):
+
         results = (
+
             db.session.query(
+
                 AIPredictionDetail,
+
                 Disease
+
             )
 
             .outerjoin(
+
                 Disease,
+
                 Disease.disease_code
-                == AIPredictionDetail.predicted_class
+                ==
+                AIPredictionDetail.predicted_class
+
             )
 
             .filter(
-                AIPredictionDetail.prediction_id
-                == prediction_id
+
+                AIPredictionDetail
+                .prediction_id
+                ==
+                prediction_id
+
             )
 
             .order_by(
+
                 AIPredictionDetail.rank
+
             )
 
             .all()
+
         )
 
         data = []
 
         for detail, disease in results:
+
             data.append({
 
-                "rank": detail.rank,
+                "rank":
+                    detail.rank,
 
                 "predicted_class":
                     detail.predicted_class,
@@ -172,13 +230,23 @@ class AIRepository:
 
             })
 
+        print(
+            "✅ AI DETAILS:",
+            data
+        )
+
         return data
 
+    # ======================================================
+    # GET HEATMAP
+    # ======================================================
 
     @staticmethod
-    def get_heatmap(prediction_id):
+    def get_heatmap(
+        prediction_id
+    ):
 
-        return (
+        heatmap = (
 
             AIHeatmap.query
 
@@ -190,9 +258,35 @@ class AIRepository:
 
         )
 
+        if heatmap:
+
+            print(
+                "✅ HEATMAP FOUND:",
+                heatmap.heatmap_path
+            )
+
+            print(
+                "✅ OVERLAY FOUND:",
+                heatmap.overlay_path
+            )
+
+        else:
+
+            print(
+                "❌ NO HEATMAP:",
+                prediction_id
+            )
+
+        return heatmap
+
+    # ======================================================
+    # GET LATEST PREDICTION
+    # ======================================================
 
     @staticmethod
-    def get_latest_prediction(image_id):
+    def get_latest_prediction(
+        image_id
+    ):
 
         return (
 
@@ -203,7 +297,9 @@ class AIRepository:
             )
 
             .order_by(
-                AIPrediction.prediction_id.desc()
+                AIPrediction
+                .prediction_id
+                .desc()
             )
 
             .first()

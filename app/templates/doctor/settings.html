@@ -2,114 +2,867 @@
 
 {% block content %}
 
-<h2>
+<style>
 
-Cài đặt
+    .settings-title {
+        font-weight: 700;
+        color: #1f5f8b;
+    }
 
-</h2>
+    .settings-subtitle {
+        color: #6c757d;
+        font-size: 14px;
+    }
 
-<div class="card shadow mt-4">
+    .settings-card {
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+    }
 
-<div class="card-body">
+    .settings-card .card-header {
+        background: #ffffff;
+        border-bottom: 1px solid #e9ecef;
+        padding: 18px 22px;
+    }
 
-<h4>
+    .settings-card .card-body {
+        padding: 22px;
+    }
 
-Thông tin bác sĩ
+    .settings-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-size: 20px;
+    }
 
-</h4>
+    .icon-doctor {
+        background: #e8f4fb;
+    }
 
-<hr>
+    .icon-security {
+        background: #fff3cd;
+    }
 
-<p>
+    .icon-ai {
+        background: #e8f5e9;
+    }
 
-Tên: {{ current_user.full_name }}
+    .icon-system {
+        background: #f0f0f0;
+    }
 
-</p>
+    .section-title {
+        font-weight: 700;
+        margin: 0;
+        color: #343a40;
+    }
 
-<p>
+    .info-label {
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 3px;
+    }
 
-Email: {{ current_user.email }}
+    .info-value {
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0;
+        word-break: break-word;
+    }
 
-</p>
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 13px 15px;
+        height: 100%;
+    }
 
-<p>
+    .ai-item {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        height: 100%;
+        background: #ffffff;
+    }
 
-Vai trò: Bác sĩ
+    .ai-label {
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
 
-</p>
+    .ai-value {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f5f8b;
+        margin-bottom: 0;
+    }
+
+    .system-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #198754;
+        font-weight: 600;
+    }
+
+    .status-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #198754;
+        display: inline-block;
+    }
+
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-wrapper input {
+        padding-right: 45px;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .password-toggle:hover {
+        color: #1f5f8b;
+    }
+
+    .security-note {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+        border-radius: 10px;
+        padding: 12px 15px;
+        color: #795548;
+        font-size: 13px;
+    }
+
+    .system-footer {
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+</style>
+
+
+<!-- ======================================================
+     PAGE HEADER
+====================================================== -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="settings-title mb-1">
+            ⚙️ Cài đặt
+        </h2>
+
+        <div class="settings-subtitle">
+            Quản lý thông tin tài khoản và cấu hình hệ thống
+        </div>
+
+    </div>
 
 </div>
 
+
+<!-- ======================================================
+     FLASH MESSAGE
+====================================================== -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+            <div
+                class="alert alert-{{ category }} alert-dismissible fade show"
+                role="alert"
+            >
+
+                {{ message }}
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- ======================================================
+     1. THÔNG TIN BÁC SĨ
+====================================================== -->
+
+<div class="card shadow-sm settings-card mb-4">
+
+    <div class="card-header">
+
+        <div class="d-flex align-items-center">
+
+            <div class="settings-icon icon-doctor">
+                👨‍⚕️
+            </div>
+
+            <div>
+
+                <h5 class="section-title">
+                    Thông tin bác sĩ
+                </h5>
+
+                <small class="text-muted">
+                    Thông tin hồ sơ bác sĩ đang đăng nhập
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="row g-3">
+
+            <!-- Họ tên -->
+
+            <div class="col-md-6">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Họ và tên
+                    </div>
+
+                    <p class="info-value">
+
+                        {{ doctor_profile.fullname
+                           if doctor_profile and doctor_profile.fullname
+                           else "Chưa cập nhật" }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="col-md-6">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Email
+                    </div>
+
+                    <p class="info-value">
+
+                        {{ doctor_profile.email
+                           if doctor_profile and doctor_profile.email
+                           else current_user.username }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Số điện thoại -->
+
+            <div class="col-md-6">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Số điện thoại
+                    </div>
+
+                    <p class="info-value">
+
+                        {{ doctor_profile.phone
+                           if doctor_profile and doctor_profile.phone
+                           else "Chưa cập nhật" }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Chuyên khoa -->
+
+            <div class="col-md-6">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Chuyên khoa
+                    </div>
+
+                    <p class="info-value">
+
+                        {{ doctor_profile.department
+                           if doctor_profile and doctor_profile.department
+                           else "Da liễu" }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Cơ sở / bệnh viện -->
+
+            <div class="col-md-6">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Cơ sở / Bệnh viện
+                    </div>
+
+                    <p class="info-value">
+
+                        {{ doctor_profile.hospital
+                           if doctor_profile and doctor_profile.hospital
+                           else "SKINAI CLINICAL" }}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Vai trò -->
+
+            <div class="col-md-6">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Vai trò
+                    </div>
+
+                    <p class="info-value">
+
+                        {% if current_user.role %}
+                            {{ current_user.role }}
+                        {% else %}
+                            Bác sĩ
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="card shadow mt-4">
 
-<div class="card-body">
+<!-- ======================================================
+     2. BẢO MẬT
+====================================================== -->
 
-<h4>
+<div class="card shadow-sm settings-card mb-4">
 
-Đổi mật khẩu
+    <div class="card-header">
 
-</h4>
+        <div class="d-flex align-items-center">
 
-<hr>
+            <div class="settings-icon icon-security">
+                🔐
+            </div>
 
-<button class="btn btn-warning">
+            <div>
 
-Đổi mật khẩu
+                <h5 class="section-title">
+                    Bảo mật
+                </h5>
 
-</button>
+                <small class="text-muted">
+                    Thay đổi mật khẩu đăng nhập tài khoản
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <form
+            method="POST"
+            action="{{ url_for('doctor.settings') }}"
+        >
+
+            <div class="row g-3">
+
+                <!-- Mật khẩu hiện tại -->
+
+                <div class="col-12">
+
+                    <label
+                        for="current_password"
+                        class="form-label fw-semibold"
+                    >
+                        Mật khẩu hiện tại
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="current_password"
+                            name="current_password"
+                            class="form-control"
+                            placeholder="Nhập mật khẩu hiện tại"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('current_password', this)"
+                            title="Hiện / ẩn mật khẩu"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Mật khẩu mới -->
+
+                <div class="col-md-6">
+
+                    <label
+                        for="new_password"
+                        class="form-label fw-semibold"
+                    >
+                        Mật khẩu mới
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="new_password"
+                            name="new_password"
+                            class="form-control"
+                            placeholder="Nhập mật khẩu mới"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('new_password', this)"
+                            title="Hiện / ẩn mật khẩu"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                    <small class="text-muted">
+                        Mật khẩu phải có ít nhất 6 ký tự.
+                    </small>
+
+                </div>
+
+
+                <!-- Xác nhận -->
+
+                <div class="col-md-6">
+
+                    <label
+                        for="confirm_password"
+                        class="form-label fw-semibold"
+                    >
+                        Xác nhận mật khẩu mới
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            class="form-control"
+                            placeholder="Nhập lại mật khẩu mới"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('confirm_password', this)"
+                            title="Hiện / ẩn mật khẩu"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Note -->
+
+                <div class="col-12">
+
+                    <div class="security-note">
+
+                        🔒
+                        Sau khi đổi mật khẩu thành công, bạn có thể
+                        sử dụng mật khẩu mới cho những lần đăng nhập tiếp theo.
+
+                    </div>
+
+                </div>
+
+
+                <!-- Button -->
+
+                <div class="col-12">
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning px-4"
+                    >
+
+                        🔐
+                        Đổi mật khẩu
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
+
+<!-- ======================================================
+     3. THÔNG TIN HỆ THỐNG AI
+====================================================== -->
+
+<div class="card shadow-sm settings-card mb-4">
+
+    <div class="card-header">
+
+        <div class="d-flex align-items-center">
+
+            <div class="settings-icon icon-ai">
+                🤖
+            </div>
+
+            <div>
+
+                <h5 class="section-title">
+                    Thông tin hệ thống AI
+                </h5>
+
+                <small class="text-muted">
+                    Thông tin mô hình trí tuệ nhân tạo đang sử dụng
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="row g-3">
+
+            <!-- Model -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="ai-item">
+
+                    <div class="ai-label">
+                        Model
+                    </div>
+
+                    <p class="ai-value">
+                        ResNet50
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Input -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="ai-item">
+
+                    <div class="ai-label">
+                        Kích thước Input
+                    </div>
+
+                    <p class="ai-value">
+                        224 × 224
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Dataset -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="ai-item">
+
+                    <div class="ai-label">
+                        Dataset
+                    </div>
+
+                    <p class="ai-value">
+                        HAM10000
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Classes -->
+
+            <div class="col-md-6 col-lg-3">
+
+                <div class="ai-item">
+
+                    <div class="ai-label">
+                        Số lớp bệnh
+                    </div>
+
+                    <p class="ai-value">
+                        7 lớp
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div class="card shadow mt-4">
 
-<div class="card-body">
+<!-- ======================================================
+     4. THÔNG TIN HỆ THỐNG
+====================================================== -->
 
-<h4>
+<div class="card shadow-sm settings-card mb-4">
 
-Thông tin AI
+    <div class="card-header">
 
-</h4>
+        <div class="d-flex align-items-center">
 
-<hr>
+            <div class="settings-icon icon-system">
+                ℹ️
+            </div>
 
-<p>
+            <div>
 
-Model:
+                <h5 class="section-title">
+                    Thông tin hệ thống
+                </h5>
 
-<b>ResNet50</b>
+                <small class="text-muted">
+                    Thông tin phiên bản và trạng thái SkinAI Clinical
+                </small>
 
-</p>
+            </div>
 
-<p>
+        </div>
 
-Input:
+    </div>
 
-224×224
 
-</p>
+    <div class="card-body">
 
-<p>
+        <div class="row g-3">
 
-Dataset:
+            <!-- System -->
 
-HAM10000
+            <div class="col-md-4">
 
-</p>
+                <div class="info-box">
 
-<p>
+                    <div class="info-label">
+                        Hệ thống
+                    </div>
 
-Classes:
+                    <p class="info-value">
+                        SkinAI Clinical
+                    </p>
 
-7
+                </div>
 
-</p>
+            </div>
+
+
+            <!-- Version -->
+
+            <div class="col-md-4">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Phiên bản
+                    </div>
+
+                    <p class="info-value">
+                        1.0.0
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="col-md-4">
+
+                <div class="info-box">
+
+                    <div class="info-label">
+                        Trạng thái hệ thống
+                    </div>
+
+                    <p class="info-value">
+
+                        <span class="system-status">
+
+                            <span class="status-dot"></span>
+
+                            Đang hoạt động
+
+                        </span>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
+
+<!-- ======================================================
+     FOOTER
+====================================================== -->
+
+<div class="text-center system-footer mb-4">
+
+    SkinAI Clinical -
+    Hệ thống hỗ trợ phân tích tổn thương da bằng trí tuệ nhân tạo.
+
 </div>
+
+
+<!-- ======================================================
+     PASSWORD TOGGLE
+====================================================== -->
+
+<script>
+
+function togglePassword(
+    inputId,
+    button
+) {
+
+    const input = document.getElementById(
+        inputId
+    );
+
+    if (!input) {
+        return;
+    }
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+        button.textContent = "🙈";
+
+    } else {
+
+        input.type = "password";
+
+        button.textContent = "👁";
+
+    }
+
+}
+
+</script>
 
 {% endblock %}
