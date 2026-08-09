@@ -1,20 +1,9 @@
 from app.database.db import db
 
-from app.models.ai_prediction import (
-    AIPrediction
-)
-
-from app.models.ai_prediction_detail import (
-    AIPredictionDetail
-)
-
-from app.models.ai_heatmap import (
-    AIHeatmap
-)
-
-from app.models.disease import (
-    Disease
-)
+from app.models.ai_prediction import AIPrediction
+from app.models.ai_prediction_detail import AIPredictionDetail
+from app.models.ai_heatmap import AIHeatmap
+from app.models.disease import Disease
 
 
 class PredictionResult:
@@ -63,12 +52,9 @@ class AIRepository:
             model_version=version,
 
             inference_time=inference_time
-
         )
 
-        db.session.add(
-            prediction
-        )
+        db.session.add(prediction)
 
         db.session.commit()
 
@@ -95,12 +81,9 @@ class AIRepository:
             predicted_class=lesion_type,
 
             confidence=probability
-
         )
 
-        db.session.add(
-            detail
-        )
+        db.session.add(detail)
 
         db.session.commit()
 
@@ -124,42 +107,48 @@ class AIRepository:
             heatmap_path=heatmap_path,
 
             overlay_path=overlay_path
-
         )
 
-        db.session.add(
-            row
-        )
+        db.session.add(row)
 
         db.session.commit()
 
         return row
 
     # ======================================================
+    # GET HEATMAP
+    # ======================================================
+
+    @staticmethod
+    def get_heatmap(prediction_id):
+
+        return (
+            AIHeatmap.query
+            .filter_by(
+                prediction_id=prediction_id
+            )
+            .order_by(
+                AIHeatmap.heatmap_id.desc()
+            )
+            .first()
+        )
+
+    # ======================================================
     # GET PREDICTION BY IMAGE
     # ======================================================
 
     @staticmethod
-    def get_prediction_by_image(
-        image_id
-    ):
+    def get_prediction_by_image(image_id):
 
         return (
-
             AIPrediction.query
-
             .filter_by(
                 image_id=image_id
             )
-
             .order_by(
-                AIPrediction
-                .prediction_id
-                .desc()
+                AIPrediction.prediction_id.desc()
             )
-
             .first()
-
         )
 
     # ======================================================
@@ -167,47 +156,33 @@ class AIRepository:
     # ======================================================
 
     @staticmethod
-    def get_prediction_details(
-        prediction_id
-    ):
+    def get_prediction_details(prediction_id):
 
         results = (
 
             db.session.query(
-
                 AIPredictionDetail,
-
                 Disease
-
             )
 
             .outerjoin(
-
                 Disease,
-
                 Disease.disease_code
                 ==
                 AIPredictionDetail.predicted_class
-
             )
 
             .filter(
-
-                AIPredictionDetail
-                .prediction_id
+                AIPredictionDetail.prediction_id
                 ==
                 prediction_id
-
             )
 
             .order_by(
-
                 AIPredictionDetail.rank
-
             )
 
             .all()
-
         )
 
         data = []
@@ -227,7 +202,6 @@ class AIRepository:
 
                 "disease":
                     disease
-
             })
 
         print(
@@ -238,70 +212,343 @@ class AIRepository:
         return data
 
     # ======================================================
-    # GET HEATMAP
+    # GET PREDICTION FOR CHAT
     # ======================================================
 
-    @staticmethod
-    def get_heatmap(
+    @classmethod
+    def get_prediction_for_chat(
+        cls,
         prediction_id
     ):
 
-        heatmap = (
-
-            AIHeatmap.query
-
+        prediction = (
+            AIPrediction.query
             .filter_by(
                 prediction_id=prediction_id
             )
-
             .first()
-
         )
 
-        if heatmap:
+        if prediction is None:
+            return None
 
-            print(
-                "✅ HEATMAP FOUND:",
-                heatmap.heatmap_path
-            )
+        results = cls.get_prediction_details(
+            prediction.prediction_id
+        )
 
-            print(
-                "✅ OVERLAY FOUND:",
-                heatmap.overlay_path
-            )
+        if not results:
+            return None
 
-        else:
+        heatmap = cls.get_heatmap(
+            prediction.prediction_id
+        )
 
-            print(
-                "❌ NO HEATMAP:",
-                prediction_id
-            )
+        top_result = results[0]
 
-        return heatmap
+        predicted_class = (
+            top_result.get("predicted_class")
+        )
+
+        confidence = float(
+            top_result.get("confidence") or 0
+        )
+
+        disease = (
+            top_result.get("disease")
+        )
+
+        return {
+
+            "prediction_id":
+                prediction.prediction_id,
+
+            "prediction":
+                predicted_class,
+
+            "predicted_class":
+                predicted_class,
+
+            "confidence":
+                confidence,
+
+            "disease":
+                (
+                    disease.disease_name_vi
+                    if disease
+                    else predicted_class
+                ),
+
+            "disease_name":
+                (
+                    disease.disease_name
+                    if disease
+                    else None
+                ),
+
+            "disease_name_vi":
+                (
+                    disease.disease_name_vi
+                    if disease
+                    else None
+                ),
+
+            "disease_code":
+                (
+                    disease.disease_code
+                    if disease
+                    else predicted_class
+                ),
+
+            "icd10":
+                (
+                    disease.icd10_code
+                    if disease
+                    else None
+                ),
+
+            "icd10_code":
+                (
+                    disease.icd10_code
+                    if disease
+                    else None
+                ),
+
+            "risk":
+                (
+                    disease.risk_level
+                    if disease
+                    else None
+                ),
+
+            "risk_level":
+                (
+                    disease.risk_level
+                    if disease
+                    else None
+                ),
+
+            "overview":
+                (
+                    disease.overview
+                    if disease
+                    else None
+                ),
+
+            "symptoms":
+                (
+                    disease.symptoms
+                    if disease
+                    else None
+                ),
+
+            "treatment":
+                (
+                    disease.treatment
+                    if disease
+                    else None
+                ),
+
+            "prevention":
+                (
+                    disease.prevention
+                    if disease
+                    else None
+                ),
+
+            "follow_up":
+                (
+                    disease.follow_up
+                    if disease
+                    else None
+                ),
+
+            "heatmap":
+                bool(heatmap),
+
+            "heatmap_path":
+                (
+                    heatmap.heatmap_path
+                    if heatmap
+                    else None
+                ),
+
+            "overlay_path":
+                (
+                    heatmap.overlay_path
+                    if heatmap
+                    else None
+                )
+        }
 
     # ======================================================
-    # GET LATEST PREDICTION
+    # GET LATEST PREDICTION FOR CHAT
     # ======================================================
 
-    @staticmethod
-    def get_latest_prediction(
-        image_id
-    ):
+    @classmethod
+    def get_latest_prediction_for_chat(cls):
 
-        return (
-
+        prediction = (
             AIPrediction.query
-
-            .filter_by(
-                image_id=image_id
-            )
-
             .order_by(
-                AIPrediction
-                .prediction_id
-                .desc()
+                AIPrediction.prediction_id.desc()
             )
-
             .first()
-
         )
+
+        if prediction is None:
+            return None
+
+        results = cls.get_prediction_details(
+            prediction.prediction_id
+        )
+
+        if not results:
+            return None
+
+        top_result = results[0]
+
+        predicted_class = (
+            top_result.get(
+                "predicted_class"
+            )
+        )
+
+        confidence = float(
+            top_result.get(
+                "confidence"
+            ) or 0
+        )
+
+        disease = top_result.get(
+            "disease"
+        )
+
+        heatmap = cls.get_heatmap(
+            prediction.prediction_id
+        )
+
+        return {
+
+            "prediction_id":
+                prediction.prediction_id,
+
+            "prediction":
+                predicted_class,
+
+            "predicted_class":
+                predicted_class,
+
+            "confidence":
+                confidence,
+
+            "disease":
+                (
+                    disease.disease_name_vi
+                    if disease
+                    else predicted_class
+                ),
+
+            "disease_name":
+                (
+                    disease.disease_name
+                    if disease
+                    else None
+                ),
+
+            "disease_name_vi":
+                (
+                    disease.disease_name_vi
+                    if disease
+                    else None
+                ),
+
+            "disease_code":
+                (
+                    disease.disease_code
+                    if disease
+                    else predicted_class
+                ),
+
+            "icd10":
+                (
+                    disease.icd10_code
+                    if disease
+                    else None
+                ),
+
+            "icd10_code":
+                (
+                    disease.icd10_code
+                    if disease
+                    else None
+                ),
+
+            "risk":
+                (
+                    disease.risk_level
+                    if disease
+                    else None
+                ),
+
+            "risk_level":
+                (
+                    disease.risk_level
+                    if disease
+                    else None
+                ),
+
+            "overview":
+                (
+                    disease.overview
+                    if disease
+                    else None
+                ),
+
+            "symptoms":
+                (
+                    disease.symptoms
+                    if disease
+                    else None
+                ),
+
+            "treatment":
+                (
+                    disease.treatment
+                    if disease
+                    else None
+                ),
+
+            "prevention":
+                (
+                    disease.prevention
+                    if disease
+                    else None
+                ),
+
+            "follow_up":
+                (
+                    disease.follow_up
+                    if disease
+                    else None
+                ),
+
+            "heatmap":
+                bool(heatmap),
+
+            "heatmap_path":
+                (
+                    heatmap.heatmap_path
+                    if heatmap
+                    else None
+                ),
+
+            "overlay_path":
+                (
+                    heatmap.overlay_path
+                    if heatmap
+                    else None
+                ),
+
+            "results":
+                results
+        }

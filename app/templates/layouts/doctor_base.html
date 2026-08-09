@@ -4,7 +4,9 @@
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>
 
@@ -16,11 +18,26 @@
 
     </title>
 
+
+    <!-- ==========================================================
+         BOOTSTRAP
+    =========================================================== -->
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 
+
+    <!-- ==========================================================
+         BOOTSTRAP ICONS
+    =========================================================== -->
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <!-- ==========================================================
+         PROJECT CSS
+    =========================================================== -->
 
     <link rel="stylesheet"
           href="{{ url_for('static',filename='css/style.css') }}">
@@ -37,54 +54,894 @@
     <link rel="stylesheet"
           href="{{ url_for('static',filename='css/doctor_sidebar.css') }}">
 
+
+    <!-- ==========================================================
+         CROPPER JS CSS
+    =========================================================== -->
+
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+
+
+    <!-- ==========================================================
+         CHATBOX CSS
+    =========================================================== -->
+
+    <style>
+
+        /* ======================================================
+           CHAT BUBBLE
+        ====================================================== */
+
+        .skinai-chat-bubble {
+
+            position: fixed;
+
+            right: 25px;
+            bottom: 25px;
+
+            width: 60px;
+            height: 60px;
+
+            border-radius: 50%;
+
+            background: #0d6efd;
+
+            color: white;
+
+            border: none;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 27px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.25);
+
+            z-index: 9999;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+
+        }
+
+
+        .skinai-chat-bubble:hover {
+
+            transform: scale(1.08);
+
+            box-shadow:
+                0 7px 22px rgba(0,0,0,0.3);
+
+        }
+
+
+        /* ======================================================
+           CHATBOX
+        ====================================================== */
+
+        .skinai-chatbox {
+
+            position: fixed;
+
+            right: 25px;
+            bottom: 100px;
+
+            width: 360px;
+
+            max-width: calc(100vw - 30px);
+
+            height: 500px;
+
+            background: white;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 10px 35px rgba(0,0,0,0.25);
+
+            display: none;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+            z-index: 9998;
+
+            border: 1px solid #dee2e6;
+
+        }
+
+
+        /* ======================================================
+           CHATBOX HEADER
+        ====================================================== */
+
+        .skinai-chat-header {
+
+            background: #0d6efd;
+
+            color: white;
+
+            padding: 14px 16px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+        }
+
+
+        .skinai-chat-header-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        .skinai-chat-ai-icon {
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            color: #0d6efd;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+
+        }
+
+
+        .skinai-chat-title {
+
+            font-weight: 600;
+
+            font-size: 15px;
+
+            margin: 0;
+
+        }
+
+
+        .skinai-chat-status {
+
+            font-size: 12px;
+
+            opacity: 0.9;
+
+            margin: 2px 0 0 0;
+
+        }
+
+
+        .skinai-chat-close {
+
+            border: none;
+
+            background: transparent;
+
+            color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            line-height: 1;
+
+            padding: 3px 6px;
+
+        }
+
+
+        .skinai-chat-close:hover {
+
+            opacity: 0.75;
+
+        }
+
+
+        /* ======================================================
+           CHAT BODY
+        ====================================================== */
+
+        .skinai-chat-body {
+
+            flex: 1;
+
+            padding: 15px;
+
+            overflow-y: auto;
+
+            background: #f8f9fa;
+
+        }
+
+
+        /* ======================================================
+           MESSAGE
+        ====================================================== */
+
+        .skinai-message {
+
+            display: flex;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .skinai-message.ai {
+
+            justify-content: flex-start;
+
+        }
+
+
+        .skinai-message.user {
+
+            justify-content: flex-end;
+
+        }
+
+
+        .skinai-message-content {
+
+            max-width: 82%;
+
+            padding: 10px 13px;
+
+            border-radius: 14px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .skinai-message.ai
+        .skinai-message-content {
+
+            background: white;
+
+            color: #212529;
+
+            border:
+                1px solid #e9ecef;
+
+            border-bottom-left-radius: 4px;
+
+        }
+
+
+        .skinai-message.user
+        .skinai-message-content {
+
+            background: #0d6efd;
+
+            color: white;
+
+            border-bottom-right-radius: 4px;
+
+        }
+
+
+        /* ======================================================
+           CHAT INPUT
+        ====================================================== */
+
+        .skinai-chat-input-area {
+
+            padding: 12px;
+
+            background: white;
+
+            border-top:
+                1px solid #dee2e6;
+
+        }
+
+
+        .skinai-chat-input-wrapper {
+
+            display: flex;
+
+            gap: 8px;
+
+            align-items: center;
+
+        }
+
+
+        .skinai-chat-input {
+
+            flex: 1;
+
+            border:
+                1px solid #ced4da;
+
+            border-radius: 20px;
+
+            padding:
+                9px 14px;
+
+            outline: none;
+
+            font-size: 14px;
+
+        }
+
+
+        .skinai-chat-input:focus {
+
+            border-color: #0d6efd;
+
+            box-shadow:
+                0 0 0 2px rgba(13,110,253,0.1);
+
+        }
+
+
+        .skinai-chat-send {
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            border: none;
+
+            background: #0d6efd;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            font-size: 17px;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .skinai-chat-send:hover {
+
+            background: #0b5ed7;
+
+        }
+
+
+        /* ======================================================
+           MOBILE
+        ====================================================== */
+
+        @media (max-width: 576px) {
+
+            .skinai-chatbox {
+
+                right: 10px;
+
+                bottom: 85px;
+
+                width:
+                    calc(100vw - 20px);
+
+                height: 70vh;
+
+            }
+
+
+            .skinai-chat-bubble {
+
+                right: 15px;
+
+                bottom: 15px;
+
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ==========================================================
+     SIDEBAR
+=========================================================== -->
 
 {% include "doctor/sidebar.html" %}
 
-<div class="main-content">
 
-    {% include "doctor/navbar.html" %}
+<!-- ==========================================================
+     NAVBAR
+=========================================================== -->
 
-    <main class="page-content">
+{% include "doctor/navbar.html" %}
 
-        {% block content %}
 
-        {% endblock %}
+<!-- ==========================================================
+     MAIN CONTENT
+=========================================================== -->
 
-    </main>
+<main class="page-content">
 
-    {% include "doctor/footer.html" %}
+    {% block content %}
 
-    {% include "layouts/bottom_nav.html" %}
+    {% endblock %}
+
+</main>
+
+
+<!-- ==========================================================
+     FOOTER
+=========================================================== -->
+
+{% include "doctor/footer.html" %}
+
+
+<!-- ==========================================================
+     BOTTOM NAVIGATION
+=========================================================== -->
+
+{% include "layouts/bottom_nav.html" %}
+
+
+<!-- ==========================================================
+     CHATBOX
+=========================================================== -->
+
+
+<!-- CHATBOX -->
+
+<div
+    id="skinaiChatbox"
+    class="skinai-chatbox">
+
+
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <div class="skinai-chat-header">
+
+
+        <div class="skinai-chat-header-left">
+
+
+            <div class="skinai-chat-ai-icon">
+
+                <i class="bi bi-robot"></i>
+
+            </div>
+
+
+            <div>
+
+                <p class="skinai-chat-title">
+
+                    SkinAI Assistant
+
+                </p>
+
+                <p class="skinai-chat-status">
+
+                    Trợ lý hỗ trợ bác sĩ
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            type="button"
+            class="skinai-chat-close"
+            onclick="closeSkinAIChat()">
+
+            <i class="bi bi-x-lg"></i>
+
+        </button>
+
+
+    </div>
+
+
+    <!-- ======================================================
+         CHAT BODY
+    ======================================================= -->
+
+    <div
+        id="skinaiChatBody"
+        class="skinai-chat-body">
+
+
+        <!-- Tin nhắn mặc định -->
+
+        <div class="skinai-message ai">
+
+            <div class="skinai-message-content">
+
+                Xin chào bác sĩ 👋
+
+                <br>
+
+                Tôi là trợ lý SkinAI.
+
+                <br>
+
+                Hiện tại tôi đang ở chế độ thử nghiệm giao diện.
+
+                <br><br>
+
+                Bác sĩ có thể nhập câu hỏi để kiểm tra chức năng chat.
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ======================================================
+         INPUT
+    ======================================================= -->
+
+    <div class="skinai-chat-input-area">
+
+
+        <div class="skinai-chat-input-wrapper">
+
+
+            <input
+                type="text"
+                id="skinaiChatInput"
+                class="skinai-chat-input"
+                placeholder="Nhập câu hỏi..."
+                autocomplete="off">
+
+
+            <button
+                type="button"
+                class="skinai-chat-send"
+                onclick="sendSkinAIMessage()">
+
+                <i class="bi bi-send-fill"></i>
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
 
 </div>
+
+
+<!-- ==========================================================
+     CHAT BUBBLE
+=========================================================== -->
+
+<button
+    type="button"
+    id="skinaiChatBubble"
+    class="skinai-chat-bubble"
+    onclick="toggleSkinAIChat()"
+    title="Chat với SkinAI">
+
+    <i class="bi bi-chat-dots-fill"></i>
+
+</button>
+
+
+<!-- ==========================================================
+     FLASH MESSAGE
+=========================================================== -->
 
 {% with messages = get_flashed_messages(with_categories=true) %}
 
-{% if messages %}
+    {% if messages %}
 
-{% for category,message in messages %}
+        {% for category, message in messages %}
 
-<div class="alert alert-{{ category }}">
+            {{ message }}
 
-{{ message }}
+        {% endfor %}
 
-</div>
-
-{% endfor %}
-
-{% endif %}
+    {% endif %}
 
 {% endwith %}
 
-<script src="{{ url_for('static',filename='js/doctor.js') }}"></script>
+
+<!-- ==========================================================
+     CHATBOX JAVASCRIPT
+=========================================================== -->
+
+<script>
+
+    /* ==========================================================
+       MỞ / ĐÓNG CHATBOX
+    =========================================================== */
+
+    function toggleSkinAIChat() {
+
+        const chatbox =
+            document.getElementById(
+                "skinaiChatbox"
+            );
+
+        const bubble =
+            document.getElementById(
+                "skinaiChatBubble"
+            );
+
+
+        if (
+            chatbox.style.display === "flex"
+        ) {
+
+            chatbox.style.display = "none";
+
+            bubble.style.display = "flex";
+
+        }
+
+        else {
+
+            chatbox.style.display = "flex";
+
+            bubble.style.display = "flex";
+
+
+            const input =
+                document.getElementById(
+                    "skinaiChatInput"
+                );
+
+            setTimeout(
+                function () {
+
+                    input.focus();
+
+                },
+                100
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       ĐÓNG CHATBOX
+    =========================================================== */
+
+    function closeSkinAIChat() {
+
+        const chatbox =
+            document.getElementById(
+                "skinaiChatbox"
+            );
+
+        chatbox.style.display = "none";
+
+    }
+
+
+    /* ==========================================================
+       THÊM TIN NHẮN
+    =========================================================== */
+
+    function addSkinAIMessage(
+        message,
+        type
+    ) {
+
+        const chatBody =
+            document.getElementById(
+                "skinaiChatBody"
+            );
+
+
+        const messageWrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        messageWrapper.className =
+            "skinai-message " + type;
+
+
+        const messageContent =
+            document.createElement(
+                "div"
+            );
+
+
+        messageContent.className =
+            "skinai-message-content";
+
+
+        messageContent.textContent =
+            message;
+
+
+        messageWrapper.appendChild(
+            messageContent
+        );
+
+
+        chatBody.appendChild(
+            messageWrapper
+        );
+
+
+        chatBody.scrollTop =
+            chatBody.scrollHeight;
+
+    }
+
+
+    /* ==========================================================
+       GỬI TIN NHẮN - DEMO
+    =========================================================== */
+
+        async function sendSkinAIMessage() {
+
+            const input =
+                document.getElementById("skinaiChatInput");
+
+            const message =
+                input.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+
+            // Hiển thị câu hỏi bác sĩ
+
+            addSkinAIMessage(
+                message,
+                "user"
+            );
+
+            input.value = "";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/doctor/chat",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                message: message
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok || !data.success) {
+
+                    addSkinAIMessage(
+
+                        data.message ||
+                        "Không thể kết nối với SkinAI Assistant.",
+
+                        "ai"
+
+                    );
+
+                    return;
+                }
+
+
+                // ==========================================
+                // HIỂN THỊ GROK
+                // ==========================================
+
+                addSkinAIMessage(
+                    data.reply,
+                    "ai"
+                );
+
+
+            }
+            catch (error) {
+
+                console.error(
+                    "SkinAI Chat Error:",
+                    error
+                );
+
+
+                addSkinAIMessage(
+
+                    "Có lỗi khi kết nối với SkinAI Assistant.",
+
+                    "ai"
+
+                );
+
+            }
+
+        }
+
+
+    /* ==========================================================
+       ENTER ĐỂ GỬI
+    =========================================================== */
+
+    document
+        .getElementById(
+            "skinaiChatInput"
+        )
+        .addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    sendSkinAIMessage();
+
+                }
+
+            }
+        );
+
+</script>
+
 
 </body>
 

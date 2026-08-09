@@ -1,0 +1,730 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<style>
+
+    /* =====================================================
+       ICD10 PAGE
+    ===================================================== */
+
+    .icd-page {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .icd-header {
+        margin-bottom: 28px;
+    }
+
+    .icd-header h2 {
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .icd-header p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+       SEARCH CARD
+    ===================================================== */
+
+    .icd-search-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        margin-bottom: 28px;
+    }
+
+    .icd-search-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .icd-search-description {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 18px;
+    }
+
+
+    /* =====================================================
+       SEARCH INPUT
+    ===================================================== */
+
+    .icd-search-wrapper {
+        position: relative;
+    }
+
+    .icd-search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        z-index: 2;
+    }
+
+    .icd-search-input {
+        height: 52px;
+        border-radius: 12px;
+        padding-left: 48px;
+        padding-right: 130px;
+        border: 1px solid #d1d5db;
+        font-size: 15px;
+    }
+
+    .icd-search-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+    }
+
+    .icd-search-button {
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        height: 40px;
+        border-radius: 9px;
+        padding: 0 20px;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       RESULT CARD
+    ===================================================== */
+
+    .icd-result-card {
+        background: #ffffff;
+        border: 1px solid #dbe3ea;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .icd-result-header {
+        background: linear-gradient(
+            135deg,
+            #0d6efd,
+            #0a58ca
+        );
+
+        color: white;
+
+        padding: 22px 26px;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 20px;
+    }
+
+    .icd-result-header-title {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.85;
+        margin-bottom: 5px;
+    }
+
+    .icd-result-header-name {
+        font-size: 21px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .icd-code-badge {
+        background: rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: #ffffff;
+        padding: 9px 14px;
+        border-radius: 10px;
+        font-family: monospace;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+
+    /* =====================================================
+       RESULT BODY
+    ===================================================== */
+
+    .icd-result-body {
+        padding: 26px;
+    }
+
+
+    /* =====================================================
+       INFORMATION GRID
+    ===================================================== */
+
+    .icd-info-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 18px;
+
+        margin-bottom: 22px;
+    }
+
+    .icd-info-box {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 17px;
+        background: #fafafa;
+    }
+
+    .icd-info-label {
+        font-size: 12px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 7px;
+        font-weight: 600;
+    }
+
+    .icd-info-value {
+        font-size: 15px;
+        color: #111827;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       DESCRIPTION
+    ===================================================== */
+
+    .icd-description {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 18px;
+    }
+
+    .icd-description-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .icd-description-text {
+        color: #374151;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+       SEARCH SUMMARY
+    ===================================================== */
+
+    .icd-search-summary {
+        margin-bottom: 16px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .icd-search-summary strong {
+        color: #111827;
+    }
+
+
+    /* =====================================================
+       NO RESULT
+    ===================================================== */
+
+    .icd-empty-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 50px 25px;
+        text-align: center;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .icd-empty-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    .icd-empty-card h4 {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .icd-empty-card p {
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+
+
+    /* =====================================================
+       INITIAL STATE
+    ===================================================== */
+
+    .icd-start-card {
+        background: #ffffff;
+
+        border: 1px dashed #cbd5e1;
+
+        border-radius: 16px;
+
+        padding: 45px 25px;
+
+        text-align: center;
+    }
+
+    .icd-start-icon {
+        font-size: 48px;
+        margin-bottom: 14px;
+    }
+
+    .icd-start-card h4 {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .icd-start-card p {
+        color: #6b7280;
+        margin: 0;
+    }
+
+
+    /* =====================================================
+       NOTICE
+    ===================================================== */
+
+    .icd-notice {
+        margin-top: 24px;
+        border-radius: 12px;
+        padding: 16px 18px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 768px) {
+
+        .icd-page {
+            width: 100%;
+        }
+
+        .icd-search-input {
+            padding-right: 100px;
+        }
+
+        .icd-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .icd-result-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .icd-search-button {
+            padding: 0 14px;
+        }
+    }
+
+</style>
+
+
+<div class="icd-page">
+
+
+    <!-- ==================================================
+         HEADER
+    =================================================== -->
+
+    <div class="icd-header">
+
+        <h2>
+            🩺 Tra cứu ICD-10
+        </h2>
+
+        <p>
+            Tra cứu mã bệnh và thông tin bệnh lý từ cơ sở dữ liệu ICD-10.
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         SEARCH
+    =================================================== -->
+
+    <div class="icd-search-card">
+
+        <div class="icd-search-title">
+
+            Tìm kiếm mã bệnh
+
+        </div>
+
+        <div class="icd-search-description">
+
+            Nhập mã ICD-10 hoặc tên bệnh bằng tiếng Anh hoặc tiếng Việt.
+
+            Ví dụ:
+            <strong>C43</strong>,
+            <strong>C43.9</strong>,
+            <strong>melanoma</strong>.
+
+        </div>
+
+
+        <form
+            method="GET"
+            action="{{ url_for('doctor.icd10') }}"
+        >
+
+            <div class="icd-search-wrapper">
+
+                <span class="icd-search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    name="q"
+                    class="form-control icd-search-input"
+                    value="{{ q }}"
+                    placeholder="Nhập mã ICD-10 hoặc tên bệnh..."
+                    autocomplete="off"
+                    autofocus
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-primary icd-search-button"
+                >
+                    Tra cứu
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ==================================================
+         CHƯA TÌM KIẾM
+    =================================================== -->
+
+    {% if not q %}
+
+        <div class="icd-start-card">
+
+            <div class="icd-start-icon">
+                🔎
+            </div>
+
+            <h4>
+                Bắt đầu tra cứu ICD-10
+            </h4>
+
+            <p>
+                Nhập mã bệnh hoặc tên bệnh vào ô phía trên
+                để xem thông tin chi tiết.
+            </p>
+
+        </div>
+
+    {% else %}
+
+
+        <!-- ==================================================
+             SEARCH SUMMARY
+        =================================================== -->
+
+        <div class="icd-search-summary">
+
+            Từ khóa:
+
+            <strong>
+                "{{ q }}"
+            </strong>
+
+            {% if total > 0 %}
+
+                — tìm thấy
+                <strong>
+                    {{ total }}
+                </strong>
+                kết quả phù hợp.
+
+                <br>
+
+                <small>
+                    Hệ thống đang hiển thị kết quả phù hợp nhất.
+                </small>
+
+            {% else %}
+
+                — không tìm thấy kết quả.
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ==================================================
+             CÓ KẾT QUẢ
+        =================================================== -->
+
+        {% if result %}
+
+            <div class="icd-result-card">
+
+
+                <!-- ==========================================
+                     RESULT HEADER
+                =========================================== -->
+
+                <div class="icd-result-header">
+
+                    <div>
+
+                        <div class="icd-result-header-title">
+
+                            Kết quả tra cứu
+
+                        </div>
+
+                        <h3 class="icd-result-header-name">
+
+                            {{ result.name_vi }}
+
+                        </h3>
+
+                    </div>
+
+
+                    <div class="icd-code-badge">
+
+                        {{ result.code_display }}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==========================================
+                     RESULT BODY
+                =========================================== -->
+
+                <div class="icd-result-body">
+
+
+                    <!-- ======================================
+                         BASIC INFORMATION
+                    ======================================= -->
+
+                    <div class="icd-info-grid">
+
+
+                        <!-- CODE -->
+
+                        <div class="icd-info-box">
+
+                            <div class="icd-info-label">
+                                Mã ICD-10
+                            </div>
+
+                            <div class="icd-info-value">
+
+                                <strong>
+                                    {{ result.code }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DISPLAY CODE -->
+
+                        <div class="icd-info-box">
+
+                            <div class="icd-info-label">
+                                Mã hiển thị
+                            </div>
+
+                            <div class="icd-info-value">
+
+                                <strong>
+                                    {{ result.code_display }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- VIETNAMESE NAME -->
+
+                        <div class="icd-info-box">
+
+                            <div class="icd-info-label">
+                                Tên bệnh tiếng Việt
+                            </div>
+
+                            <div class="icd-info-value">
+
+                                {{ result.name_vi }}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ENGLISH NAME -->
+
+                        <div class="icd-info-box">
+
+                            <div class="icd-info-label">
+                                Tên bệnh tiếng Anh
+                            </div>
+
+                            <div class="icd-info-value">
+
+                                {{ result.name_en }}
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ======================================
+                         VIETNAMESE DESCRIPTION
+                    ======================================= -->
+
+                    <div class="icd-description">
+
+                        <div class="icd-description-title">
+
+                            🇻🇳 Thông tin tiếng Việt
+
+                        </div>
+
+                        <p class="icd-description-text">
+
+                            {{ result.description_vi }}
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- ======================================
+                         ENGLISH DESCRIPTION
+                    ======================================= -->
+
+                    <div class="icd-description">
+
+                        <div class="icd-description-title">
+
+                            🇬🇧 Thông tin gốc
+
+                        </div>
+
+                        <p class="icd-description-text">
+
+                            {{ result.description_en }}
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        <!-- ==================================================
+             KHÔNG CÓ KẾT QUẢ
+        =================================================== -->
+
+        {% else %}
+
+            <div class="icd-empty-card">
+
+                <div class="icd-empty-icon">
+                    🔎
+                </div>
+
+                <h4>
+                    Không tìm thấy mã ICD-10
+                </h4>
+
+                <p>
+
+                    Không tìm thấy thông tin phù hợp với từ khóa:
+
+                    <strong>
+                        "{{ q }}"
+                    </strong>
+
+                </p>
+
+                <p class="mt-2">
+
+                    Hãy thử nhập mã bệnh,
+                    tên bệnh tiếng Anh hoặc một từ khóa khác.
+
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+
+    <!-- ==================================================
+         NOTICE
+    =================================================== -->
+
+    <div class="icd-notice">
+
+        <strong>ℹ️ Lưu ý:</strong>
+
+        Chức năng này được xây dựng nhằm hỗ trợ bác sĩ
+        tra cứu và tham khảo thông tin ICD-10.
+        Thông tin tra cứu không thay thế chẩn đoán,
+        đánh giá hoặc quyết định chuyên môn của bác sĩ.
+
+    </div>
+
+</div>
+
+{% endblock %}

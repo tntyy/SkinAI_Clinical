@@ -4,7 +4,8 @@ from flask import (
     url_for,
     flash,
     send_file,
-    request
+    request,
+    jsonify
 )
 
 from flask_login import (
@@ -16,6 +17,8 @@ from werkzeug.security import (
     check_password_hash,
     generate_password_hash
 )
+
+from app.ai.grok_service import GrokService
 
 from app.database.db import db
 
@@ -41,6 +44,11 @@ from app.doctor.pdf_service import PDFService
 
 from app.doctor.repositories import (
     DoctorReportRepository
+)
+
+from app.doctor.icd10_mapping import (
+    get_vietnamese_name,
+    get_vietnamese_description
 )
 
 
@@ -97,6 +105,111 @@ def ai():
     return render_template(
         "doctor/ai.html"
     )
+
+# ==========================================================
+# SKINAI CHAT
+# ==========================================================
+
+@doctor.route(
+    "/chat",
+    methods=["POST"]
+)
+@login_required
+def chat():
+
+    try:
+
+        data = request.get_json(silent=True) or {}
+
+        message = (
+            data.get("message", "")
+            .strip()
+        )
+
+        if not message:
+
+            return jsonify({
+                "success": False,
+                "message": "Vui lòng nhập câu hỏi."
+            }), 400
+
+        # ==========================================
+        # LẤY KẾT QUẢ AI MỚI NHẤT
+        # ==========================================
+
+        context = (
+            AIRepository
+            .get_latest_prediction_for_chat()
+        )
+
+        if not context:
+
+            return jsonify({
+                "success": False,
+                "message": (
+                    "Hiện tại chưa có kết quả AI "
+                    "để hỗ trợ trả lời."
+                )
+            }), 404
+
+        # ==========================================
+        # GỌI GROK
+        # ==========================================
+
+        reply = GrokService.chat(
+            message,
+            context
+        )
+
+        # ==========================================
+        # RESPONSE
+        # ==========================================
+
+        return jsonify({
+
+            "success": True,
+
+            "reply": reply,
+
+            "context": {
+
+                "disease":
+                    context.get("disease"),
+
+                "prediction":
+                    context.get("prediction"),
+
+                "confidence":
+                    context.get("confidence"),
+
+                "icd10":
+                    context.get("icd10"),
+
+                "risk":
+                    context.get("risk")
+
+            }
+
+        })
+
+    except Exception as e:
+
+        print(
+            "❌ GROK CHAT ERROR:",
+            repr(e)
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Không thể kết nối với SkinAI Assistant.",
+
+            "error":
+                str(e)
+
+        }), 500
 
 
 # ==========================================================
@@ -640,30 +753,171 @@ def review(image_id):
 
     )
 
-
 # ==========================================================
-# PREDICTION HISTORY
+# ICD-10 LOOKUP
 # ==========================================================
 
-@doctor.route(
-    "/prediction-history/<int:patient_id>"
-)
+@doctor.route("/icd10")
 @login_required
-def prediction_history(patient_id):
+def icd10():
 
-    history = (
-        DoctorReportService
-        .prediction_history(
-            patient_id
+    q = request.args.get(
+        "q",
+        "",
+        type=str
+    ).strip()
+
+    # Chưa tìm kiếm
+    if not q:
+        return render_template(
+            "doctor/icd10.html",
+            result=None,
+            total=0,
+            q=""
         )
+
+    keyword = f"%{q}%"
+
+    # ======================================================
+    # TÌM ICD-10
+    # ======================================================
+
+    sql = text("""
+        SELECT
+            id,
+            code,
+            code_display,
+            short_description_en,
+            long_description_en,
+            short_description_vi,
+            long_description_vi
+        FROM icd10
+        WHERE
+            code ILIKE :keyword
+            OR code_display ILIKE :keyword
+            OR short_description_en ILIKE :keyword
+            OR long_description_en ILIKE :keyword
+            OR short_description_vi ILIKE :keyword
+            OR long_description_vi ILIKE :keyword
+        ORDER BY
+            CASE
+                WHEN UPPER(code) = UPPER(:exact)
+                    THEN 0
+
+                WHEN UPPER(code_display) = UPPER(:exact)
+                    THEN 1
+
+                WHEN UPPER(code) LIKE UPPER(:prefix)
+                    THEN 2
+
+                WHEN LOWER(short_description_en)
+                     LIKE LOWER(:prefix)
+                    THEN 3
+
+                WHEN LOWER(short_description_vi)
+                     LIKE LOWER(:prefix)
+                    THEN 4
+
+                ELSE 5
+            END,
+            code_display ASC
+        LIMIT 1
+    """)
+
+    result = db.session.execute(
+        sql,
+        {
+            "keyword": keyword,
+            "exact": q,
+            "prefix": f"{q}%"
+        }
     )
 
+    row = result.mappings().first()
+
+    # ======================================================
+    # ĐẾM KẾT QUẢ
+    # ======================================================
+
+    count_sql = text("""
+        SELECT COUNT(*)
+        FROM icd10
+        WHERE
+            code ILIKE :keyword
+            OR code_display ILIKE :keyword
+            OR short_description_en ILIKE :keyword
+            OR long_description_en ILIKE :keyword
+            OR short_description_vi ILIKE :keyword
+            OR long_description_vi ILIKE :keyword
+    """)
+
+    count_result = db.session.execute(
+        count_sql,
+        {
+            "keyword": keyword
+        }
+    )
+
+    total = count_result.scalar() or 0
+
+    # ======================================================
+    # CHUYỂN DATA
+    # ======================================================
+
+    result_data = None
+
+    if row:
+
+        name_vi = (
+            row["short_description_vi"]
+            or get_vietnamese_name(
+                row["code"],
+                row["short_description_en"]
+            )
+        )
+
+        description_vi = (
+            row["long_description_vi"]
+            or get_vietnamese_description(
+                row["code"],
+                row["long_description_en"]
+            )
+        )
+
+        if not description_vi:
+            description_vi = (
+                name_vi
+                or "Chưa có mô tả tiếng Việt."
+            )
+
+        result_data = {
+
+            "id": row["id"],
+
+            "code": row["code"],
+
+            "code_display": row["code_display"],
+
+            "name_vi": name_vi,
+
+            "name_en": (
+                row["short_description_en"]
+                or "Chưa có thông tin"
+            ),
+
+            "description_vi": description_vi,
+
+            "description_en": (
+                row["long_description_en"]
+                or "Chưa có thông tin"
+            )
+        }
+
     return render_template(
-
-        "doctor/prediction_history.html",
-
-        history=history
-
+        "doctor/icd10.html",
+        result=result_data,
+        total=total,
+        q=q
     )
 
 

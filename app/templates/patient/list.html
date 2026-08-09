@@ -6,145 +6,1165 @@ Danh sách bệnh nhân
 
 {% block content %}
 
-<div class="container mt-4">
+<!-- ==========================================================
+     HEADER
+========================================================== -->
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
 
-        <h3>Danh sách bệnh nhân</h3>
 
-        <a href="{{ url_for('patient.create_patient') }}"
-           class="btn btn-primary">
+<div>
+    <h3 class="mb-1">
+        <i class="bi bi-people-fill"></i>
+        Danh sách bệnh nhân
+    </h3>
 
-            <i class="bi bi-plus-circle"></i>
-            Thêm bệnh nhân
+    <small class="text-muted">
+        Quản lý và tra cứu thông tin bệnh nhân
+    </small>
+</div>
 
-        </a>
+<a href="{{ url_for('patient.create_patient') }}"
+   class="btn btn-primary">
 
-    </div>
+    <i class="bi bi-plus-circle"></i>
+    Thêm bệnh nhân
 
-    <form method="GET">
+</a>
 
-        <div class="input-group mb-3">
+
+</div>
+
+<!-- ==========================================================
+     BỘ LỌC
+========================================================== -->
+
+<div class="card shadow-sm mb-4">
+
+
+<div class="card-body">
+
+    <div class="row g-3">
+
+        <!-- TÌM KIẾM -->
+
+        <div class="col-md-5">
+
+            <label class="form-label fw-semibold">
+                <i class="bi bi-search"></i>
+                Tìm kiếm bệnh nhân
+            </label>
 
             <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Tìm bệnh nhân..."
-                    name="keyword"
-                    value="{{ keyword if keyword else '' }}">
+                type="text"
+                id="searchInput"
+                class="form-control"
+                placeholder="Nhập mã BN, họ tên, số điện thoại..."
+            >
 
-            <button class="btn btn-success">
+        </div>
 
-                <i class="bi bi-search"></i>
-                Tìm kiếm
+
+        <!-- GIỚI TÍNH -->
+
+        <div class="col-md-3">
+
+            <label class="form-label fw-semibold">
+                <i class="bi bi-gender-ambiguous"></i>
+                Giới tính
+            </label>
+
+            <select
+                id="genderFilter"
+                class="form-select">
+
+                <option value="">
+                    Tất cả giới tính
+                </option>
+
+                <option value="male">
+                    Nam
+                </option>
+
+                <option value="female">
+                    Nữ
+                </option>
+
+                <option value="other">
+                    Khác
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- SỐ LƯỢNG / TRANG -->
+
+        <div class="col-md-2">
+
+            <label class="form-label fw-semibold">
+                Hiển thị
+            </label>
+
+            <select
+                id="pageSize"
+                class="form-select">
+
+                <option value="10">
+                    10 / trang
+                </option>
+
+                <option value="20">
+                    20 / trang
+                </option>
+
+                <option value="50">
+                    50 / trang
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- RESET -->
+
+        <div class="col-md-2 d-flex align-items-end">
+
+            <button
+                type="button"
+                id="resetFilter"
+                class="btn btn-secondary w-100">
+
+                <i class="bi bi-arrow-clockwise"></i>
+                Đặt lại
 
             </button>
 
         </div>
 
-    </form>
+    </div>
 
-    <table class="table table-bordered table-hover align-middle">
 
-        <thead class="table-light">
+    <!-- ======================================================
+         LỌC THEO CHỮ CÁI
+    ======================================================= -->
 
-        <tr>
+    <div class="mt-4">
 
-            <th>Mã BN</th>
+        <label class="form-label fw-semibold">
 
-            <th>Họ tên</th>
+            <i class="bi bi-sort-alpha-down"></i>
 
-            <th>Giới tính</th>
+            Lọc theo chữ cái đầu họ
 
-            <th>Năm sinh</th>
+        </label>
 
-            <th>Điện thoại</th>
+        <div
+            id="alphabetFilter"
+            class="d-flex flex-wrap gap-1">
 
-            <th width="330">Thao tác</th>
+            <button
+                type="button"
+                class="btn btn-sm btn-primary alphabet-btn active"
+                data-letter="">
 
-        </tr>
+                Tất cả
 
-        </thead>
+            </button>
 
-        <tbody>
+            {% for letter in
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            %}
 
-        {% for patient in patients %}
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-primary alphabet-btn"
+                data-letter="{{ letter }}">
 
-        <tr>
+                {{ letter }}
 
-            <td>{{ patient.patient_code }}</td>
+            </button>
 
-            <td>{{ patient.fullname }}</td>
+            {% endfor %}
 
-            <td>{{ patient.gender }}</td>
+        </div>
 
-            <td>{{ patient.birth_year }}</td>
-
-            <td>{{ patient.phone }}</td>
-
-            <td>
-
-                <!-- Chi tiết -->
-
-                <a href="{{ url_for('patient.detail_patient',
-                                    patient_id=patient.patient_id) }}"
-                   class="btn btn-info btn-sm">
-
-                    <i class="bi bi-eye"></i>
-                    Chi tiết
-
-                </a>
-
-                <!-- Sửa -->
-
-                <a href="{{ url_for('patient.edit_patient',
-                                    patient_id=patient.patient_id) }}"
-                   class="btn btn-warning btn-sm">
-
-                    <i class="bi bi-pencil-square"></i>
-                    Sửa
-
-                </a>
-
-                <!-- Tạo lần khám -->
-
-                <a href="{{ url_for('patient.new_examination',
-                                    patient_id=patient.patient_id) }}"
-                   class="btn btn-success btn-sm">
-
-                    <i class="bi bi-clipboard2-plus"></i>
-                    Khám
-
-                </a>
-
-                <!-- Xóa -->
-
-                <form action="{{ url_for('patient.delete_patient',
-                                         patient_id=patient.patient_id) }}"
-                      method="POST"
-                      style="display:inline;">
-
-                    <button
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Bạn chắc chắn muốn xóa?')">
-
-                        <i class="bi bi-trash"></i>
-                        Xóa
-
-                    </button>
-
-                </form>
-
-            </td>
-
-        </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
+    </div>
 
 </div>
+
+
+</div>
+
+<!-- ==========================================================
+     THÔNG TIN KẾT QUẢ
+========================================================== -->
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+
+
+<div>
+
+    <span class="text-muted">
+        Tổng số:
+    </span>
+
+    <strong id="totalPatients">
+        {{ patients|length }}
+    </strong>
+
+    <span class="text-muted">
+        bệnh nhân
+    </span>
+
+</div>
+
+
+<div>
+
+    <span class="text-muted">
+        Đang hiển thị:
+    </span>
+
+    <strong id="displayedPatients">
+        0
+    </strong>
+
+</div>
+
+
+</div>
+
+<!-- ==========================================================
+     TABLE
+========================================================== -->
+
+<div class="card shadow-sm">
+
+<div class="card-body p-0">
+
+    <div class="table-responsive">
+
+        <table
+            class="table table-bordered table-hover align-middle mb-0"
+            id="patientTable">
+
+            <thead class="table-light">
+
+            <tr>
+
+                <th style="width: 100px;">
+                    Mã BN
+                </th>
+
+                <th>
+                    Họ tên
+                </th>
+
+                <th style="width: 100px;">
+                    Giới tính
+                </th>
+
+                <th style="width: 110px;">
+                    Năm sinh
+                </th>
+
+                <th style="width: 150px;">
+                    Điện thoại
+                </th>
+
+                <th style="width: 330px;">
+                    Thao tác
+                </th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody id="patientTableBody">
+
+            {% for patient in patients %}
+
+            <tr
+                class="patient-row"
+
+                data-code="{{ patient.patient_code|default('')|lower }}"
+
+                data-name="{{ patient.fullname|default('')|lower }}"
+
+                data-gender="{{ patient.gender|default('') }}"
+
+                data-phone="{{ patient.phone|default('')|lower }}"
+
+                data-letter="{{ patient.fullname|default('')|trim|first|upper }}"
+            >
+
+                <!-- MÃ BỆNH NHÂN -->
+
+                <td>
+
+                    <span class="fw-semibold">
+
+                        {{ patient.patient_code }}
+
+                    </span>
+
+                </td>
+
+
+                <!-- HỌ TÊN -->
+
+                <td>
+
+                    <div class="fw-semibold">
+
+                        {{ patient.fullname }}
+
+                    </div>
+
+                </td>
+
+
+                <!-- GIỚI TÍNH -->
+
+                <td>
+
+                    {% if patient.gender == "male" %}
+
+                        <span class="badge bg-primary">
+
+                            <i class="bi bi-gender-male"></i>
+
+                            Nam
+
+                        </span>
+
+                    {% elif patient.gender == "female" %}
+
+                        <span class="badge bg-danger">
+
+                            <i class="bi bi-gender-female"></i>
+
+                            Nữ
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+
+                            {{ patient.gender or "Khác" }}
+
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- NĂM SINH -->
+
+                <td>
+
+                    {{ patient.birth_year }}
+
+                </td>
+
+
+                <!-- ĐIỆN THOẠI -->
+
+                <td>
+
+                    {{ patient.phone }}
+
+                </td>
+
+
+                <!-- THAO TÁC -->
+
+                <td>
+
+                    <!-- CHI TIẾT -->
+
+                    <a
+                        href="{{ url_for(
+                            'patient.detail_patient',
+                            patient_id=patient.patient_id
+                        ) }}"
+                        class="btn btn-info btn-sm mb-1">
+
+                        <i class="bi bi-eye"></i>
+
+                        Chi tiết
+
+                    </a>
+
+
+                    <!-- SỬA -->
+
+                    <a
+                        href="{{ url_for(
+                            'patient.edit_patient',
+                            patient_id=patient.patient_id
+                        ) }}"
+                        class="btn btn-warning btn-sm mb-1">
+
+                        <i class="bi bi-pencil-square"></i>
+
+                        Sửa
+
+                    </a>
+
+
+                    <!-- KHÁM -->
+
+                    <a
+                        href="{{ url_for(
+                            'patient.new_examination',
+                            patient_id=patient.patient_id
+                        ) }}"
+                        class="btn btn-success btn-sm mb-1">
+
+                        <i class="bi bi-clipboard2-plus"></i>
+
+                        Khám
+
+                    </a>
+
+
+                    <!-- XÓA -->
+
+                    <form
+                        action="{{ url_for(
+                            'patient.delete_patient',
+                            patient_id=patient.patient_id
+                        ) }}"
+                        method="POST"
+                        style="display:inline;">
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger btn-sm mb-1"
+                            onclick="return confirm(
+                                'Bạn chắc chắn muốn xóa bệnh nhân này?'
+                            )">
+
+                            <i class="bi bi-trash"></i>
+
+                            Xóa
+
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+
+            <!-- KHÔNG CÓ DỮ LIỆU -->
+
+            <tr id="noResultRow" style="display:none;">
+
+                <td
+                    colspan="6"
+                    class="text-center py-5">
+
+                    <i
+                        class="bi bi-person-x fs-1 text-muted">
+                    </i>
+
+                    <div class="mt-2 text-muted">
+
+                        Không tìm thấy bệnh nhân phù hợp.
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<!-- ==========================================================
+     PHÂN TRANG
+========================================================== -->
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+
+<div class="text-muted">
+
+    Trang
+    <strong id="currentPage">
+        1
+    </strong>
+
+    /
+    <strong id="totalPages">
+        1
+    </strong>
+
+</div>
+
+
+<nav>
+
+    <ul
+        class="pagination mb-0"
+        id="pagination">
+
+    </ul>
+
+</nav>
+
+
+</div>
+
+<!-- ==========================================================
+     JAVASCRIPT
+========================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ======================================================
+    // ELEMENTS
+    // ======================================================
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const genderFilter =
+        document.getElementById("genderFilter");
+
+    const pageSizeSelect =
+        document.getElementById("pageSize");
+
+    const resetFilter =
+        document.getElementById("resetFilter");
+
+    const alphabetButtons =
+        document.querySelectorAll(".alphabet-btn");
+
+    const patientRows =
+        Array.from(
+            document.querySelectorAll(".patient-row")
+        );
+
+    const noResultRow =
+        document.getElementById("noResultRow");
+
+    const pagination =
+        document.getElementById("pagination");
+
+    const currentPageElement =
+        document.getElementById("currentPage");
+
+    const totalPagesElement =
+        document.getElementById("totalPages");
+
+    const displayedPatients =
+        document.getElementById("displayedPatients");
+
+
+    // ======================================================
+    // STATE
+    // ======================================================
+
+    let currentPage = 1;
+
+    let selectedLetter = "";
+
+    let filteredPatients = [...patientRows];
+
+
+    // ======================================================
+    // FILTER
+    // ======================================================
+
+    function filterPatients() {
+
+        const keyword =
+            searchInput.value
+                .trim()
+                .toLowerCase();
+
+        const gender =
+            genderFilter.value;
+
+
+        filteredPatients =
+            patientRows.filter(function (row) {
+
+                const code =
+                    row.dataset.code || "";
+
+                const name =
+                    row.dataset.name || "";
+
+                const phone =
+                    row.dataset.phone || "";
+
+                const rowGender =
+                    row.dataset.gender || "";
+
+                const letter =
+                    row.dataset.letter || "";
+
+
+                // ------------------------------------------
+                // TÌM KIẾM
+                // ------------------------------------------
+
+                const matchesKeyword =
+
+                    keyword === "" ||
+
+                    code.includes(keyword) ||
+
+                    name.includes(keyword) ||
+
+                    phone.includes(keyword);
+
+
+                // ------------------------------------------
+                // GIỚI TÍNH
+                // ------------------------------------------
+
+                const matchesGender =
+
+                    gender === "" ||
+
+                    rowGender === gender;
+
+
+                // ------------------------------------------
+                // CHỮ CÁI
+                // ------------------------------------------
+
+                const matchesLetter =
+
+                    selectedLetter === "" ||
+
+                    letter === selectedLetter;
+
+
+                return (
+
+                    matchesKeyword &&
+
+                    matchesGender &&
+
+                    matchesLetter
+
+                );
+
+            });
+
+
+        currentPage = 1;
+
+        renderPatients();
+
+    }
+
+
+    // ======================================================
+    // RENDER PATIENTS
+    // ======================================================
+
+    function renderPatients() {
+
+        const pageSize =
+            parseInt(
+                pageSizeSelect.value
+            );
+
+
+        const total =
+            filteredPatients.length;
+
+
+        const totalPages =
+            Math.max(
+                1,
+                Math.ceil(
+                    total / pageSize
+                )
+            );
+
+
+        if (currentPage > totalPages) {
+
+            currentPage =
+                totalPages;
+
+        }
+
+
+        // ------------------------------------------
+        // ẨN TOÀN BỘ
+        // ------------------------------------------
+
+        patientRows.forEach(function (row) {
+
+            row.style.display = "none";
+
+        });
+
+
+        // ------------------------------------------
+        // KHÔNG CÓ KẾT QUẢ
+        // ------------------------------------------
+
+        if (total === 0) {
+
+            noResultRow.style.display =
+                "table-row";
+
+            displayedPatients.textContent =
+                "0";
+
+        }
+
+        else {
+
+            noResultRow.style.display =
+                "none";
+
+
+            const start =
+                (currentPage - 1)
+                * pageSize;
+
+
+            const end =
+                start + pageSize;
+
+
+            const currentPatients =
+                filteredPatients.slice(
+                    start,
+                    end
+                );
+
+
+            currentPatients.forEach(
+                function (row) {
+
+                    row.style.display =
+                        "table-row";
+
+                }
+            );
+
+
+            displayedPatients.textContent =
+                currentPatients.length;
+
+        }
+
+
+        // ------------------------------------------
+        // PAGE INFO
+        // ------------------------------------------
+
+        currentPageElement.textContent =
+            currentPage;
+
+        totalPagesElement.textContent =
+            totalPages;
+
+
+        // ------------------------------------------
+        // PAGINATION
+        // ------------------------------------------
+
+        renderPagination(
+            totalPages
+        );
+
+    }
+
+
+    // ======================================================
+    // PAGINATION
+    // ======================================================
+
+    function renderPagination(totalPages) {
+
+        pagination.innerHTML = "";
+
+
+        // ------------------------------------------
+        // PREVIOUS
+        // ------------------------------------------
+
+        const previousLi =
+            document.createElement("li");
+
+        previousLi.className =
+            "page-item " +
+            (
+                currentPage === 1
+                    ? "disabled"
+                    : ""
+            );
+
+
+        const previousButton =
+            document.createElement("button");
+
+        previousButton.className =
+            "page-link";
+
+        previousButton.innerHTML =
+            "&laquo;";
+
+
+        previousButton.addEventListener(
+            "click",
+            function () {
+
+                if (currentPage > 1) {
+
+                    currentPage--;
+
+                    renderPatients();
+
+                }
+
+            }
+        );
+
+
+        previousLi.appendChild(
+            previousButton
+        );
+
+
+        pagination.appendChild(
+            previousLi
+        );
+
+
+        // ------------------------------------------
+        // PAGE NUMBERS
+        // ------------------------------------------
+
+        for (
+            let page = 1;
+            page <= totalPages;
+            page++
+        ) {
+
+            const pageLi =
+                document.createElement("li");
+
+
+            pageLi.className =
+                "page-item " +
+                (
+                    page === currentPage
+                        ? "active"
+                        : ""
+                );
+
+
+            const pageButton =
+                document.createElement("button");
+
+
+            pageButton.className =
+                "page-link";
+
+
+            pageButton.textContent =
+                page;
+
+
+            pageButton.addEventListener(
+                "click",
+                function () {
+
+                    currentPage =
+                        page;
+
+                    renderPatients();
+
+                }
+            );
+
+
+            pageLi.appendChild(
+                pageButton
+            );
+
+
+            pagination.appendChild(
+                pageLi
+            );
+
+        }
+
+
+        // ------------------------------------------
+        // NEXT
+        // ------------------------------------------
+
+        const nextLi =
+            document.createElement("li");
+
+
+        nextLi.className =
+            "page-item " +
+
+            (
+                currentPage === totalPages
+                    ? "disabled"
+                    : ""
+            );
+
+
+        const nextButton =
+            document.createElement("button");
+
+
+        nextButton.className =
+            "page-link";
+
+
+        nextButton.innerHTML =
+            "&raquo;";
+
+
+        nextButton.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    currentPage
+                    < totalPages
+                ) {
+
+                    currentPage++;
+
+                    renderPatients();
+
+                }
+
+            }
+        );
+
+
+        nextLi.appendChild(
+            nextButton
+        );
+
+
+        pagination.appendChild(
+            nextLi
+        );
+
+    }
+
+
+    // ======================================================
+    // SEARCH
+    // ======================================================
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            filterPatients();
+
+        }
+    );
+
+
+    // ======================================================
+    // GENDER
+    // ======================================================
+
+    genderFilter.addEventListener(
+        "change",
+        function () {
+
+            filterPatients();
+
+        }
+    );
+
+
+    // ======================================================
+    // PAGE SIZE
+    // ======================================================
+
+    pageSizeSelect.addEventListener(
+        "change",
+        function () {
+
+            currentPage = 1;
+
+            renderPatients();
+
+        }
+    );
+
+
+    // ======================================================
+    // ALPHABET
+    // ======================================================
+
+    alphabetButtons.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    alphabetButtons.forEach(
+                        function (btn) {
+
+                            btn.classList.remove(
+                                "active"
+                            );
+
+                            btn.classList.remove(
+                                "btn-primary"
+                            );
+
+                            btn.classList.add(
+                                "btn-outline-primary"
+                            );
+
+                        }
+                    );
+
+
+                    this.classList.add(
+                        "active"
+                    );
+
+                    this.classList.remove(
+                        "btn-outline-primary"
+                    );
+
+                    this.classList.add(
+                        "btn-primary"
+                    );
+
+
+                    selectedLetter =
+                        this.dataset.letter;
+
+
+                    filterPatients();
+
+                }
+            );
+
+        }
+    );
+
+
+    // ======================================================
+    // RESET
+    // ======================================================
+
+    resetFilter.addEventListener(
+        "click",
+        function () {
+
+            searchInput.value =
+                "";
+
+            genderFilter.value =
+                "";
+
+            pageSizeSelect.value =
+                "10";
+
+
+            selectedLetter =
+                "";
+
+
+            alphabetButtons.forEach(
+                function (btn) {
+
+                    btn.classList.remove(
+                        "active"
+                    );
+
+                    btn.classList.remove(
+                        "btn-primary"
+                    );
+
+                    btn.classList.add(
+                        "btn-outline-primary"
+                    );
+
+                }
+            );
+
+
+            const allButton =
+                document.querySelector(
+                    '.alphabet-btn[data-letter=""]'
+                );
+
+
+            if (allButton) {
+
+                allButton.classList.add(
+                    "active"
+                );
+
+                allButton.classList.remove(
+                    "btn-outline-primary"
+                );
+
+                allButton.classList.add(
+                    "btn-primary"
+                );
+
+            }
+
+
+            currentPage = 1;
+
+            filterPatients();
+
+        }
+    );
+
+
+    // ======================================================
+    // INITIAL
+    // ======================================================
+
+    filterPatients();
+
+});
+
+</script>
 
 {% endblock %}

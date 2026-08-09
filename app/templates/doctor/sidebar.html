@@ -25,6 +25,14 @@
             </a>
         </li>
 
+        <a
+            href="{{ url_for('doctor.icd10') }}"
+            class="nav-link"
+        >
+            🩺
+            <span>Tra cứu ICD-10</span>
+        </a>
+
          <!-- Báo cáo -->
         <li class="{{ 'active' if request.endpoint == 'doctor.reports' }}">
             <a href="{{ url_for('doctor.reports') }}">
