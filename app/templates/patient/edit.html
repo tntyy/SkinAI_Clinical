@@ -4,55 +4,109 @@
 
 <div class="container mt-4">
 
-<h3>Sửa bệnh nhân</h3>
+    <h3>Sửa bệnh nhân</h3>
 
-<form method="POST">
+    <form method="POST">
 
-{{ form.hidden_tag() }}
+        {{ form.hidden_tag() }}
 
-<div class="mb-3">
+        <div class="card shadow-sm mb-4">
 
-{{ form.fullname.label }}
+            <div class="card-header">
+                <strong>Thông tin bệnh nhân</strong>
+            </div>
 
-{{ form.fullname(class="form-control") }}
+            <div class="card-body">
 
-</div>
+                <div class="mb-3">
+                    {{ form.fullname.label(class="form-label") }}
+                    {{ form.fullname(class="form-control") }}
+                </div>
 
-<div class="mb-3">
+                <div class="mb-3">
+                    {{ form.gender.label(class="form-label") }}
+                    {{ form.gender(class="form-select") }}
+                </div>
 
-{{ form.gender.label }}
+                <div class="mb-3">
+                    {{ form.birth_year.label(class="form-label") }}
+                    {{ form.birth_year(class="form-control") }}
+                </div>
 
-{{ form.gender(class="form-select") }}
+                <div class="mb-3">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control") }}
+                </div>
 
-</div>
+            </div>
 
-<div class="mb-3">
+        </div>
 
-{{ form.birth_year.label }}
 
-{{ form.birth_year(class="form-control") }}
+        <div class="card shadow-sm mb-4">
 
-</div>
+            <div class="card-header">
+                <strong>Thông tin bệnh sử</strong>
+            </div>
 
-<div class="mb-3">
+            <div class="card-body">
 
-{{ form.phone.label }}
+                <div class="mb-3">
 
-{{ form.phone(class="form-control") }}
+                    {{ form.drug_allergies.label(
+                        class="form-label"
+                    ) }}
 
-</div>
+                    {{ form.drug_allergies(
+                        class="form-control"
+                    ) }}
 
-{{ form.submit(class="btn btn-warning") }}
+                </div>
 
-<a
-href="{{ url_for('patient.list_patients') }}"
-class="btn btn-secondary">
 
-Hủy
+                <div class="mb-3">
 
-</a>
+                    {{ form.chronic_diseases.label(
+                        class="form-label"
+                    ) }}
 
-</form>
+                    {{ form.chronic_diseases(
+                        class="form-control"
+                    ) }}
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    {{ form.hereditary_diseases.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.hereditary_diseases(
+                        class="form-control"
+                    ) }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{ form.submit(
+            class="btn btn-warning"
+        ) }}
+
+        <a
+            href="{{ url_for('patient.list_patients') }}"
+            class="btn btn-secondary">
+
+            Hủy
+
+        </a>
+
+    </form>
 
 </div>
 

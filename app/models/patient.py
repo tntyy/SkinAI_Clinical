@@ -18,7 +18,9 @@ class Patient(db.Model):
 
     created_by_doctor = db.Column(
         db.Integer,
-        db.ForeignKey("doctor_profiles.doctor_id"),
+        db.ForeignKey(
+            "doctor_profiles.doctor_id"
+        ),
         nullable=False
     )
 
@@ -39,10 +41,31 @@ class Patient(db.Model):
         db.String(20)
     )
 
+    # ==================================================
+    # THÔNG TIN Y KHOA BỆNH NHÂN
+    # ==================================================
+
+    drug_allergies = db.Column(
+        db.Text
+    )
+
+    chronic_diseases = db.Column(
+        db.Text
+    )
+
+    hereditary_diseases = db.Column(
+        db.Text
+    )
+
     created_at = db.Column(
         db.DateTime,
         server_default=db.func.now()
     )
+
+    # ==================================================
+    # RELATIONSHIPS
+    # ==================================================
+
     doctor = db.relationship(
         "DoctorProfile",
         back_populates="patients"

@@ -1,0 +1,520 @@
+{% extends "layouts/doctor_base.html" %}
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ========================================= -->
+    <!-- HEADER -->
+    <!-- ========================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="mb-1">
+                <i class="fas fa-history me-2"></i>
+                Lịch sử AI
+            </h2>
+
+            {% if patient %}
+
+                <div class="text-muted">
+
+                    Bệnh nhân:
+
+                    <strong>
+                        {{ patient.fullname }}
+                    </strong>
+
+                    <span class="ms-2">
+                        #{{ patient.patient_id }}
+                    </span>
+
+                    {% if patient.patient_code %}
+
+                        <span class="ms-2">
+                            ({{ patient.patient_code }})
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            {% else %}
+
+                <div class="text-muted">
+                    Chưa chọn bệnh nhân.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        {% if patient %}
+
+            <a
+                href="{{ url_for(
+                    'doctor.history',
+                    patient_id=patient.patient_id
+                ) }}"
+                class="btn btn-outline-secondary"
+            >
+                <i class="fas fa-sync-alt me-1"></i>
+                Làm mới
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if patient %}
+
+    <!-- ========================================= -->
+    <!-- SEARCH -->
+    <!-- ========================================= -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form
+                method="GET"
+                action="{{ url_for('doctor.history') }}"
+            >
+
+                <input
+                    type="hidden"
+                    name="patient_id"
+                    value="{{ patient.patient_id }}"
+                >
+
+                <div class="row g-3">
+
+                    <!-- SEARCH -->
+
+                    <div class="col-md-5">
+
+                        <label class="form-label fw-semibold">
+                            Tìm kiếm
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+
+                            <input
+                                type="text"
+                                name="search"
+                                class="form-control"
+                                placeholder="Bệnh, triệu chứng, model..."
+                                value="{{ search }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FROM -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Từ ngày
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date_from"
+                            class="form-control"
+                            value="{{ date_from }}"
+                        >
+
+                    </div>
+
+
+                    <!-- TO -->
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Đến ngày
+                        </label>
+
+                        <input
+                            type="date"
+                            name="date_to"
+                            class="form-control"
+                            value="{{ date_to }}"
+                        >
+
+                    </div>
+
+
+                    <!-- BUTTON -->
+
+                    <div class="col-md-1 d-flex align-items-end">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                            title="Tìm kiếm"
+                        >
+
+                            <i class="fas fa-search"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- RESULT COUNT -->
+    <!-- ========================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div class="text-muted">
+
+            Tìm thấy
+
+            <strong>
+                {{ history|length }}
+            </strong>
+
+            lần dự đoán AI.
+
+        </div>
+
+        {% if search or date_from or date_to %}
+
+            <a
+                href="{{ url_for(
+                    'doctor.history',
+                    patient_id=patient.patient_id
+                ) }}"
+                class="btn btn-sm btn-outline-danger"
+            >
+
+                <i class="fas fa-times me-1"></i>
+
+                Xóa bộ lọc
+
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- HISTORY -->
+    <!-- ========================================= -->
+
+    {% if history %}
+
+        <div class="row g-4">
+
+            {% for item in history %}
+
+                <div class="col-12">
+
+                    <div class="card shadow-sm">
+
+                        <div class="card-body">
+
+                            <div class="row align-items-center">
+
+                                <!-- IMAGE -->
+
+                                <div class="col-md-2 text-center">
+
+                                    {% if item.image_path %}
+
+                                        <img
+                                            src="{{ url_for(
+                                                'static',
+                                                filename=item.image_path
+                                            ) }}"
+                                            class="img-fluid rounded"
+                                            style="
+                                                width: 140px;
+                                                height: 140px;
+                                                object-fit: cover;
+                                            "
+                                            alt="Ảnh tổn thương"
+                                        >
+
+                                    {% else %}
+
+                                        <div
+                                            class="bg-light rounded d-flex align-items-center justify-content-center"
+                                            style="
+                                                width: 140px;
+                                                height: 140px;
+                                            "
+                                        >
+
+                                            <i
+                                                class="fas fa-image fa-2x text-muted"
+                                            ></i>
+
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- MAIN INFO -->
+
+                                <div class="col-md-7">
+
+                                    <div class="d-flex align-items-center mb-2">
+
+                                        <h5 class="mb-0">
+
+                                            Lần dự đoán
+                                            #{{ item.prediction_id }}
+
+                                        </h5>
+
+                                        {% if item.predicted_class %}
+
+                                            <span class="badge bg-primary ms-2">
+
+                                                {{ item.predicted_class|upper }}
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <div class="mb-2">
+
+                                        <strong>
+                                            Độ tin cậy:
+                                        </strong>
+
+                                        {% if item.confidence is not none %}
+
+                                            <span class="text-success fw-bold">
+
+                                                {{ "%.2f"|format(
+                                                    item.confidence * 100
+                                                ) }}%
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="text-muted">
+                                                Chưa có
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <div class="text-muted mb-1">
+
+                                        <i class="fas fa-calendar me-1"></i>
+
+                                        Khám:
+
+                                        {% if item.exam_date %}
+
+                                            {{ item.exam_date.strftime(
+                                                "%d/%m/%Y %H:%M"
+                                            ) }}
+
+                                        {% else %}
+
+                                            Chưa có
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <div class="text-muted mb-1">
+
+                                        <i class="fas fa-robot me-1"></i>
+
+                                        Model:
+
+                                        {{ item.model_name or "Không rõ" }}
+
+                                        {% if item.model_version %}
+
+                                            - {{ item.model_version }}
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    {% if item.chief_complaint %}
+
+                                        <div class="text-muted">
+
+                                            <i class="fas fa-notes-medical me-1"></i>
+
+                                            {{ item.chief_complaint }}
+
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- TIME -->
+
+                                <div class="col-md-3 text-md-end mt-3 mt-md-0">
+
+                                    <div class="text-muted small mb-2">
+
+                                        AI thực hiện
+
+                                    </div>
+
+                                    <div class="fw-semibold">
+
+                                        {% if item.prediction_created_at %}
+
+                                            {{ item.prediction_created_at.strftime(
+                                                "%d/%m/%Y %H:%M"
+                                            ) }}
+
+                                        {% else %}
+
+                                            Không rõ
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <div class="mt-3">
+
+                                        <a
+                                            href="{{ url_for(
+                                                'lesion.detail',
+                                                image_id=item.image_id
+                                            ) }}"
+                                            class="btn btn-sm btn-outline-primary"
+                                        >
+
+                                            <i class="fas fa-eye me-1"></i>
+
+                                            Xem chi tiết
+
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <!-- ===================================== -->
+        <!-- EMPTY -->
+        <!-- ===================================== -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body text-center py-5">
+
+                <i
+                    class="fas fa-history fa-3x text-muted mb-3"
+                ></i>
+
+                <h5>
+                    Chưa có lịch sử AI
+                </h5>
+
+                <p class="text-muted mb-0">
+
+                    Bệnh nhân này chưa có kết quả dự đoán AI
+                    phù hợp với điều kiện tìm kiếm.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
+    {% else %}
+
+        <!-- ========================================= -->
+        <!-- NO PATIENT -->
+        <!-- ========================================= -->
+
+        <div class="card shadow-sm">
+
+            <div class="card-body text-center py-5">
+
+                <i
+                    class="fas fa-user-injured fa-3x text-muted mb-3"
+                ></i>
+
+                <h5>
+                    Chưa chọn bệnh nhân
+                </h5>
+
+                <p class="text-muted">
+                    Vui lòng chọn bệnh nhân để xem lịch sử AI.
+                </p>
+
+                <a
+                    href="{{ url_for('doctor.patients') }}"
+                    class="btn btn-primary"
+                >
+
+                    <i class="fas fa-users me-1"></i>
+
+                    Danh sách bệnh nhân
+
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

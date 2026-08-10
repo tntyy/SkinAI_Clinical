@@ -1,39 +1,496 @@
 {% extends "layouts/doctor_base.html" %}
 
+{% block title %}
+Kết luận lâm sàng
+{% endblock %}
+
 {% block content %}
 
-<h3>Xác nhận AI</h3>
+<div class="container-fluid">
 
-<form method="POST">
 
-    {{ form.hidden_tag() }}
+<h3 class="mb-4">
+    Kết luận lâm sàng
+</h3>
 
-    <div class="mb-3">
 
-        {{ form.diagnosis.label }}
+<!-- ======================================================
+     THÔNG TIN BỆNH NHÂN
+======================================================= -->
 
-        {{ form.diagnosis(class="form-control") }}
+<div class="card shadow-sm mb-4">
 
-    </div>
+    <div class="card-header bg-primary text-white">
 
-    <div class="mb-3">
+        <h5 class="mb-0">
 
-        {{ form.treatment.label }}
+            <i class="bi bi-person-vcard"></i>
 
-        {{ form.treatment(class="form-control") }}
+            Thông tin bệnh nhân
 
-    </div>
-
-    <div class="mb-3">
-
-        {{ form.note.label }}
-
-        {{ form.note(class="form-control") }}
+        </h5>
 
     </div>
 
-    {{ form.submit(class="btn btn-success") }}
+    <div class="card-body">
 
-</form>
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <label class="form-label fw-semibold">
+                    Họ và tên
+                </label>
+
+                <div class="form-control bg-light">
+                    {{ patient.fullname }}
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <label class="form-label fw-semibold">
+                    Mã bệnh nhân
+                </label>
+
+                <div class="form-control bg-light">
+                    {{ patient.patient_code }}
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <label class="form-label fw-semibold">
+                    Giới tính
+                </label>
+
+                <div class="form-control bg-light">
+
+                    {{ patient.gender or "Chưa cập nhật" }}
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <label class="form-label fw-semibold">
+                    Tuổi
+                </label>
+
+                <div class="form-control bg-light">
+
+                    {% if patient.age is not none %}
+
+                        {{ patient.age }} tuổi
+
+                    {% else %}
+
+                        Chưa cập nhật
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-9">
+
+                <label class="form-label fw-semibold">
+
+                    <i class="bi bi-capsule"></i>
+
+                    Dị ứng thuốc
+
+                </label>
+
+                <div class="form-control bg-light">
+
+                    {% if patient.drug_allergies %}
+
+                        {{ patient.drug_allergies }}
+
+                    {% else %}
+
+                        <span class="text-muted">
+                            Không ghi nhận
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <label class="form-label fw-semibold">
+
+                    <i class="bi bi-heart-pulse"></i>
+
+                    Bệnh nền
+
+                </label>
+
+                <div
+                    class="form-control bg-light"
+                    style="min-height: 100px;"
+                >
+
+                    {% if patient.chronic_diseases %}
+
+                        {{ patient.chronic_diseases }}
+
+                    {% else %}
+
+                        <span class="text-muted">
+                            Không ghi nhận
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <label class="form-label fw-semibold">
+
+                    <i class="bi bi-diagram-3"></i>
+
+                    Bệnh di truyền / tiền sử gia đình
+
+                </label>
+
+                <div
+                    class="form-control bg-light"
+                    style="min-height: 100px;"
+                >
+
+                    {% if patient.hereditary_diseases %}
+
+                        {{ patient.hereditary_diseases }}
+
+                    {% else %}
+
+                        <span class="text-muted">
+                            Không ghi nhận
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     KẾT QUẢ AI
+======================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-success text-white">
+
+        <h5 class="mb-0">
+
+            <i class="bi bi-robot"></i>
+
+            Kết quả phân tích AI
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if results %}
+
+            {% set top = results[0] %}
+
+            <div class="alert alert-success">
+
+                <h5>
+
+                    AI dự đoán:
+
+                    <strong>
+                        {{ top.disease.disease_name_vi }}
+                    </strong>
+
+                </h5>
+
+                <p class="mb-1">
+
+                    Độ tin cậy:
+
+                    <strong>
+                        {{ "%.2f"|format(top.confidence * 100) }}%
+                    </strong>
+
+                </p>
+
+                <p class="mb-0">
+
+                    Mức nguy hiểm:
+
+                    <strong>
+                        {{ top.disease.risk_level }}
+                    </strong>
+
+                </p>
+
+            </div>
+
+
+            <table class="table table-bordered">
+
+                <tr>
+
+                    <th style="width: 220px;">
+                        Chẩn đoán AI
+                    </th>
+
+                    <td>
+                        {{ top.disease.disease_name_vi }}
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Độ tin cậy
+                    </th>
+
+                    <td>
+                        {{ "%.2f"|format(top.confidence * 100) }}%
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        Mức nguy hiểm
+                    </th>
+
+                    <td>
+                        {{ top.disease.risk_level }}
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <th>
+                        ICD-10
+                    </th>
+
+                    <td>
+                        {{ top.disease.icd10_code or "Chưa xác định" }}
+                    </td>
+
+                </tr>
+
+            </table>
+
+
+            {% if results|length > 1 %}
+
+                <h6 class="mt-4">
+                    Top các dự đoán
+                </h6>
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Hạng
+                            </th>
+
+                            <th>
+                                Bệnh
+                            </th>
+
+                            <th>
+                                Xác suất
+                            </th>
+
+                            <th>
+                                Nguy cơ
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for item in results %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.rank }}
+                            </td>
+
+                            <td>
+
+                                {{ item.disease.disease_name_vi }}
+
+                                <br>
+
+                                <small class="text-muted">
+                                    {{ item.disease.disease_name }}
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                {{ "%.2f"|format(
+                                    item.confidence * 100
+                                ) }}%
+
+                            </td>
+
+                            <td>
+                                {{ item.disease.risk_level }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="alert alert-warning">
+
+                Chưa có kết quả AI.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     KẾT LUẬN BÁC SĨ
+======================================================= -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-dark text-white">
+
+        <h5 class="mb-0">
+
+            <i class="bi bi-clipboard2-pulse"></i>
+
+            Kết luận của bác sĩ
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+
+            <div class="mb-3">
+
+                {{ form.diagnosis.label(
+                    class="form-label fw-semibold"
+                ) }}
+
+                {{ form.diagnosis(
+                    class="form-control",
+                    rows="3"
+                ) }}
+
+            </div>
+
+
+            <div class="mb-3">
+
+                {{ form.treatment.label(
+                    class="form-label fw-semibold"
+                ) }}
+
+                {{ form.treatment(
+                    class="form-control",
+                    rows="4"
+                ) }}
+
+            </div>
+
+
+            <div class="mb-3">
+
+                {{ form.note.label(
+                    class="form-label fw-semibold"
+                ) }}
+
+                {{ form.note(
+                    class="form-control",
+                    rows="4"
+                ) }}
+
+            </div>
+
+
+            {{ form.submit(
+                class="btn btn-success"
+            ) }}
+
+            <a
+                href="{{ url_for(
+                    'lesion.detail',
+                    image_id=lesion.image_id
+                ) }}"
+                class="btn btn-outline-secondary ms-2"
+            >
+
+                Quay lại
+
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+</div>
 
 {% endblock %}

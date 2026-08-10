@@ -1,45 +1,39 @@
-import random
-from datetime import datetime
-
-from flask_login import current_user
-
 from app.models.patient import Patient
 from app.patient.repositories import PatientRepository
+from flask_login import current_user
 
 
 class PatientService:
 
     @staticmethod
-    def generate_patient_code():
+    def get_all():
+        return PatientRepository.get_all()
 
-        while True:
+    @staticmethod
+    def get_by_id(patient_id):
+        return PatientRepository.get_by_id(patient_id)
 
-            code = "BN" + str(random.randint(100000, 999999))
-
-            patient = PatientRepository.get_by_code(code)
-
-            if patient is None:
-                return code
+    @staticmethod
+    def search(keyword):
+        return PatientRepository.search(keyword)
 
     @staticmethod
     def create_patient(form):
+        doctor = current_user.doctor_profile
 
         patient = Patient(
-
             patient_code=PatientService.generate_patient_code(),
 
-            created_by_doctor=current_user.doctor_profile.doctor_id,
+            created_by_doctor=doctor.doctor_id,
 
             fullname=form.fullname.data,
-
             gender=form.gender.data,
-
             birth_year=form.birth_year.data,
-
             phone=form.phone.data,
 
-            created_at=datetime.utcnow()
-
+            drug_allergies=form.drug_allergies.data,
+            chronic_diseases=form.chronic_diseases.data,
+            hereditary_diseases=form.hereditary_diseases.data
         )
 
         return PatientRepository.create(patient)
@@ -55,29 +49,29 @@ class PatientService:
 
         patient.phone = form.phone.data
 
+        # ==========================
+        # BỆNH SỬ
+        # ==========================
+
+        patient.drug_allergies = form.drug_allergies.data
+
+        patient.chronic_diseases = form.chronic_diseases.data
+
+        patient.hereditary_diseases = form.hereditary_diseases.data
+
         PatientRepository.update()
+
+        return patient
 
     @staticmethod
     def delete_patient(patient):
-
         PatientRepository.delete(patient)
 
     @staticmethod
-    def get_all():
+    def generate_patient_code():
 
-        return PatientRepository.get_all()
+        # Nếu project hiện tại của bạn đã có
+        # cách sinh patient_code thì GIỮ NGUYÊN
+        import uuid
 
-    @staticmethod
-    def get_by_id(patient_id):
-
-        return PatientRepository.get_by_id(patient_id)
-
-    @staticmethod
-    def search(keyword):
-
-        return PatientRepository.search(keyword)
-
-    @staticmethod
-    def count():
-
-        return PatientRepository.count()
+        return "BN-" + uuid.uuid4().hex[:8].upper()

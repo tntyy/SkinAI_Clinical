@@ -4,55 +4,132 @@
 
 <div class="container mt-4">
 
-<h3>Thêm bệnh nhân</h3>
+    <h3>Thêm bệnh nhân</h3>
 
-<form method="POST">
+    <form method="POST">
 
-{{ form.hidden_tag() }}
+        {{ form.hidden_tag() }}
 
-<div class="mb-3">
+        <!-- ==========================
+             THÔNG TIN CƠ BẢN
+        =========================== -->
 
-{{ form.fullname.label }}
+        <div class="card shadow-sm mb-4">
 
-{{ form.fullname(class="form-control") }}
+            <div class="card-header">
+                <strong>Thông tin bệnh nhân</strong>
+            </div>
 
-</div>
+            <div class="card-body">
 
-<div class="mb-3">
+                <div class="mb-3">
+                    {{ form.fullname.label(class="form-label") }}
+                    {{ form.fullname(class="form-control") }}
+                </div>
 
-{{ form.gender.label }}
+                <div class="mb-3">
+                    {{ form.gender.label(class="form-label") }}
+                    {{ form.gender(class="form-select") }}
+                </div>
 
-{{ form.gender(class="form-select") }}
+                <div class="mb-3">
+                    {{ form.birth_year.label(class="form-label") }}
+                    {{ form.birth_year(class="form-control") }}
+                </div>
 
-</div>
+                <div class="mb-3">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control") }}
+                </div>
 
-<div class="mb-3">
+            </div>
 
-{{ form.birth_year.label }}
+        </div>
 
-{{ form.birth_year(class="form-control") }}
 
-</div>
+        <!-- ==========================
+             TIỀN SỬ BỆNH
+        =========================== -->
 
-<div class="mb-3">
+        <div class="card shadow-sm mb-4">
 
-{{ form.phone.label }}
+            <div class="card-header">
+                <strong>Thông tin bệnh sử</strong>
+            </div>
 
-{{ form.phone(class="form-control") }}
+            <div class="card-body">
 
-</div>
+                <div class="mb-3">
 
-{{ form.submit(class="btn btn-success") }}
+                    {{ form.drug_allergies.label(
+                        class="form-label"
+                    ) }}
 
-<a
-href="{{ url_for('patient.list_patients') }}"
-class="btn btn-secondary">
+                    {{ form.drug_allergies(
+                        class="form-control"
+                    ) }}
 
-Quay lại
+                    <small class="text-muted">
+                        Ghi nhận các loại thuốc mà bệnh nhân
+                        từng dị ứng.
+                    </small>
 
-</a>
+                </div>
 
-</form>
+
+                <div class="mb-3">
+
+                    {{ form.chronic_diseases.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.chronic_diseases(
+                        class="form-control"
+                    ) }}
+
+                    <small class="text-muted">
+                        Ghi nhận các bệnh nền hoặc bệnh
+                        mạn tính của bệnh nhân.
+                    </small>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    {{ form.hereditary_diseases.label(
+                        class="form-label"
+                    ) }}
+
+                    {{ form.hereditary_diseases(
+                        class="form-control"
+                    ) }}
+
+                    <small class="text-muted">
+                        Ghi nhận tiền sử bệnh có yếu tố
+                        di truyền trong gia đình.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{ form.submit(
+            class="btn btn-success"
+        ) }}
+
+        <a
+            href="{{ url_for('patient.list_patients') }}"
+            class="btn btn-secondary">
+
+            Quay lại
+
+        </a>
+
+    </form>
 
 </div>
 

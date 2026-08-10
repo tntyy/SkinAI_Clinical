@@ -169,3 +169,81 @@ CREATE INDEX idx_predictions_image ON ai_predictions(image_id);
 CREATE INDEX idx_reports_exam ON doctor_reports(exam_id);
 CREATE INDEX idx_audit_user ON audit_logs(user_id);
 CREATE INDEX idx_audit_created ON audit_logs(created_at);
+
+
+1. Nhóm người dùng
+users
+doctor_profiles
+patients
+2. Nhóm khám bệnh
+examinations
+lesion_images
+3. Nhóm AI
+ai_predictions
+ai_prediction_details
+ai_heatmaps
+4. Nhóm bệnh
+diseases
+icd10
+...
+5. Nhóm bác sĩ / báo cáo
+doctor_reports
+report_prediction_refs
+...
+
+                    BỆNH NHÂN
+                        │
+        ┌───────────────┼────────────────┐
+        ↓               ↓                ↓
+     Giới tính        Tuổi          Tiền sử bệnh
+                                      │
+                              ┌───────┼───────┐
+                              ↓       ↓       ↓
+                           Dị ứng   Bệnh nền  Di truyền
+                                      │
+                                      ↓
+                                  Bác sĩ xem
+                                      │
+                                      ↓
+                              Kết luận lâm sàng
+
+┌─────────────────────────────────────────────┐
+│              THÔNG TIN BỆNH NHÂN            │
+│                                             │
+│ Họ tên       Mã BN       Giới tính       Tuổi│
+│                                             │
+│ Dị ứng thuốc                               │
+│ Bệnh nền                                    │
+│ Tiền sử gia đình / di truyền                │
+└─────────────────────────────────────────────┘
+
+┌─────────────────────┬───────────────────────┐
+│ ẢNH TỔN THƯƠNG      │ KẾT QUẢ AI            │
+│                     │                       │
+│                     │ Bệnh dự đoán          │
+│                     │ Confidence            │
+│                     │ Risk                  │
+│                     │ ICD-10                │
+│                     │ Top 3                 │
+└─────────────────────┴───────────────────────┘
+
+┌─────────────────────────────────────────────┐
+│           KẾT LUẬN CỦA BÁC SĨ                │
+│                                             │
+│ Chẩn đoán cuối:                             │
+│ ┌─────────────────────────────────────────┐ │
+│ │                                         │ │
+│ └─────────────────────────────────────────┘ │
+│                                             │
+│ Điều trị:                                   │
+│ ┌─────────────────────────────────────────┐ │
+│ │                                         │ │
+│ └─────────────────────────────────────────┘ │
+│                                             │
+│ Ghi chú:                                    │
+│ ┌─────────────────────────────────────────┐ │
+│ │                                         │ │
+│ └─────────────────────────────────────────┘ │
+│                                             │
+│       [ Xác nhận kết luận ]                 │
+└─────────────────────────────────────────────┘

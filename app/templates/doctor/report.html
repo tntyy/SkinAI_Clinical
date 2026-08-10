@@ -6,190 +6,524 @@ Báo cáo
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid">
+    
+<!-- ======================================================
+     HEADER
+====================================================== -->
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div>
+    <div>
 
-            <h3 class="mb-1">
-                Danh sách báo cáo
-            </h3>
+        <h3 class="mb-1">
+            <i class="bi bi-file-earmark-medical"></i>
+            Danh sách báo cáo
+        </h3>
 
-            <p class="text-muted mb-0">
-                Các ca khám đã được bác sĩ xác nhận
-            </p>
+        <p class="text-muted mb-0">
+            Các ca khám đã được bác sĩ xác nhận
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     BỘ LỌC / TÌM KIẾM
+====================================================== -->
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <form
+            method="GET"
+            action="{{ url_for('doctor.reports') }}"
+        >
+
+            <div class="row g-3 align-items-end">
+
+                <!-- MÃ BÁO CÁO -->
+
+                <div class="col-md-2">
+
+                    <label class="form-label fw-semibold">
+
+                        Mã báo cáo
+
+                    </label>
+
+                    <input
+                        type="number"
+                        name="report_id"
+                        class="form-control"
+                        value="{{ report_id or '' }}"
+                        placeholder="VD: 19"
+                        min="1"
+                    >
+
+                </div>
+
+
+                <!-- BỆNH NHÂN -->
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-semibold">
+
+                        Bệnh nhân
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="patient_name"
+                        class="form-control"
+                        value="{{ patient_name or '' }}"
+                        placeholder="Tên hoặc mã bệnh nhân..."
+                    >
+
+                </div>
+
+
+                <!-- TỪ NGÀY -->
+
+                <div class="col-md-2">
+
+                    <label class="form-label fw-semibold">
+
+                        Từ ngày
+
+                    </label>
+
+                    <input
+                        type="date"
+                        name="from_date"
+                        class="form-control"
+                        value="{{ from_date or '' }}"
+                    >
+
+                </div>
+
+
+                <!-- ĐẾN NGÀY -->
+
+                <div class="col-md-2">
+
+                    <label class="form-label fw-semibold">
+
+                        Đến ngày
+
+                    </label>
+
+                    <input
+                        type="date"
+                        name="to_date"
+                        class="form-control"
+                        value="{{ to_date or '' }}"
+                    >
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <div class="col-md-2">
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            title="Tìm kiếm"
+                        >
+
+                            <i class="bi bi-search"></i>
+
+                            Tìm
+
+                        </button>
+
+
+                        <a
+                            href="{{ url_for('doctor.reports') }}"
+                            class="btn btn-outline-secondary"
+                            title="Xóa bộ lọc"
+                        >
+
+                            <i class="bi bi-arrow-counterclockwise"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     THÔNG TIN KẾT QUẢ
+====================================================== -->
+
+{% if pagination %}
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div class="text-muted">
+
+            <i class="bi bi-file-earmark-text"></i>
+
+            Tìm thấy
+
+            <strong>
+                {{ pagination.total }}
+            </strong>
+
+            báo cáo
+
+        </div>
+
+
+        <div class="text-muted">
+
+            Trang
+
+            <strong>
+                {{ pagination.page }}
+            </strong>
+
+            /
+
+            <strong>
+                {{ pagination.pages if pagination.pages > 0 else 1 }}
+            </strong>
 
         </div>
 
     </div>
 
+{% endif %}
 
-    {% if reports %}
+
+<!-- ======================================================
+     DANH SÁCH BÁO CÁO
+====================================================== -->
+
+{% if reports %}
 
     <div class="card shadow-sm">
 
-        <div class="card-body">
+        <div class="card-body p-0">
 
             <div class="table-responsive">
 
-                <table class="table table-bordered table-hover align-middle">
+                <table
+                    class="table table-bordered table-hover align-middle mb-0"
+                >
+
+                    <!-- ==================================================
+                         HEADER TABLE
+                    ================================================== -->
 
                     <thead class="table-success">
 
-                    <tr>
+                        <tr>
 
-                        <th>#</th>
+                            <th
+                                class="text-center"
+                                style="width: 60px;"
+                            >
+                                #
+                            </th>
 
-                        <th>Mã báo cáo</th>
+                            <th
+                                style="width: 120px;"
+                            >
+                                Mã báo cáo
+                            </th>
 
-                        <th>Bệnh nhân</th>
+                            <th>
+                                Bệnh nhân
+                            </th>
 
-                        <th>Chẩn đoán bác sĩ</th>
+                            <th>
+                                Chẩn đoán bác sĩ
+                            </th>
 
-                        <th>Ngày xác nhận</th>
+                            <th
+                                style="width: 180px;"
+                            >
+                                Ngày xác nhận
+                            </th>
 
-                        <th>Trạng thái</th>
+                            <th
+                                class="text-center"
+                                style="width: 130px;"
+                            >
+                                Trạng thái
+                            </th>
 
-                        <th style="width: 180px;">
-                            Thao tác
-                        </th>
+                            <th
+                                class="text-center"
+                                style="width: 190px;"
+                            >
+                                Thao tác
+                            </th>
 
-                    </tr>
+                        </tr>
 
                     </thead>
 
+
+                    <!-- ==================================================
+                         BODY TABLE
+                    ================================================== -->
+
                     <tbody>
 
-                    {% for report in reports %}
+                        {% for report in reports %}
 
-                    <tr>
+                            <tr>
 
-                        <td>
-                            {{ loop.index }}
-                        </td>
+                                <!-- STT -->
 
-                        <td>
-                            #{{ report.report_id }}
-                        </td>
+                                <td class="text-center">
 
-                        <td>
+                                    {% if pagination %}
 
-                            {% if report.examination and report.examination.patient %}
+                                        {{
+                                            (pagination.page - 1)
+                                            * pagination.per_page
+                                            + loop.index
+                                        }}
 
-                                <strong>
-                                    {{ report.examination.patient.fullname }}
-                                </strong>
+                                    {% else %}
 
-                                <br>
+                                        {{ loop.index }}
 
-                                <small class="text-muted">
+                                    {% endif %}
 
-                                    Mã BN:
-
-                                    {{ report.examination.patient.patient_code }}
-
-                                </small>
-
-                            {% else %}
-
-                                <span class="text-muted">
-                                    Không có dữ liệu
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                {{ report.diagnosis }}
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            {% if report.confirmed_at %}
-
-                                {{ report.confirmed_at.strftime(
-                                    "%d/%m/%Y %H:%M"
-                                ) }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            {% if report.status == "confirmed" %}
-
-                                <span class="badge bg-success">
-
-                                    Đã xác nhận
-
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-secondary">
-
-                                    {{ report.status }}
-
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            <div class="d-flex gap-2">
-
-                                {% if report.examination
-                                      and report.examination.lesion_images %}
-
-                                    <a
-                                        href="{{ url_for(
-                                            'lesion.detail',
-                                            image_id=report.examination.lesion_images[0].image_id
-                                        ) }}"
-                                        class="btn btn-primary btn-sm">
-
-                                        <i class="bi bi-eye"></i>
-
-                                        Xem
-
-                                    </a>
-
-                                {% endif %}
+                                </td>
 
 
-                                <a
-                                    href="{{ url_for(
-                                        'doctor.export_report_pdf',
-                                        report_id=report.report_id
-                                    ) }}"
-                                    class="btn btn-danger btn-sm">
+                                <!-- MÃ BÁO CÁO -->
 
-                                    <i class="bi bi-file-earmark-pdf"></i>
+                                <td>
 
-                                    PDF
+                                    <strong>
+                                        #{{ report.report_id }}
+                                    </strong>
 
-                                </a>
+                                </td>
 
-                            </div>
 
-                        </td>
+                                <!-- BỆNH NHÂN -->
 
-                    </tr>
+                                <td>
 
-                    {% endfor %}
+                                    {% if
+                                        report.examination
+                                        and report.examination.patient
+                                    %}
+
+                                        <strong>
+
+                                            {{
+                                                report.examination.patient.fullname
+                                            }}
+
+                                        </strong>
+
+                                        <br>
+
+                                        <small class="text-muted">
+
+                                            <i class="bi bi-person-badge"></i>
+
+                                            Mã BN:
+
+                                            {{
+                                                report.examination.patient.patient_code
+                                            }}
+
+                                        </small>
+
+                                    {% else %}
+
+                                        <span class="text-muted">
+
+                                            Không có dữ liệu
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- CHẨN ĐOÁN -->
+
+                                <td>
+
+                                    {% if report.diagnosis %}
+
+                                        <strong>
+                                            {{ report.diagnosis }}
+                                        </strong>
+
+                                    {% else %}
+
+                                        <span class="text-muted">
+                                            Chưa có chẩn đoán
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- NGÀY XÁC NHẬN -->
+
+                                <td>
+
+                                    {% if report.confirmed_at %}
+
+                                        <i class="bi bi-calendar3"></i>
+
+                                        {{
+                                            report.confirmed_at.strftime(
+                                                "%d/%m/%Y"
+                                            )
+                                        }}
+
+                                        <br>
+
+                                        <small class="text-muted">
+
+                                            <i class="bi bi-clock"></i>
+
+                                            {{
+                                                report.confirmed_at.strftime(
+                                                    "%H:%M"
+                                                )
+                                            }}
+
+                                        </small>
+
+                                    {% else %}
+
+                                        <span class="text-muted">
+                                            -
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- TRẠNG THÁI -->
+
+                                <td class="text-center">
+
+                                    {% if report.status == "confirmed" %}
+
+                                        <span class="badge bg-success">
+
+                                            <i class="bi bi-check-circle"></i>
+
+                                            Đã xác nhận
+
+                                        </span>
+
+                                    {% elif report.status == "pending" %}
+
+                                        <span class="badge bg-warning text-dark">
+
+                                            <i class="bi bi-clock"></i>
+
+                                            Chờ xác nhận
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+
+                                            {{ report.status or "Không rõ" }}
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- THAO TÁC -->
+
+                                <td class="text-center">
+
+                                    <div
+                                        class="d-flex justify-content-center gap-2"
+                                    >
+
+                                        <!-- XEM -->
+
+                                        {% if
+                                            report.examination
+                                            and report.examination.lesion_images
+                                        %}
+
+                                            <a
+                                                href="{{ url_for(
+                                                    'lesion.detail',
+                                                    image_id=report.examination.lesion_images[0].image_id
+                                                ) }}"
+                                                class="btn btn-primary btn-sm"
+                                                title="Xem ca khám"
+                                            >
+
+                                                <i class="bi bi-eye"></i>
+
+                                                Xem
+
+                                            </a>
+
+                                        {% endif %}
+
+
+                                        <!-- PDF -->
+
+                                        <a
+                                            href="{{ url_for(
+                                                'doctor.export_report_pdf',
+                                                report_id=report.report_id
+                                            ) }}"
+                                            class="btn btn-danger btn-sm"
+                                            title="Xuất báo cáo PDF"
+                                        >
+
+                                            <i class="bi bi-file-earmark-pdf"></i>
+
+                                            PDF
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
 
                     </tbody>
 
@@ -201,17 +535,206 @@ Báo cáo
 
     </div>
 
-    {% else %}
 
-    <div class="alert alert-info">
+    <!-- ======================================================
+         PHÂN TRANG
+    ====================================================== -->
 
-        <i class="bi bi-info-circle"></i>
+    {% if pagination and pagination.pages > 1 %}
 
-        Chưa có báo cáo nào được bác sĩ xác nhận.
+        <nav
+            aria-label="Phân trang báo cáo"
+            class="mt-4"
+        >
+
+            <ul class="pagination justify-content-center">
+
+
+                <!-- TRANG TRƯỚC -->
+
+                <li
+                    class="page-item
+                    {% if not pagination.has_prev %}
+                        disabled
+                    {% endif %}"
+                >
+
+                    {% if pagination.has_prev %}
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'doctor.reports',
+                                page=pagination.prev_num,
+                                report_id=report_id,
+                                patient_name=patient_name,
+                                from_date=from_date,
+                                to_date=to_date
+                            ) }}"
+                            title="Trang trước"
+                        >
+
+                            <i class="bi bi-chevron-left"></i>
+
+                        </a>
+
+                    {% else %}
+
+                        <span class="page-link">
+
+                            <i class="bi bi-chevron-left"></i>
+
+                        </span>
+
+                    {% endif %}
+
+                </li>
+
+
+                <!-- CÁC TRANG -->
+
+                {% for page_num in pagination.iter_pages(
+                    left_edge=1,
+                    left_current=2,
+                    right_current=2,
+                    right_edge=1
+                ) %}
+
+                    {% if page_num %}
+
+                        <li
+                            class="page-item
+                            {% if page_num == pagination.page %}
+                                active
+                            {% endif %}"
+                        >
+
+                            <a
+                                class="page-link"
+                                href="{{ url_for(
+                                    'doctor.reports',
+                                    page=page_num,
+                                    report_id=report_id,
+                                    patient_name=patient_name,
+                                    from_date=from_date,
+                                    to_date=to_date
+                                ) }}"
+                            >
+
+                                {{ page_num }}
+
+                            </a>
+
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item disabled">
+
+                            <span class="page-link">
+                                ...
+                            </span>
+
+                        </li>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                <!-- TRANG SAU -->
+
+                <li
+                    class="page-item
+                    {% if not pagination.has_next %}
+                        disabled
+                    {% endif %}"
+                >
+
+                    {% if pagination.has_next %}
+
+                        <a
+                            class="page-link"
+                            href="{{ url_for(
+                                'doctor.reports',
+                                page=pagination.next_num,
+                                report_id=report_id,
+                                patient_name=patient_name,
+                                from_date=from_date,
+                                to_date=to_date
+                            ) }}"
+                            title="Trang sau"
+                        >
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </a>
+
+                    {% else %}
+
+                        <span class="page-link">
+
+                            <i class="bi bi-chevron-right"></i>
+
+                        </span>
+
+                    {% endif %}
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+    {% endif %}
+
+
+{% else %}
+
+    <!-- ======================================================
+         KHÔNG CÓ KẾT QUẢ
+    ====================================================== -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center py-5">
+
+            <div class="mb-3">
+
+                <i
+                    class="bi bi-file-earmark-x"
+                    style="font-size: 48px;"
+                ></i>
+
+            </div>
+
+            <h5>
+                Không tìm thấy báo cáo
+            </h5>
+
+            <p class="text-muted mb-3">
+
+                Không có báo cáo nào phù hợp với điều kiện tìm kiếm.
+
+            </p>
+
+            <a
+                href="{{ url_for('doctor.reports') }}"
+                class="btn btn-outline-primary"
+            >
+
+                <i class="bi bi-arrow-counterclockwise"></i>
+
+                Xem tất cả báo cáo
+
+            </a>
+
+        </div>
 
     </div>
 
-    {% endif %}
+{% endif %}
+
 
 </div>
 

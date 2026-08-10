@@ -85,13 +85,22 @@ def upload_image(exam_id):
 
         # Upload từ Camera
         if file:
-
             LesionService.upload_file(
                 file,
                 exam_id
             )
 
-            return "OK", 200
+            flash(
+                "Upload ảnh thành công.",
+                "success"
+            )
+
+            return redirect(
+                url_for(
+                    "lesion.list_images",
+                    exam_id=exam_id
+                )
+            )
 
         # Upload từ máy
         if form.validate_on_submit():

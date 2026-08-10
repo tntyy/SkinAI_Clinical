@@ -17,6 +17,7 @@ from werkzeug.security import (
     check_password_hash,
     generate_password_hash
 )
+from sqlalchemy import text
 
 from app.ai.grok_service import GrokService
 
@@ -31,6 +32,8 @@ from app.doctor.services import DoctorReportService
 from app.doctor.dashboard_service import DashboardService
 
 from app.ai.repositories import AIRepository
+
+from app.models.patient import Patient
 
 from app.lesion.repositories import (
     LesionImageRepository
@@ -226,17 +229,121 @@ def explain():
 
 
 # ==========================================================
-# HISTORY
+# AI HISTORY
 # ==========================================================
 
 @doctor.route("/history")
 @login_required
 def history():
 
-    return render_template(
-        "doctor/history.html"
+    patient_id = request.args.get(
+        "patient_id",
+        type=int
     )
 
+    search = request.args.get(
+        "search",
+        "",
+        type=str
+    ).strip()
+
+    date_from = request.args.get(
+        "date_from",
+        "",
+        type=str
+    ).strip()
+
+    date_to = request.args.get(
+        "date_to",
+        "",
+        type=str
+    ).strip()
+
+    # ==========================================
+    # CHƯA CHỌN BỆNH NHÂN
+    # ==========================================
+
+    if not patient_id:
+
+        return render_template(
+            "doctor/history.html",
+
+            patient=None,
+
+            history=[],
+
+            patient_id=None,
+
+            search=search,
+
+            date_from=date_from,
+
+            date_to=date_to
+        )
+
+    # ==========================================
+    # LẤY BỆNH NHÂN
+    # ==========================================
+
+    patient = Patient.query.get(patient_id)
+
+    if patient is None:
+
+        flash(
+            "Không tìm thấy bệnh nhân.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("doctor.patients")
+        )
+
+    # ==========================================
+    # LẤY LỊCH SỬ AI
+    # ==========================================
+
+    history_data = (
+        DoctorReportService
+        .prediction_history(
+
+            patient_id=patient_id,
+
+            search=search,
+
+            date_from=(
+                date_from
+                if date_from
+                else None
+            ),
+
+            date_to=(
+                date_to
+                if date_to
+                else None
+            )
+        )
+    )
+
+    # ==========================================
+    # RENDER
+    # ==========================================
+
+    return render_template(
+
+        "doctor/history.html",
+
+        patient=patient,
+
+        history=history_data,
+
+        patient_id=patient_id,
+
+        search=search,
+
+        date_from=date_from,
+
+        date_to=date_to
+    )
 
 # ==========================================================
 # REPORTS
@@ -246,14 +353,106 @@ def history():
 @login_required
 def reports():
 
-    reports = (
-        DoctorReportRepository
-        .get_all()
+    # ==================================================
+    # 1. LẤY THAM SỐ TÌM KIẾM
+    # ==================================================
+
+    keyword = request.args.get(
+        "keyword",
+        "",
+        type=str
+    ).strip()
+
+    from_date_str = request.args.get(
+        "from_date",
+        "",
+        type=str
+    ).strip()
+
+    to_date_str = request.args.get(
+        "to_date",
+        "",
+        type=str
+    ).strip()
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
     )
+
+    # ==================================================
+    # 2. CHUYỂN NGÀY
+    # ==================================================
+
+    from datetime import datetime, timedelta
+
+    from_date = None
+    to_date = None
+
+    if from_date_str:
+
+        try:
+
+            from_date = datetime.strptime(
+                from_date_str,
+                "%Y-%m-%d"
+            )
+
+        except ValueError:
+
+            from_date_str = ""
+            from_date = None
+
+    if to_date_str:
+
+        try:
+
+            # cộng 1 ngày để lấy trọn ngày đến
+            to_date = (
+                datetime.strptime(
+                    to_date_str,
+                    "%Y-%m-%d"
+                )
+                + timedelta(days=1)
+            )
+
+        except ValueError:
+
+            to_date_str = ""
+            to_date = None
+
+    # ==================================================
+    # 3. LẤY DỮ LIỆU
+    # ==================================================
+
+    pagination = (
+        DoctorReportRepository
+        .search_reports(
+            keyword=keyword,
+            from_date=from_date,
+            to_date=to_date,
+            page=page,
+            per_page=10
+        )
+    )
+
+    # ==================================================
+    # 4. RENDER
+    # ==================================================
 
     return render_template(
         "doctor/report.html",
-        reports=reports
+
+        reports=pagination.items,
+
+        pagination=pagination,
+
+        keyword=keyword,
+
+        from_date=from_date_str,
+
+        to_date=to_date_str
     )
 
 
@@ -683,12 +882,74 @@ def settings():
 @login_required
 def review(image_id):
 
+# ======================================================
+# 1. LẤY ẢNH TỔN THƯƠNG
+# ======================================================
+
     lesion = (
         LesionImageRepository
-        .get_by_id(
-            image_id
-        )
+        .get_by_id(image_id)
     )
+
+    if lesion is None:
+
+        flash(
+            "Không tìm thấy ảnh tổn thương.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "doctor.lesions"
+            )
+        )
+
+
+    # ======================================================
+    # 2. LẤY CA KHÁM
+    # ======================================================
+
+    exam = lesion.examination
+
+    if exam is None:
+
+        flash(
+            "Không tìm thấy thông tin ca khám.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "lesion.detail",
+                image_id=image_id
+            )
+        )
+
+
+    # ======================================================
+    # 3. LẤY BỆNH NHÂN
+    # ======================================================
+
+    patient = exam.patient
+
+    if patient is None:
+
+        flash(
+            "Không tìm thấy thông tin bệnh nhân.",
+            "danger"
+        )
+
+        return redirect(
+            url_for(
+                "lesion.detail",
+                image_id=image_id
+            )
+        )
+
+
+    # ======================================================
+    # 4. LẤY KẾT QUẢ AI
+    # ======================================================
 
     prediction = (
         AIRepository
@@ -700,7 +961,8 @@ def review(image_id):
     if prediction is None:
 
         flash(
-            "Ảnh chưa được AI dự đoán.",
+            "Ảnh này chưa có kết quả AI. "
+            "Không thể thực hiện kết luận.",
             "warning"
         )
 
@@ -711,13 +973,35 @@ def review(image_id):
             )
         )
 
+
+    # ======================================================
+    # 5. LẤY CHI TIẾT AI
+    # ======================================================
+
+    results = (
+        AIRepository
+        .get_prediction_details(
+            prediction.prediction_id
+        )
+    )
+
+
+    # ======================================================
+    # 6. LẤY FORM
+    # ======================================================
+
     form = DoctorReviewForm()
+
+
+    # ======================================================
+    # 7. BÁC SĨ XÁC NHẬN
+    # ======================================================
 
     if form.validate_on_submit():
 
         DoctorReportService.confirm(
 
-            lesion.exam_id,
+            exam.exam_id,
 
             current_user
             .doctor_profile
@@ -730,7 +1014,7 @@ def review(image_id):
         )
 
         flash(
-            "Đã xác nhận kết quả AI.",
+            "Đã xác nhận kết luận bác sĩ.",
             "success"
         )
 
@@ -741,17 +1025,29 @@ def review(image_id):
             )
         )
 
+
+    # ======================================================
+    # 8. RENDER
+    # ======================================================
+
     return render_template(
 
         "doctor/review.html",
 
         lesion=lesion,
 
+        exam=exam,
+
+        patient=patient,
+
         prediction=prediction,
+
+        results=results,
 
         form=form
 
     )
+
 
 # ==========================================================
 # ICD-10 LOOKUP

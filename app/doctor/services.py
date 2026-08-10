@@ -42,9 +42,17 @@ class DoctorReportService:
         )
 
     @staticmethod
-    def prediction_history(patient_id):
+    def prediction_history(
+            patient_id,
+            search=None,
+            date_from=None,
+            date_to=None
+    ):
         return DoctorReportRepository.get_prediction_history(
-            patient_id
+            patient_id=patient_id,
+            search=search,
+            date_from=date_from,
+            date_to=date_to
         )
 
     @staticmethod
