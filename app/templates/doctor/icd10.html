@@ -350,6 +350,280 @@
         }
     }
 
+    /* =====================================================
+       RESULTS LIST (nhiều kết quả để chọn) — THÊM MỚI
+    ===================================================== */
+
+    .icd-result-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 26px;
+
+        /* THÊM: giới hạn chiều cao, cuộn thay vì kéo dài trang */
+        max-height: 420px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+
+    /* THÊM: thanh cuộn gọn, đỡ thô */
+    .icd-result-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .icd-result-list::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+    }
+
+    .icd-result-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .icd-result-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: #ffffff;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px 18px;
+        text-decoration: none;
+        color: #111827;
+        transition: .2s;
+    }
+
+    .icd-result-item:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        transform: translateY(-1px);
+    }
+
+    .icd-result-item.active {
+        border-color: #0d6efd;
+        background: rgba(13, 110, 253, .04);
+    }
+
+    .icd-result-item-main {
+        min-width: 0;
+    }
+
+    .icd-result-item-name {
+        font-weight: 600;
+        font-size: 14.5px;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .icd-result-item-meta {
+        font-size: 12.5px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .icd-result-item-code {
+        font-family: monospace;
+        font-weight: 700;
+        color: #0d6efd;
+        background: rgba(13, 110, 253, .08);
+        padding: 6px 12px;
+        border-radius: 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+
+    /* =====================================================
+       ACTION ROW: nhóm chương + nút Phân tích bệnh — THÊM MỚI
+    ===================================================== */
+
+    .icd-action-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        background: #fafafa;
+    }
+
+    .icd-chapter-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    .icd-analyze-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #198754;
+        color: #fff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 13.5px;
+        transition: .2s;
+    }
+
+    .icd-analyze-btn:hover {
+        background: #157347;
+        color: #fff;
+    }
+
+
+    /* =====================================================
+       AI ANALYSIS PANEL — THÊM MỚI
+    ===================================================== */
+
+    .icd-analysis-panel {
+        display: none;
+        margin-top: 22px;
+        border-top: 2px dashed #e5e7eb;
+        padding-top: 22px;
+    }
+
+    .icd-analysis-panel.open {
+        display: block;
+    }
+
+    .icd-analysis-loading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #6b7280;
+        font-size: 14px;
+        padding: 20px 0;
+    }
+
+    .icd-analysis-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .icd-analysis-header i {
+        color: #198754;
+        font-size: 20px;
+    }
+
+    .icd-analysis-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .icd-analysis-header small {
+        display: block;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .icd-analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .icd-analysis-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        background: #ffffff;
+    }
+
+    .icd-analysis-card-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        margin-bottom: 10px;
+        color: #111827;
+    }
+
+    .icd-analysis-card-title i {
+        color: #0d6efd;
+    }
+
+    .icd-analysis-card.warning .icd-analysis-card-title i {
+        color: #dc3545;
+    }
+
+    .icd-analysis-card ul {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 13.5px;
+        color: #111827;
+        line-height: 1.8;
+    }
+
+    .icd-analysis-card p {
+        margin: 0;
+        font-size: 13.5px;
+        color: #111827;
+        line-height: 1.7;
+    }
+
+    .icd-analysis-card.full {
+        grid-column: 1 / -1;
+    }
+
+    .icd-treatment-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+
+    .icd-treatment-tab {
+        border: 1px solid #e5e7eb;
+        background: #fafafa;
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+    }
+
+    @media (max-width: 768px) {
+
+        .icd-analysis-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .icd-result-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .icd-action-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .icd-analyze-btn {
+            justify-content: center;
+        }
+    }
+
 </style>
 
 
@@ -491,6 +765,50 @@
             {% endif %}
 
         </div>
+
+
+        <!-- ==================================================
+             DANH SÁCH KẾT QUẢ (khi có từ 2 kết quả trở lên) — THÊM MỚI
+        =================================================== -->
+
+        {% if results and total > 1 %}
+
+            <div class="icd-result-list">
+
+                {% for item in results %}
+
+                    <a
+                        href="{{ url_for('doctor.icd10', q=q, code=item.code_display) }}"
+                        class="icd-result-item {{ 'active' if result and result.code_display == item.code_display }}"
+                    >
+
+                        <div class="icd-result-item-main">
+
+                            <div class="icd-result-item-name">
+                                {{ item.name_vi }}
+                            </div>
+
+                            <div class="icd-result-item-meta">
+                                <span>{{ item.name_en }}</span>
+                                {% if item.chapter_name %}
+                                    <span>&middot;</span>
+                                    <span>{{ item.chapter_name }}</span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <div class="icd-result-item-code">
+                            {{ item.code_display }}
+                        </div>
+
+                    </a>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
 
 
         <!-- ==================================================
@@ -665,6 +983,40 @@
                     </div>
 
 
+                    <!-- ======================================
+                         ACTION ROW: nhóm chương + nút phân tích
+                         AI — THÊM MỚI
+                    ======================================= -->
+
+                    <div class="icd-action-row">
+
+                        <div class="icd-chapter-badge">
+                            📁 {{ result.chapter_name or "Chưa phân loại" }}
+                        </div>
+
+                        <button
+                            type="button"
+                            class="icd-analyze-btn"
+                            id="icdAnalyzeBtn"
+                            data-code="{{ result.code_display }}"
+                            data-name-vi="{{ result.name_vi }}"
+                        >
+                            🤖 Phân tích bệnh
+                        </button>
+
+                    </div>
+
+
+                    <!-- ======================================
+                         AI ANALYSIS PANEL (ẩn mặc định, chỉ
+                         hiện khi bấm "Phân tích bệnh") — THÊM MỚI
+                    ======================================= -->
+
+                    <div class="icd-analysis-panel" id="icdAnalysisPanel">
+                        <!-- Nội dung được JS (icd10.js) render vào đây -->
+                    </div>
+
+
                 </div>
 
             </div>
@@ -673,6 +1025,26 @@
         <!-- ==================================================
              KHÔNG CÓ KẾT QUẢ
         =================================================== -->
+
+        {% elif total > 0 %}
+
+            <!-- CÓ KẾT QUẢ NHƯNG CHƯA CHỌN — THÊM MỚI -->
+
+            <div class="icd-empty-card">
+
+                <div class="icd-empty-icon">
+                    👆
+                </div>
+
+                <h4>
+                    Chọn 1 kết quả để xem chi tiết
+                </h4>
+
+                <p>
+                    Bấm vào 1 mã trong danh sách phía trên để xem thông tin đầy đủ.
+                </p>
+
+            </div>
 
         {% else %}
 
@@ -726,5 +1098,7 @@
     </div>
 
 </div>
+
+<script src="{{ url_for('static', filename='js/icd10.js') }}"></script>
 
 {% endblock %}

@@ -51,9 +51,12 @@ from app.doctor.repositories import (
 
 from app.doctor.icd10_mapping import (
     get_vietnamese_name,
-    get_vietnamese_description
+    get_vietnamese_description,
+    get_chapter_name
 )
 
+from app.doctor.icd10_analysis_data import get_analysis
+from app.doctor.icd10_mapping import get_chapter_name
 
 # ==========================================================
 # DASHBOARD
@@ -1063,10 +1066,17 @@ def icd10():
         type=str
     ).strip()
 
+    selected_code = request.args.get(
+        "code",
+        "",
+        type=str
+    ).strip()
+
     # Chưa tìm kiếm
     if not q:
         return render_template(
             "doctor/icd10.html",
+            results=[],
             result=None,
             total=0,
             q=""
@@ -1075,7 +1085,7 @@ def icd10():
     keyword = f"%{q}%"
 
     # ======================================================
-    # TÌM ICD-10
+    # TÌM ICD-10 (liệt kê nhiều kết quả để bác sĩ chọn)
     # ======================================================
 
     sql = text("""
@@ -1117,52 +1127,25 @@ def icd10():
                 ELSE 5
             END,
             code_display ASC
-        LIMIT 1
+        LIMIT 20
     """)
 
-    result = db.session.execute(
+    rows = db.session.execute(
         sql,
         {
             "keyword": keyword,
             "exact": q,
             "prefix": f"{q}%"
         }
-    )
+    ).mappings().all()
 
-    row = result.mappings().first()
-
-    # ======================================================
-    # ĐẾM KẾT QUẢ
-    # ======================================================
-
-    count_sql = text("""
-        SELECT COUNT(*)
-        FROM icd10
-        WHERE
-            code ILIKE :keyword
-            OR code_display ILIKE :keyword
-            OR short_description_en ILIKE :keyword
-            OR long_description_en ILIKE :keyword
-            OR short_description_vi ILIKE :keyword
-            OR long_description_vi ILIKE :keyword
-    """)
-
-    count_result = db.session.execute(
-        count_sql,
-        {
-            "keyword": keyword
-        }
-    )
-
-    total = count_result.scalar() or 0
+    total = len(rows)
 
     # ======================================================
-    # CHUYỂN DATA
+    # CHUYỂN DANH SÁCH KẾT QUẢ
     # ======================================================
 
-    result_data = None
-
-    if row:
+    def build_item(row):
 
         name_vi = (
             row["short_description_vi"]
@@ -1186,13 +1169,15 @@ def icd10():
                 or "Chưa có mô tả tiếng Việt."
             )
 
-        result_data = {
+        return {
 
             "id": row["id"],
 
             "code": row["code"],
 
             "code_display": row["code_display"],
+
+            "chapter_name": get_chapter_name(row["code"]),
 
             "name_vi": name_vi,
 
@@ -1209,12 +1194,85 @@ def icd10():
             )
         }
 
+    results = [build_item(row) for row in rows]
+
+    # ======================================================
+    # CHỌN KẾT QUẢ ĐANG XEM CHI TIẾT
+    #
+    # Ưu tiên:
+    # 1. Mã bác sĩ bấm chọn (?code=...)
+    # 2. Nếu chỉ có đúng 1 kết quả -> tự chọn luôn
+    # 3. Ngược lại -> chưa hiện chi tiết, chờ bác sĩ chọn
+    # ======================================================
+
+    result_data = None
+
+    if selected_code:
+
+        result_data = next(
+            (
+                item for item in results
+                if item["code_display"] == selected_code
+                or item["code"] == selected_code
+            ),
+            None
+        )
+
+    elif total == 1:
+
+        result_data = results[0]
+
     return render_template(
         "doctor/icd10.html",
+        results=results,
         result=result_data,
         total=total,
-        q=q
+        q=q,
+        selected_code=selected_code
     )
+
+
+# ==========================================================
+# ICD-10 - PHÂN TÍCH BỆNH BẰNG AI (STUB)
+# ==========================================================
+#
+# ⚠️ Đây là route STUB (dữ liệu mẫu cố định), CHƯA gọi AI thật.
+# Thay phần TODO bên dưới bằng lệnh gọi Groq API thật,
+# giữ đúng cấu trúc JSON trả về để không phải sửa giao diện.
+# ==========================================================
+
+@doctor.route(
+    "/icd10/analyze",
+    methods=["POST"]
+)
+@login_required
+def icd10_analyze():
+
+    data = request.get_json(silent=True) or {}
+
+    code = data.get("code", "")
+    name_vi = data.get("name_vi", "")
+
+    if not code or not name_vi:
+
+        return jsonify({
+            "success": False,
+            "message": "Thiếu mã ICD-10 hoặc tên bệnh."
+        }), 400
+
+    analysis = get_analysis(
+        code,
+        name_vi,
+        get_chapter_name(code)
+    )
+
+    return jsonify({
+        "success": True,
+        "code": code,
+        "name_vi": name_vi,
+        "analysis": analysis,
+        "source": "static"
+    })
 
 
 # ==========================================================

@@ -338,8 +338,8 @@ def translate_code(code, english_text=None):
     Trả về tên tiếng Việt dựa trên mã ICD-10.
 
     Ưu tiên:
-    1. Ánh xạ mã cụ thể.
-    2. Ánh xạ nhóm 3 ký tự.
+    1. Ánh xạ mã cụ thể (kể cả khi code không có dấu chấm, vd "C4339").
+    2. Ánh xạ mã rút gọn dần (C43.39 -> C43.3 -> C43).
     3. Dịch thuật ngữ tiếng Anh.
     4. Nếu không có ánh xạ thì trả None.
     """
@@ -350,32 +350,60 @@ def translate_code(code, english_text=None):
     code = str(code).strip().upper()
 
     # ------------------------------------------------------
-    # Mã đầy đủ
+    # Mã đầy đủ, đúng y như trong DB (vd "C4339")
     # ------------------------------------------------------
 
     if code in ICD10_CODE_MAPPING:
         return ICD10_CODE_MAPPING[code]
 
     # ------------------------------------------------------
-    # Mã nhóm
+    # Chuẩn hoá về dạng có dấu chấm: "C4339" -> "C43.39"
+    # (giữ nguyên nếu code đã có dấu chấm sẵn, vd "C43.39")
     # ------------------------------------------------------
 
-    base_code = code
+    raw = code.replace(".", "")
 
-    if "." in base_code:
-        base_code = base_code.split(".")[0]
+    dotted = (
+        f"{raw[:3]}.{raw[3:]}"
+        if len(raw) > 3
+        else raw
+    )
 
-    if base_code in ICD10_CODE_MAPPING:
-        return ICD10_CODE_MAPPING[base_code]
+    if dotted in ICD10_CODE_MAPPING:
+        return ICD10_CODE_MAPPING[dotted]
 
     # ------------------------------------------------------
-    # Thử dịch từ tên tiếng Anh
+    # Rút gọn dần phần thập phân: C43.39 -> C43.3
+    # (để bắt các mã con chưa được khai báo riêng)
+    # ------------------------------------------------------
+
+    if "." in dotted:
+
+        integer_part, decimal_part = dotted.split(".")
+
+        for i in range(len(decimal_part) - 1, 0, -1):
+
+            candidate = f"{integer_part}.{decimal_part[:i]}"
+
+            if candidate in ICD10_CODE_MAPPING:
+                return ICD10_CODE_MAPPING[candidate]
+
+    # ------------------------------------------------------
+    # Mã nhóm 3 ký tự (vd "C43")
+    # ------------------------------------------------------
+
+    category = raw[:3]
+
+    if category in ICD10_CODE_MAPPING:
+        return ICD10_CODE_MAPPING[category]
+
+    # ------------------------------------------------------
+    # Thử dịch từ tên tiếng Anh (chỉ khi thật sự không có
+    # ánh xạ mã nào khớp)
     # ------------------------------------------------------
 
     if english_text:
-        translated = translate_text(
-            english_text
-        )
+        translated = translate_text(english_text)
 
         if translated != english_text:
             return translated
@@ -479,3 +507,77 @@ def get_vietnamese_description(
     return translate_text(
         long_description_en
     )
+# ==========================================================
+# 6. NHÓM CHƯƠNG ICD-10 (hiển thị badge phân loại)
+# ==========================================================
+
+ICD10_CHAPTER_RANGES = [
+
+    ("A00", "B99", "Bệnh nhiễm trùng và ký sinh trùng"),
+    ("C00", "D49", "U tân sinh (khối u)"),
+    ("D50", "D89", "Bệnh máu và cơ quan tạo máu"),
+    ("E00", "E89", "Bệnh nội tiết, dinh dưỡng, chuyển hóa"),
+    ("F01", "F99", "Rối loạn tâm thần và hành vi"),
+    ("G00", "G99", "Bệnh hệ thần kinh"),
+    ("H00", "H59", "Bệnh mắt"),
+    ("H60", "H95", "Bệnh tai"),
+    ("I00", "I99", "Bệnh hệ tuần hoàn"),
+    ("J00", "J99", "Bệnh hệ hô hấp"),
+    ("K00", "K95", "Bệnh hệ tiêu hóa"),
+    ("L00", "L99", "Da & mô dưới da"),
+    ("M00", "M99", "Bệnh cơ xương khớp"),
+    ("N00", "N99", "Bệnh hệ tiết niệu - sinh dục"),
+    ("R00", "R99", "Triệu chứng và dấu hiệu chưa phân loại"),
+    ("S00", "T88", "Chấn thương, ngộ độc"),
+
+]
+
+
+def get_chapter_name(code):
+    """
+    Trả về tên nhóm chương ICD-10 dựa trên mã bệnh.
+    Ví dụ: L57.0 -> "Da & mô dưới da"
+    """
+
+    if not code:
+        return None
+
+    code = str(code).strip().upper()
+
+    if not code:
+        return None
+
+    letter = code[0]
+
+    try:
+        number = int(
+            "".join(
+                ch for ch in code[1:3]
+                if ch.isdigit()
+            ) or "0"
+        )
+    except ValueError:
+        number = 0
+
+    for start, end, name in ICD10_CHAPTER_RANGES:
+
+        start_letter = start[0]
+        end_letter = end[0]
+
+        start_number = int(start[1:])
+        end_number = int(end[1:])
+
+        if start_letter == end_letter:
+
+            if (
+                letter == start_letter
+                and start_number <= number <= end_number
+            ):
+                return name
+
+        else:
+
+            if start_letter <= letter <= end_letter:
+                return name
+
+    return "Chưa phân loại"

@@ -6,119 +6,243 @@ Upload ảnh
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
 
-    <h3>Upload ảnh tổn thương</h3>
+    .upload-page { max-width: 1000px; margin: 0 auto; }
+    .upload-header { margin-bottom: 24px; }
+    .upload-header h3 { font-weight: 700; margin-bottom: 4px; }
+    .upload-header p { color: #6b7280; margin: 0; font-size: 14px; }
 
-    <form method="POST"
-          id="uploadForm"
-          enctype="multipart/form-data">
+    .upload-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        height: 100%;
+    }
 
-        {{ form.hidden_tag() }}
+    .upload-card-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+    .upload-card-desc { color: #6b7280; font-size: 13.5px; margin-bottom: 18px; }
 
-        <div class="mb-3">
+    .upload-dropzone {
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
+        padding: 28px 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: .2s;
+        background: #fafafa;
+    }
 
-            {{ form.image.label }}
+    .upload-dropzone:hover, .upload-dropzone.dragover { border-color: #0d6efd; background: rgba(13,110,253,0.04); }
+    .upload-dropzone i { font-size: 32px; color: #0d6efd; margin-bottom: 8px; display: block; }
+    .upload-dropzone span { font-size: 13.5px; color: #6b7280; }
 
-            {{ form.image(class="form-control", id="imageInput") }}
+    .crop-box { margin-top: 18px; display: none; }
+    .crop-box img { max-width: 100%; display: block; }
+
+    .camera-video-wrapper { border-radius: 12px; overflow: hidden; background: #111827; margin-bottom: 14px; }
+    .camera-video-wrapper video { width: 100%; display: block; }
+
+    .camera-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .camera-btn-row .btn { flex: 1; min-width: 100px; font-size: 13.5px; }
+
+    .form-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+</style>
+
+<div class="container mt-4 upload-page">
+
+    <div class="upload-header">
+        <h3>📤 Upload ảnh tổn thương</h3>
+        <p>Chọn ảnh có sẵn trên thiết bị hoặc chụp trực tiếp bằng camera, sau đó cắt vùng tổn thương trước khi tải lên.</p>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- ================= UPLOAD TỪ THIẾT BỊ ================= -->
+
+        <div class="col-md-6">
+
+            <div class="upload-card">
+
+                <div class="upload-card-title"><i class="bi bi-folder2-open"></i> Upload từ thiết bị</div>
+                <div class="upload-card-desc">Chọn file ảnh từ máy, sau đó cắt vùng cần thiết trước khi lưu.</div>
+
+                <form method="POST" id="uploadForm" enctype="multipart/form-data">
+
+                    {{ form.hidden_tag() }}
+
+                    <div class="upload-dropzone" id="dropzone">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <span>Bấm để chọn ảnh hoặc kéo thả vào đây</span>
+                        {{ form.image(class="d-none", id="imageInput") }}
+                    </div>
+
+                    <div class="crop-box" id="fileCropBox">
+                        <img id="fileCropImg" alt="Ảnh cần cắt">
+                        <button type="button" class="btn btn-success w-100 mt-3" id="confirmFileCropBtn">
+                            <i class="bi bi-check2-circle"></i> Xác nhận cắt ảnh
+                        </button>
+                    </div>
+
+                    <img id="fileThumb" style="width:100%;border-radius:10px;margin-top:14px;display:none;border:1px solid #e5e7eb;" alt="Ảnh đã cắt">
+
+                    <div class="form-actions">
+                        {{ form.submit(class="btn btn-primary flex-fill", id="submitBtn", disabled=true) }}
+                        <a href="{{ url_for('lesion.list_images', exam_id=exam_id) }}" class="btn btn-secondary">Quay lại</a>
+                    </div>
+
+                </form>
+
+            </div>
 
         </div>
 
-        {{ form.submit(class="btn btn-primary") }}
+        <!-- ================= CHỤP BẰNG CAMERA ================= -->
 
-        <a href="{{ url_for('lesion.list_images',
-                            exam_id=exam_id) }}"
-           class="btn btn-secondary">
+        <div class="col-md-6">
 
-            Quay lại
+            <div class="upload-card">
 
-        </a>
+                <div class="upload-card-title"><i class="bi bi-camera"></i> Chụp bằng Camera</div>
+                <div class="upload-card-desc">Mở camera, chụp ảnh tổn thương rồi cắt lại trước khi upload.</div>
 
-    </form>
+                <div class="camera-video-wrapper">
+                    <video id="video" autoplay></video>
+                </div>
 
-        <hr>
+                <div class="camera-btn-row">
+                    <button type="button" class="btn btn-primary" onclick="startCamera()"><i class="bi bi-camera-video"></i> Mở Camera</button>
+                    <button type="button" class="btn btn-success" onclick="captureImage()"><i class="bi bi-camera-fill"></i> Chụp ảnh</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="stopCamera()"><i class="bi bi-camera-video-off"></i> Tắt</button>
+                </div>
 
-    <h4>Hoặc chụp bằng Camera</h4>
+                <canvas id="canvas" style="display:none;"></canvas>
 
-    <video
-        id="video"
-        autoplay
-        style="width:500px;border-radius:10px;"></video>
+                <div id="cropContainer" style="display:none">
+                    <div class="crop-box" style="display:block;">
+                        <img id="preview">
+                    </div>
+                    <button id="uploadCropBtn" type="button" class="btn btn-success w-100 mt-3">
+                        <i class="bi bi-check2-circle"></i> Upload ảnh đã Crop
+                    </button>
+                </div>
 
-    <br><br>
+            </div>
 
-    <button
-        type="button"
-        class="btn btn-primary"
-        onclick="startCamera()">
-
-        Mở Camera
-
-    </button>
-
-    <button
-        type="button"
-        class="btn btn-success"
-        onclick="captureImage()">
-
-        Chụp ảnh
-
-    </button>
-
-    <button
-        type="button"
-        class="btn btn-danger"
-        onclick="stopCamera()">
-
-        Tắt Camera
-    </button>
-
-    <br><br>
-
-    <canvas
-        id="canvas"
-        style="display:none;"></canvas>
-
-        <div
-        id="cropContainer"
-        style="display:none">
-
-        <img
-            id="preview"
-            style="max-width:500px">
-
-        <br><br>
-
-        <button
-            id="uploadCropBtn"
-            type="button"
-            class="btn btn-success">
-
-            Upload ảnh đã Crop
-
-        </button>
+        </div>
 
     </div>
 
-    <br><br>
-
-
-
 </div>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/cropper/cropperjs-1.6.2/dist/cropper.min.css') }}">
+<script src="{{ url_for('static', filename='vendor/cropper/cropperjs-1.6.2/dist/cropper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
 
-<link rel="stylesheet"
-href="{{ url_for('static',
-filename='vendor/cropper/cropperjs-1.6.2/dist/cropper.min.css') }}">
+<script>
 
-<script
-src="{{ url_for('static',
-filename='vendor/cropper/cropperjs-1.6.2/dist/cropper.min.js') }}">
-</script>
+    (function () {
 
-<script
-src="{{ url_for('static',
-filename='js/camera.js') }}">
+        var dropzone = document.getElementById('dropzone');
+        var imageInput = document.getElementById('imageInput');
+        var fileThumb = document.getElementById('fileThumb');
+        var submitBtn = document.getElementById('submitBtn');
+
+        var fileCropBox = document.getElementById('fileCropBox');
+        var fileCropImg = document.getElementById('fileCropImg');
+        var confirmBtn = document.getElementById('confirmFileCropBtn');
+
+        var fileCropper = null;
+
+        dropzone.addEventListener('click', function () {
+            imageInput.click();
+        });
+
+        dropzone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', function () {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+
+            if (e.dataTransfer.files && e.dataTransfer.files.length) {
+                imageInput.files = e.dataTransfer.files;
+                handleFileSelected();
+            }
+        });
+
+        imageInput.addEventListener('change', handleFileSelected);
+
+        function handleFileSelected() {
+
+            var file = imageInput.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                fileCropImg.src = e.target.result;
+                fileCropBox.style.display = 'block';
+
+                fileCropImg.onload = function () {
+
+                    if (fileCropper) {
+                        fileCropper.destroy();
+                    }
+
+                    fileCropper = new Cropper(fileCropImg, {
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        background: false
+                    });
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        confirmBtn.addEventListener('click', function () {
+
+            if (!fileCropper) {
+                return;
+            }
+
+            fileCropper.getCroppedCanvas().toBlob(function (blob) {
+
+                var croppedFile = new File([blob], 'lesion_cropped.jpg', { type: 'image/jpeg' });
+
+                var dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                imageInput.files = dataTransfer.files;
+
+                fileThumb.src = URL.createObjectURL(blob);
+                fileThumb.style.display = 'block';
+                submitBtn.disabled = false;
+
+                fileCropper.destroy();
+                fileCropper = null;
+
+                fileCropBox.style.display = 'none';
+
+            }, 'image/jpeg', 0.92);
+
+        });
+
+    })();
+
 </script>
 
 {% endblock %}
