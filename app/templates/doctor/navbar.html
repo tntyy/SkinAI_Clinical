@@ -1,27 +1,30 @@
-<nav class="navbar-custom">
+<header class="navbar-custom">
 
     <div class="navbar-left">
+
         <button class="sidebar-toggle" id="sidebarToggle" aria-label="Mở menu">
             <i class="bi bi-list"></i>
         </button>
 
-        <div class="d-flex align-items-center">
-
-            Xin chào,
-
-            <strong>
-
-                {{ current_user.username }}
-
-            </strong>
-
+        <div class="navbar-greeting">
+            <span>Xin chào,</span>
+            <strong>{{ current_user.username }}</strong>
         </div>
-        
+
     </div>
 
-    <div class="user-info">
-        <i class="bi bi-person-circle"></i>
-        <span>Bác sĩ</span>
+    <div class="navbar-right">
+
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="user-meta">
+                <strong>{{ current_user.username }}</strong>
+                <span>Bác sĩ</span>
+            </div>
+        </div>
+
     </div>
 
-</nav>
+</header>

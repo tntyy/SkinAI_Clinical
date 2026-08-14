@@ -13,7 +13,6 @@ from app.models.user import User
 from app.auth import auth
 from app.patient import patient
 from app.examination import examination
-from app.admin import admin
 from app.metadata import metadata
 from app.lesion import lesion
 from app.ai import ai
@@ -43,7 +42,6 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(patient)
     app.register_blueprint(examination)
-    app.register_blueprint(admin)
     app.register_blueprint(metadata)
     app.register_blueprint(lesion)
     app.register_blueprint(ai)

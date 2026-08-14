@@ -5,3 +5,215 @@
     background:var(--white);
 
 }
+/* ============================================================
+   SIDEBAR — SkinAI Clinical (Doctor)
+   Dùng chung biến màu/khoảng cách với static/css/style.css
+   (--color-primary, --radius-lg, --shadow-soft, ...)
+   Nếu doctor_base.html không load style.css trước file này,
+   thêm fallback bên dưới để không bị vỡ giao diện.
+============================================================ */
+
+:root{
+    --sidebar-width: 260px;
+    --navbar-height: 72px;
+}
+
+/* Fallback nếu :root của style.css chưa được nạp */
+:root{
+    --color-primary: var(--color-primary, #1976D2);
+    --color-primary-dark: var(--color-primary-dark, #125A9C);
+    --color-secondary: var(--color-secondary, #2E7D32);
+    --color-text: var(--color-text, #1C1C1E);
+    --color-text-muted: var(--color-text-muted, #5F6368);
+    --color-bg: var(--color-bg, #F7FAFC);
+    --color-white: var(--color-white, #FFFFFF);
+    --radius-lg: var(--radius-lg, 20px);
+    --radius-md: var(--radius-md, 14px);
+    --shadow-soft: var(--shadow-soft, 0 8px 24px rgba(25,118,210,0.08));
+    --shadow-soft-hover: var(--shadow-soft-hover, 0 14px 32px rgba(25,118,210,0.14));
+    --transition-fast: var(--transition-fast, 0.2s ease);
+    --transition-med: var(--transition-med, 0.3s ease);
+}
+
+/* ============================================================
+   SIDEBAR CONTAINER
+============================================================ */
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:var(--sidebar-width);
+    height:100vh;
+    background:var(--color-white);
+    box-shadow:var(--shadow-soft-hover);
+    z-index:1000;
+    display:flex;
+    flex-direction:column;
+    padding:24px 0 20px;
+    transition:transform var(--transition-med);
+}
+
+/* ============================================================
+   LOGO
+============================================================ */
+
+.sidebar-logo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 20px 24px;
+    margin-bottom:12px;
+    border-bottom:1px solid #EEF1F4;
+}
+
+.sidebar-logo img{
+    width:150px;
+}
+
+/* ============================================================
+   CLOSE BUTTON (mobile)
+============================================================ */
+
+.sidebar-close{
+    display:none;
+    position:absolute;
+    top:16px;
+    right:16px;
+    width:36px;
+    height:36px;
+    border:none;
+    border-radius:50%;
+    background:var(--color-bg);
+    color:var(--color-text-muted);
+    font-size:16px;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:background var(--transition-fast), color var(--transition-fast);
+}
+
+.sidebar-close:hover{
+    background:rgba(25,118,210,0.1);
+    color:var(--color-primary);
+}
+
+/* ============================================================
+   MENU
+============================================================ */
+
+.sidebar-menu{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    overflow-y:auto;
+}
+
+.menu{
+    list-style:none;
+    padding:0 14px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.menu li a{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px 16px;
+    border-radius:var(--radius-md);
+    color:var(--color-text-muted);
+    font-weight:500;
+    font-size:14.5px;
+    text-decoration:none;
+    transition:background var(--transition-fast), color var(--transition-fast);
+}
+
+.menu li a i{
+    font-size:18px;
+    width:22px;
+    text-align:center;
+    color:inherit;
+    flex-shrink:0;
+}
+
+.menu li a:hover{
+    background:rgba(25,118,210,0.08);
+    color:var(--color-primary);
+}
+
+/* Active state */
+.menu li.active a{
+    background:rgba(25,118,210,0.1);
+    color:var(--color-primary);
+    font-weight:600;
+    position:relative;
+}
+
+.menu li.active a::before{
+    content:"";
+    position:absolute;
+    left:-14px;
+    top:50%;
+    transform:translateY(-50%);
+    width:4px;
+    height:22px;
+    border-radius:0 4px 4px 0;
+    background:var(--color-primary);
+}
+
+/* Logout — tách biệt, tông đỏ nhẹ */
+.menu-bottom{
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid #EEF1F4;
+}
+
+.menu li.logout a{
+    color:#D32F2F;
+}
+
+.menu li.logout a:hover{
+    background:rgba(211,47,47,0.08);
+    color:#B71C1C;
+}
+
+/* ============================================================
+   OVERLAY (mobile)
+============================================================ */
+
+.sidebar-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,32,0.45);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity var(--transition-med);
+    z-index:999;
+}
+
+.sidebar-overlay.active{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width:992px){
+
+    .sidebar{
+        transform:translateX(-100%);
+    }
+
+    .sidebar.active{
+        transform:translateX(0);
+    }
+
+    .sidebar-close{
+        display:flex;
+    }
+}
