@@ -84,6 +84,56 @@ class PDFService:
             default
         )
 
+        # ======================================================
+        # ẨN DANH BỆNH NHÂN (PRIVACY)
+        # ======================================================
+
+    @staticmethod
+    def _mask_name(fullname):
+        """
+        Che tên bệnh nhân, chỉ giữ chữ cái đầu mỗi từ.
+        Vd: "Nguyễn Văn An" -> "N** V** A*"
+        """
+
+        if not fullname:
+            return ""
+
+        words = str(fullname).strip().split()
+
+        masked_words = []
+
+        for word in words:
+
+            if len(word) <= 1:
+                masked_words.append(word)
+            else:
+                masked_words.append(
+                    word[0] + "*" * (len(word) - 1)
+                )
+
+        return " ".join(masked_words)
+
+    @staticmethod
+    def _mask_phone(phone):
+        """
+        Che số điện thoại, giữ lại 3 số đầu và 3 số cuối.
+        Vd: "0901234567" -> "090****567"
+        """
+
+        if not phone:
+            return ""
+
+        phone = str(phone).strip()
+
+        if len(phone) <= 6:
+            return "*" * len(phone)
+
+        return (
+                phone[:3]
+                + "*" * (len(phone) - 6)
+                + phone[-3:]
+        )
+
     # ======================================================
     # RESOLVE FILE
     # ======================================================
@@ -811,16 +861,19 @@ class PDFService:
             else "Không xác định"
         )
 
+        fullname_display = PDFService._mask_name(
+            PDFService._get_value(patient, "fullname", "")
+        )
+        phone_display = PDFService._mask_phone(
+            PDFService._get_value(patient, "phone", "")
+        )
+
         story.append(
             PDFService._info_table(
                 [
                     [
                         "Họ và tên",
-                        PDFService._get_value(
-                            patient,
-                            "fullname",
-                            ""
-                        ),
+                        fullname_display,
                         "Mã bệnh nhân",
                         PDFService._get_value(
                             patient,
@@ -838,11 +891,8 @@ class PDFService:
                         birth_year or "Không xác định",
                     ],
                     [
-                        "Số điện thoại",
-                        PDFService._get_value(
-                            patient,
-                            "phone"
-                        ) or "Không có",
+                         "Số điện thoại",
+                        phone_display,
                         "Ngày khám",
                         exam_date_text,
                     ],
