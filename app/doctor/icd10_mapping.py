@@ -581,3 +581,34 @@ def get_chapter_name(code):
                 return name
 
     return "Chưa phân loại"
+# ==========================================================
+# 7. TÌM MÃ ICD-10 THEO TÊN TIẾNG VIỆT (reverse lookup)
+# ==========================================================
+#
+# Dùng khi bác sĩ gõ tiếng Việt để tìm (vd "vảy nến", "u hắc tố")
+# nhưng cột *_vi trong DB đang NULL. Ta tra ngược trong
+# ICD10_CODE_MAPPING để lấy ra các mã có tên tiếng Việt khớp,
+# sau đó dùng các mã này để lọc thêm trong SQL.
+# ==========================================================
+
+def search_codes_by_vietnamese_name(keyword):
+    """
+    Trả về danh sách mã ICD-10 (vd ["L40", "C43"])
+    có tên tiếng Việt trong ICD10_CODE_MAPPING chứa `keyword`.
+    """
+
+    if not keyword:
+        return []
+
+    keyword_lower = keyword.strip().lower()
+
+    if not keyword_lower:
+        return []
+
+    matched = [
+        code
+        for code, name_vi in ICD10_CODE_MAPPING.items()
+        if keyword_lower in name_vi.lower()
+    ]
+
+    return matched

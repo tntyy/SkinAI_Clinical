@@ -34,7 +34,10 @@ class ConsentRecord(db.Model):
 
     examination = db.relationship(
         "Examination",
-        backref="consents"
+        backref=db.backref(
+            "consents",
+            cascade="all, delete-orphan"
+        )
     )
 
     doctor = db.relationship(

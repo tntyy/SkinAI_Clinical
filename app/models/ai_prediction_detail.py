@@ -32,5 +32,8 @@ class AIPredictionDetail(db.Model):
 
     prediction = db.relationship(
         "AIPrediction",
-        backref="details"
+        backref=db.backref(
+            "details",
+            cascade="all, delete-orphan"
+        )
     )

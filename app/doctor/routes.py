@@ -52,7 +52,8 @@ from app.doctor.repositories import (
 from app.doctor.icd10_mapping import (
     get_vietnamese_name,
     get_vietnamese_description,
-    get_chapter_name
+    get_chapter_name,
+    search_codes_by_vietnamese_name   # THÊM MỚI
 )
 
 from app.doctor.icd10_analysis_data import get_analysis
@@ -1085,10 +1086,32 @@ def icd10():
     keyword = f"%{q}%"
 
     # ======================================================
+    # THÊM MỚI: tìm mã ICD-10 có tên tiếng Việt khớp từ khóa
+    # (vì cột *_vi trong DB thường NULL, tên VI chỉ có trong
+    # ICD10_CODE_MAPPING ở app code)
+    # ======================================================
+
+    vi_matched_codes = search_codes_by_vietnamese_name(q)
+
+    extra_where = ""
+    extra_params = {}
+
+    if vi_matched_codes:
+
+        clauses = []
+
+        for i, code in enumerate(vi_matched_codes):
+            key = f"vi_code_{i}"
+            clauses.append(f"code ILIKE :{key}")
+            extra_params[key] = f"{code}%"
+
+        extra_where = " OR " + " OR ".join(clauses)
+
+    # ======================================================
     # TÌM ICD-10 (liệt kê nhiều kết quả để bác sĩ chọn)
     # ======================================================
 
-    sql = text("""
+    sql = text(f"""
         SELECT
             id,
             code,
@@ -1105,6 +1128,7 @@ def icd10():
             OR long_description_en ILIKE :keyword
             OR short_description_vi ILIKE :keyword
             OR long_description_vi ILIKE :keyword
+            {extra_where}
         ORDER BY
             CASE
                 WHEN UPPER(code) = UPPER(:exact)
@@ -1135,7 +1159,8 @@ def icd10():
         {
             "keyword": keyword,
             "exact": q,
-            "prefix": f"{q}%"
+            "prefix": f"{q}%",
+            **extra_params
         }
     ).mappings().all()
 

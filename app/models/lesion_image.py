@@ -45,5 +45,8 @@ class LesionImage(db.Model):
 
     examination = db.relationship(
         "Examination",
-        backref="lesion_images"
+        backref=db.backref(
+            "lesion_images",
+            cascade="all, delete-orphan"
+        )
     )

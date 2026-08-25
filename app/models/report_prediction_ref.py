@@ -23,10 +23,16 @@ class ReportPredictionRef(db.Model):
 
     report = db.relationship(
         "DoctorReport",
-        backref="prediction_refs"
+        backref=db.backref(
+            "prediction_refs",
+            cascade="all, delete-orphan"
+        )
     )
 
     prediction = db.relationship(
         "AIPrediction",
-        backref="report_refs"
+        backref=db.backref(
+            "report_refs",
+            cascade="all, delete-orphan"
+        )
     )

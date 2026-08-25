@@ -47,7 +47,10 @@ class DoctorReport(db.Model):
 
     examination = db.relationship(
         "Examination",
-        backref="doctor_reports"
+        backref=db.backref(
+            "doctor_reports",
+            cascade="all, delete-orphan"
+        )
     )
 
     doctor = db.relationship(

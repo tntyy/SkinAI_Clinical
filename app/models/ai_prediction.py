@@ -36,5 +36,8 @@ class AIPrediction(db.Model):
 
     lesion_image = db.relationship(
         "LesionImage",
-        backref="predictions"
+        backref=db.backref(
+            "predictions",
+            cascade="all, delete-orphan"
+        )
     )

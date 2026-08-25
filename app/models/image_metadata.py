@@ -42,6 +42,8 @@ class ImageMetadata(db.Model):
 
     lesion_image = db.relationship(
         "LesionImage",
-        backref="metadata",
-        uselist=False
+        backref=db.backref(
+            "metadata",  # giữ đúng tên backref hiện có
+            cascade="all, delete-orphan"
+        )
     )

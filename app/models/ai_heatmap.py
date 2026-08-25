@@ -31,5 +31,8 @@ class AIHeatmap(db.Model):
 
     prediction = db.relationship(
         "AIPrediction",
-        backref="heatmaps"
+        backref=db.backref(
+            "heatmaps",
+            cascade="all, delete-orphan"
+        )
     )
