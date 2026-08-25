@@ -240,19 +240,17 @@ class DoctorReportRepository:
             from_date=None,
             to_date=None,
             page=1,
-            per_page=10
+            per_page=10,
+            doctor_id=None  # THÊM tham số
     ):
         query = (
             DoctorReport.query
-            .join(
-                Examination,
-                DoctorReport.exam_id == Examination.exam_id
-            )
-            .join(
-                Patient,
-                Examination.patient_id == Patient.patient_id
-            )
+            .join(Examination, DoctorReport.exam_id == Examination.exam_id)
+            .join(Patient, Examination.patient_id == Patient.patient_id)
         )
+
+        if doctor_id:
+            query = query.filter(DoctorReport.doctor_id == doctor_id)
 
         # ==================================================
         # TÌM KIẾM

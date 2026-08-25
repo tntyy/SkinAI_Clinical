@@ -87,3 +87,23 @@ class PatientRepository:
     @staticmethod
     def count():
         return Patient.query.count()
+
+    @staticmethod
+    def get_all_by_doctor(doctor_id):
+        return (
+            Patient.query
+            .filter_by(created_by_doctor=doctor_id)
+            .order_by(Patient.created_at.desc())
+            .all()
+        )
+
+    @staticmethod
+    def search_by_doctor(keyword, doctor_id):
+        return (
+            Patient.query
+            .filter(
+                Patient.created_by_doctor == doctor_id,
+                Patient.fullname.ilike(f"%{keyword}%")
+            )
+            .all()
+        )

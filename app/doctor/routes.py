@@ -301,6 +301,9 @@ def history():
         return redirect(
             url_for("doctor.patients")
         )
+    if patient.created_by_doctor != current_user.doctor_profile.doctor_id:
+        flash("Bạn không có quyền xem bệnh nhân này.", "danger")
+        return redirect(url_for("doctor.patients"))
 
     # ==========================================
     # LẤY LỊCH SỬ AI
@@ -437,7 +440,8 @@ def reports():
             from_date=from_date,
             to_date=to_date,
             page=page,
-            per_page=10
+            per_page=10,
+            doctor_id=current_user.doctor_profile.doctor_id
         )
     )
 

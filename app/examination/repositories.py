@@ -56,3 +56,20 @@ class ExaminationRepository:
     def count():
 
         return Examination.query.count()
+
+    @staticmethod
+    def get_by_patient_and_doctor(patient_id, doctor_id):
+        return (
+            Examination.query
+            .filter_by(patient_id=patient_id, doctor_id=doctor_id)
+            .order_by(Examination.created_at.desc())
+            .all()
+        )
+
+    @staticmethod
+    def get_by_id_and_doctor(exam_id, doctor_id):
+        return (
+            Examination.query
+            .filter_by(exam_id=exam_id, doctor_id=doctor_id)
+            .first()
+        )

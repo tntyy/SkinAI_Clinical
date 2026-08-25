@@ -6,6 +6,7 @@ from app.models.examination import Examination
 from app.examination.repositories import ExaminationRepository
 
 
+
 class ExaminationService:
 
     @staticmethod
@@ -35,9 +36,12 @@ class ExaminationService:
         return ExaminationRepository.get_all()
 
     @staticmethod
+    @staticmethod
     def get_by_id(exam_id):
-
-        return ExaminationRepository.get_by_id(exam_id)
+        doctor = current_user.doctor_profile
+        return ExaminationRepository.get_by_id_and_doctor(
+            exam_id, doctor.doctor_id
+        )
 
     @staticmethod
     def get_by_patient(patient_id):
@@ -46,13 +50,18 @@ class ExaminationService:
 
     @staticmethod
     def get_patient_examinations(patient_id):
-
-        return ExaminationRepository.get_by_patient(patient_id)
+        doctor = current_user.doctor_profile
+        return ExaminationRepository.get_by_patient_and_doctor(
+            patient_id, doctor.doctor_id
+        )
 
     @staticmethod
     def get_detail(exam_id):
+        doctor = current_user.doctor_profile
+        return ExaminationRepository.get_by_id_and_doctor(
+            exam_id, doctor.doctor_id
+        )
 
-        return ExaminationRepository.get_by_id(exam_id)
     @staticmethod
     def update(exam, form):
 

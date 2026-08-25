@@ -2,44 +2,326 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
 
-    <h3>Thêm bệnh nhân</h3>
+    /* =====================================================
+       PATIENT CREATE PAGE
+    ===================================================== */
+
+    .pc-page {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .pc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 26px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .pc-header-left h2 {
+        font-weight: 700;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .pc-header-left p {
+        color: #6c757d;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .pc-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        padding: 9px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 13.5px;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+    .pc-back-btn:hover {
+        border-color: #0d6efd;
+        color: #0d6efd;
+        background: #f5f9ff;
+    }
+
+
+    /* =====================================================
+       SECTION CARD
+    ===================================================== */
+
+    .pc-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+
+    .pc-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #f1f3f5;
+        background: #fafbfc;
+    }
+
+    .pc-card-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .pc-card-icon.blue {
+        background: rgba(13, 110, 253, .1);
+        color: #0d6efd;
+    }
+
+    .pc-card-icon.amber {
+        background: rgba(245, 158, 11, .12);
+        color: #b45309;
+    }
+
+    .pc-card-header-text strong {
+        display: block;
+        font-size: 15.5px;
+        color: #111827;
+    }
+
+    .pc-card-header-text span {
+        font-size: 12.5px;
+        color: #6b7280;
+    }
+
+    .pc-card-body {
+        padding: 24px;
+    }
+
+
+    /* =====================================================
+       FORM GRID
+    ===================================================== */
+
+    .pc-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .pc-field {
+        margin-bottom: 0;
+    }
+
+    .pc-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .pc-field label {
+        display: block;
+        font-weight: 600;
+        font-size: 13px;
+        color: #374151;
+        margin-bottom: 7px;
+    }
+
+    .pc-field .form-control,
+    .pc-field .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14.5px;
+        transition: .2s;
+    }
+
+    .pc-field .form-control:focus,
+    .pc-field .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+    }
+
+    .pc-field textarea.form-control {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .pc-hint {
+        display: block;
+        margin-top: 6px;
+        font-size: 12px;
+        color: #9ca3af;
+    }
+
+
+    /* =====================================================
+       ACTIONS
+    ===================================================== */
+
+    .pc-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 4px 2px 40px;
+    }
+
+    .pc-actions .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        padding: 11px 22px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: .2s;
+    }
+
+    .pc-actions .btn-cancel:hover {
+        background: #f3f4f6;
+    }
+
+    .pc-actions .btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #198754, #157347);
+        border: none;
+        color: #fff;
+        padding: 11px 26px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(25, 135, 84, 0.25);
+        transition: .2s;
+    }
+
+    .pc-actions .btn-submit:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 700px) {
+
+        .pc-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .pc-actions {
+            flex-direction: column-reverse;
+        }
+
+        .pc-actions .btn-cancel,
+        .pc-actions .btn-submit {
+            justify-content: center;
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+
+<div class="pc-page">
+
+
+    <!-- ==================================================
+         HEADER
+    =================================================== -->
+
+    <div class="pc-header">
+
+        <div class="pc-header-left">
+            <h2>🧑‍⚕️ Thêm bệnh nhân</h2>
+            <p>Nhập thông tin cơ bản và tiền sử bệnh của bệnh nhân mới</p>
+        </div>
+
+        <a href="{{ url_for('patient.list_patients') }}" class="pc-back-btn">
+            ← Quay lại danh sách
+        </a>
+
+    </div>
+
 
     <form method="POST">
 
         {{ form.hidden_tag() }}
 
-        <!-- ==========================
+
+        <!-- ==============================================
              THÔNG TIN CƠ BẢN
-        =========================== -->
+        =============================================== -->
 
-        <div class="card shadow-sm mb-4">
+        <div class="pc-card">
 
-            <div class="card-header">
-                <strong>Thông tin bệnh nhân</strong>
+            <div class="pc-card-header">
+
+                <div class="pc-card-icon blue">
+                    👤
+                </div>
+
+                <div class="pc-card-header-text">
+                    <strong>Thông tin bệnh nhân</strong>
+                    <span>Họ tên, giới tính và thông tin liên hệ</span>
+                </div>
+
             </div>
 
-            <div class="card-body">
+            <div class="pc-card-body">
 
-                <div class="mb-3">
-                    {{ form.fullname.label(class="form-label") }}
-                    {{ form.fullname(class="form-control") }}
-                </div>
+                <div class="pc-grid">
 
-                <div class="mb-3">
-                    {{ form.gender.label(class="form-label") }}
-                    {{ form.gender(class="form-select") }}
-                </div>
+                    <div class="pc-field full">
+                        {{ form.fullname.label(class="form-label") }}
+                        {{ form.fullname(class="form-control", placeholder="Nhập họ và tên bệnh nhân") }}
+                    </div>
 
-                <div class="mb-3">
-                    {{ form.birth_year.label(class="form-label") }}
-                    {{ form.birth_year(class="form-control") }}
-                </div>
+                    <div class="pc-field">
+                        {{ form.gender.label(class="form-label") }}
+                        {{ form.gender(class="form-select") }}
+                    </div>
 
-                <div class="mb-3">
-                    {{ form.phone.label(class="form-label") }}
-                    {{ form.phone(class="form-control") }}
+                    <div class="pc-field">
+                        {{ form.birth_year.label(class="form-label") }}
+                        {{ form.birth_year(class="form-control", placeholder="VD: 1990") }}
+                    </div>
+
+                    <div class="pc-field full">
+                        {{ form.phone.label(class="form-label") }}
+                        {{ form.phone(class="form-control", placeholder="Nhập số điện thoại liên hệ") }}
+                    </div>
+
                 </div>
 
             </div>
@@ -47,68 +329,61 @@
         </div>
 
 
-        <!-- ==========================
+        <!-- ==============================================
              TIỀN SỬ BỆNH
-        =========================== -->
+        =============================================== -->
 
-        <div class="card shadow-sm mb-4">
+        <div class="pc-card">
 
-            <div class="card-header">
-                <strong>Thông tin bệnh sử</strong>
+            <div class="pc-card-header">
+
+                <div class="pc-card-icon amber">
+                    📋
+                </div>
+
+                <div class="pc-card-header-text">
+                    <strong>Thông tin bệnh sử</strong>
+                    <span>Dị ứng, bệnh nền và tiền sử gia đình</span>
+                </div>
+
             </div>
 
-            <div class="card-body">
+            <div class="pc-card-body">
 
-                <div class="mb-3">
+                <div class="pc-grid">
 
-                    {{ form.drug_allergies.label(
-                        class="form-label"
-                    ) }}
+                    <div class="pc-field full">
 
-                    {{ form.drug_allergies(
-                        class="form-control"
-                    ) }}
+                        {{ form.drug_allergies.label(class="form-label") }}
+                        {{ form.drug_allergies(class="form-control", placeholder="VD: Dị ứng penicillin, aspirin...") }}
 
-                    <small class="text-muted">
-                        Ghi nhận các loại thuốc mà bệnh nhân
-                        từng dị ứng.
-                    </small>
+                        <small class="pc-hint">
+                            Ghi nhận các loại thuốc mà bệnh nhân từng dị ứng.
+                        </small>
 
-                </div>
+                    </div>
 
+                    <div class="pc-field full">
 
-                <div class="mb-3">
+                        {{ form.chronic_diseases.label(class="form-label") }}
+                        {{ form.chronic_diseases(class="form-control", placeholder="VD: Tiểu đường, cao huyết áp...") }}
 
-                    {{ form.chronic_diseases.label(
-                        class="form-label"
-                    ) }}
+                        <small class="pc-hint">
+                            Ghi nhận các bệnh nền hoặc bệnh mạn tính của bệnh nhân.
+                        </small>
 
-                    {{ form.chronic_diseases(
-                        class="form-control"
-                    ) }}
+                    </div>
 
-                    <small class="text-muted">
-                        Ghi nhận các bệnh nền hoặc bệnh
-                        mạn tính của bệnh nhân.
-                    </small>
+                    <div class="pc-field full">
 
-                </div>
+                        {{ form.hereditary_diseases.label(class="form-label") }}
+                        {{ form.hereditary_diseases(class="form-control", placeholder="VD: Gia đình có tiền sử ung thư da...") }}
 
+                        <small class="pc-hint">
+                            Ghi nhận tiền sử bệnh có yếu tố di truyền trong gia đình.
+                        </small>
 
-                <div class="mb-3">
-
-                    {{ form.hereditary_diseases.label(
-                        class="form-label"
-                    ) }}
-
-                    {{ form.hereditary_diseases(
-                        class="form-control"
-                    ) }}
-
-                    <small class="text-muted">
-                        Ghi nhận tiền sử bệnh có yếu tố
-                        di truyền trong gia đình.
-                    </small>
+                    </div>
 
                 </div>
 
@@ -117,17 +392,21 @@
         </div>
 
 
-        {{ form.submit(
-            class="btn btn-success"
-        ) }}
+        <!-- ==============================================
+             ACTIONS
+        =============================================== -->
 
-        <a
-            href="{{ url_for('patient.list_patients') }}"
-            class="btn btn-secondary">
+        <div class="pc-actions">
 
-            Quay lại
+            <a href="{{ url_for('patient.list_patients') }}" class="btn-cancel">
+                Hủy
+            </a>
 
-        </a>
+            <button type="submit" class="btn-submit">
+                ✓ {{ form.submit.label.text if form.submit.label else "Lưu bệnh nhân" }}
+            </button>
+
+        </div>
 
     </form>
 

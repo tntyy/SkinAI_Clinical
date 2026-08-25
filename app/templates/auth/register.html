@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Đăng ký | SkinAI Clinical</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <style>
+
+        /* ==========================================================
+           GHI ĐÈ RIÊNG CHO TRANG ĐĂNG KÝ
+           (không đụng tới login.css để không ảnh hưởng trang đăng nhập)
+        ========================================================== */
+
+        /* Mở rộng khung để có chỗ chia 2 cột */
+        .overlay .login-card.register-card {
+            max-width: 720px;
+            width: 92%;
+        }
+
+        .register-card .logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .register-card h1,
+        .register-card > p {
+            text-align: center;
+        }
+
+        /* Lưới 2 cột cho các ô nhập thông tin */
+        .register-card form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 18px;
+        }
+
+        /* Các phần tử chiếm trọn cả 2 cột */
+        .register-card form .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Nút đăng ký + footer luôn full width, không nằm trong grid con nữa
+           (đã tách ra ngoài <form> phía dưới) */
+
+        /* ==========================================================
+           RESPONSIVE: về điện thoại thì rớt lại thành 1 cột
+        ========================================================== */
+
+        @media (max-width: 700px) {
+
+            .overlay .login-card.register-card {
+                max-width: 430px;
+                width: 92%;
+            }
+
+            .register-card form {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="login-card register-card">
+
+        <img src="{{ url_for('static', filename='images/logo.png') }}"
+             class="logo">
+
+        <h1>Đăng ký tài khoản</h1>
+
+        <p>Dành cho bác sĩ sử dụng SkinAI Clinical</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }} full-width">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" name="username"
+                       placeholder="Tên đăng nhập" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-id-card"></i>
+                <input type="text" name="fullname"
+                       placeholder="Họ và tên bác sĩ" required>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" name="email"
+                       placeholder="Email (không bắt buộc)">
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-phone"></i>
+                <input type="text" name="phone"
+                       placeholder="Số điện thoại (không bắt buộc)">
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-hospital"></i>
+                <input type="text" name="hospital"
+                       placeholder="Bệnh viện / cơ sở (không bắt buộc)">
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-stethoscope"></i>
+                <input type="text" name="department"
+                       placeholder="Chuyên khoa (không bắt buộc)">
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="password" name="password"
+                       placeholder="Mật khẩu (tối thiểu 6 ký tự)" required>
+                <span class="toggle-password">
+                    <i class="fa-solid fa-eye" onclick="togglePassword('password')"></i>
+                </span>
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="confirm_password" name="confirm_password"
+                       placeholder="Nhập lại mật khẩu" required>
+                <span class="toggle-password">
+                    <i class="fa-solid fa-eye" onclick="togglePassword('confirm_password')"></i>
+                </span>
+            </div>
+
+            <button type="submit" class="full-width">
+                Đăng ký
+            </button>
+
+        </form>
+
+        <div class="footer">
+            Đã có tài khoản? <a href="{{ url_for('auth.login') }}">Đăng nhập</a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function togglePassword(id){
+
+    let field = document.getElementById(id);
+
+    if(field.type === "password"){
+        field.type = "text";
+    }
+    else{
+        field.type = "password";
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

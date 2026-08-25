@@ -7,15 +7,28 @@ class PatientService:
 
     @staticmethod
     def get_all():
-        return PatientRepository.get_all()
-
-    @staticmethod
-    def get_by_id(patient_id):
-        return PatientRepository.get_by_id(patient_id)
+        doctor = current_user.doctor_profile
+        return PatientRepository.get_all_by_doctor(doctor.doctor_id)
 
     @staticmethod
     def search(keyword):
-        return PatientRepository.search(keyword)
+        doctor = current_user.doctor_profile
+        return PatientRepository.search_by_doctor(keyword, doctor.doctor_id)
+
+    @staticmethod
+    def get_by_id(patient_id):
+        patient = PatientRepository.get_by_id(patient_id)
+
+        if patient is None:
+            return None
+
+        doctor = current_user.doctor_profile
+
+        # Chặn bác sĩ khác xem/sửa/xóa bệnh nhân không phải của mình
+        if patient.created_by_doctor != doctor.doctor_id:
+            return None
+
+        return patient
 
     @staticmethod
     def create_patient(form):
